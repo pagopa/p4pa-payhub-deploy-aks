@@ -7,6 +7,6 @@ tags = {
   CreatedBy   = "Terraform"
   Environment = "DEV"
   Owner       = "ARC"
-  Source      = "https://github.com/pagopa/arc-be"
+  Source      = "https://github.com/pagopa/arc-deploy-aks"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }

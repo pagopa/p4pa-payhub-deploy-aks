@@ -1,13 +1,6 @@
-resource "github_branch" "release" {
-  for_each      = var.env == "prod" ? toset(local.branches) : []
-  repository    = local.github.repository
-  branch        = each.key
-  source_branch = "main"
-}
-
 resource "github_branch_default" "default" {
   repository = local.github.repository
-  branch     = "develop"
+  branch     = "main"
 }
 
 resource "github_repository_ruleset" "branch_rules" {

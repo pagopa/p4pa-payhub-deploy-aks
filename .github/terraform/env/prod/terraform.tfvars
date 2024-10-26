@@ -1,12 +1,12 @@
 prefix         = "arc"
-env            = "uat"
-env_short      = "u"
+env            = "prod"
+env_short      = "p"
 location_short = "itn"
 
 tags = {
   CreatedBy   = "Terraform"
-  Environment = "UAT"
+  Environment = "PROD"
   Owner       = "ARC"
-  Source      = "https://github.com/pagopa/arc-be"
+  Source      = "https://github.com/pagopa/arc-deploy-aks"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }

@@ -2,11 +2,10 @@ locals {
   # Repo
   github = {
     org        = "pagopa"
-    repository = "arc-be"
+    repository = "arc-deploy-aks"
   }
 
   repo_secrets = var.env_short == "p" ? {
-    SONAR_TOKEN = data.azurerm_key_vault_secret.sonar_token[0].value
   } : {}
 
   map_repo = {
@@ -25,24 +24,10 @@ locals {
   }
 
   branch_rulesets = {
-    develop = {
-      ref_name                        = "refs/heads/develop"
-      bypass_actors                   = false
-      required_linear_history         = true
-      require_code_owner_review       = false
-      required_approving_review_count = 0
-    }
-    uat = {
-      ref_name                        = "refs/heads/uat"
-      bypass_actors                   = false
-      required_linear_history         = false
-      require_code_owner_review       = false
-      required_approving_review_count = 1
-    },
     main = {
       ref_name                        = "refs/heads/main"
       bypass_actors                   = false
-      required_linear_history         = false
+      required_linear_history         = true
       require_code_owner_review       = true
       required_approving_review_count = 0
     },
