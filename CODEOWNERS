@@ -1,7 +1,6 @@
 # .github/CODEOWNERS
 
 # groups
-.github/ @pagopa/payments-cloud-admin @pagopa/p4pa-admins
+.github/ @pagopa/payments-cloud-admin @pagopa/arc-admins
 
-helm/prod @pagopa/payments-cloud-admin @pagopa/p4pa-admins
-
+helm/prod @pagopa/payments-cloud-admin @pagopa/arc-admins

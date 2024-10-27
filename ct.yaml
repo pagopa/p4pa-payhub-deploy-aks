@@ -1,0 +1,56 @@
+# Basic Chart Testing Configuration
+remote: origin
+target-branch: main
+timeout: 600s
+
+# Chart directories to scan for changes recursively
+chart-dirs:
+ - helm/dev
+ - helm/uat
+ - helm/prod
+
+# Required Helm repositories for chart dependencies
+chart-repos:
+ - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
+
+# General validation settings
+validate-maintainers: false
+validate-chart-schema: true
+validate-yaml: true
+check-version-increment: true
+debug: true
+
+# =====================================================
+# Lint and Validation Rules
+# =====================================================
+
+rules:
+ # Values.yaml validation rules
+ # Ensures required fields and correct types in values files
+ values:
+   - name: image.tag
+     required: true
+     type: string
+   - name: replicaCount
+     required: true
+     type: integer
+
+ # Chart.yaml validation rules
+ # Validates the chart metadata and dependencies
+ chart:
+   - name: version
+     required: true
+     type: string
+   - name: appVersion
+     required: true
+     type: string
+   - name: dependencies
+     required: true
+     type: array
+
+ # Template validation rules
+ # Ensures Kubernetes manifests have required metadata
+ template:
+   - name: metadata.labels
+     required: true
+     type: object
