@@ -1,7 +1,8 @@
-# ct.yaml
 remote: origin
 target-branch: main
-helm-extra-args: --timeout 600s
+# Rimuoviamo helm-extra-args: --timeout 600s che causa l'errore
+# E lo sostituiamo con:
+timeout: 600s  # Questo è il formato corretto
 
 # Directory dei chart
 chart-dirs:
@@ -20,9 +21,7 @@ validate-yaml: true
 check-version-increment: true
 debug: true
 
-#
-# Lint
-#
+# Configurazioni lint
 rules:
   # Regole per values.yaml
   values:
