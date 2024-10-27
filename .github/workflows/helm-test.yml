@@ -34,8 +34,8 @@ jobs:
          helm repo update
 
      - name: Set up chart-testing
-       # v2.6.1 - https://github.com/helm/chart-testing-action/releases/tag/v2.6.1
-       uses: helm/chart-testing-action@e8788873b61e4a4b4fe0a29714c97f72c8aee0dd
+       # v2.6.1 - https://github.com/helm/chart-testing-action/releases/tag/v2.6.0
+       uses: helm/chart-testing-action@b43128a8b25298e1e7b043b78ea6613844e079b1
 
      - name: List changed charts
        id: list-changed
