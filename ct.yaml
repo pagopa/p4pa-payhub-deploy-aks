@@ -1,51 +1,56 @@
+# Basic Chart Testing Configuration
 remote: origin
 target-branch: main
-# Rimuoviamo helm-extra-args: --timeout 600s che causa l'errore
-# E lo sostituiamo con:
-timeout: 600s  # Questo è il formato corretto
+timeout: 600s
 
-# Directory dei chart
+# Chart directories to scan for changes recursively
 chart-dirs:
-  - helm/dev
-  - helm/uat
-  - helm/prod
+ - helm/dev
+ - helm/uat
+ - helm/prod
 
-# Repository necessari
+# Required Helm repositories for chart dependencies
 chart-repos:
-  - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
+ - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
 
-# Configurazioni base
+# General validation settings
 validate-maintainers: false
 validate-chart-schema: true
 validate-yaml: true
 check-version-increment: true
 debug: true
 
-# Configurazioni lint
+# =====================================================
+# Lint and Validation Rules
+# =====================================================
+
 rules:
-  # Regole per values.yaml
-  values:
-    - name: image.tag
-      required: true
-      type: string
-    - name: replicaCount
-      required: true
-      type: integer
+ # Values.yaml validation rules
+ # Ensures required fields and correct types in values files
+ values:
+   - name: image.tag
+     required: true
+     type: string
+   - name: replicaCount
+     required: true
+     type: integer
 
-  # Regole per Chart.yaml
-  chart:
-    - name: version
-      required: true
-      type: string
-    - name: appVersion
-      required: true
-      type: string
-    - name: dependencies
-      required: true
-      type: array
+ # Chart.yaml validation rules
+ # Validates the chart metadata and dependencies
+ chart:
+   - name: version
+     required: true
+     type: string
+   - name: appVersion
+     required: true
+     type: string
+   - name: dependencies
+     required: true
+     type: array
 
-  # Regole per i template
-  template:
-    - name: metadata.labels
-      required: true
-      type: object
+ # Template validation rules
+ # Ensures Kubernetes manifests have required metadata
+ template:
+   - name: metadata.labels
+     required: true
+     type: object
