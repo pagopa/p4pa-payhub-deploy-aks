@@ -1,0 +1,52 @@
+# ct.yaml
+remote: origin
+target-branch: main
+helm-extra-args: --timeout 600s
+
+# Directory dei chart
+chart-dirs:
+  - helm/dev
+  - helm/uat
+  - helm/prod
+
+# Repository necessari
+chart-repos:
+  - pagopa-microservice=https://pagopa.github.io/aks-microservice-chart-blueprint
+
+# Configurazioni base
+validate-maintainers: false
+validate-chart-schema: true
+validate-yaml: true
+check-version-increment: true
+debug: true
+
+#
+# Lint
+#
+rules:
+  # Regole per values.yaml
+  values:
+    - name: image.tag
+      required: true
+      type: string
+    - name: replicaCount
+      required: true
+      type: integer
+
+  # Regole per Chart.yaml
+  chart:
+    - name: version
+      required: true
+      type: string
+    - name: appVersion
+      required: true
+      type: string
+    - name: dependencies
+      required: true
+      type: array
+
+  # Regole per i template
+  template:
+    - name: metadata.labels
+      required: true
+      type: object
