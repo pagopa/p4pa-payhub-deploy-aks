@@ -188,6 +188,17 @@ stages:
                     echo "❌ Failed to sync application $app_name after $max_attempts attempts"
                     return 1
                 }
+                
+                # Install ArgoCD CLI
+                echo "🔨 Installing ArgoCD CLI..."
+                if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
+                    echo "❌ Failed to download ArgoCD CLI"
+                    exit 1
+                fi
+                 
+                chmod +x /tmp/argocd-v2.12.4
+                sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
+                
                 # Login to ArgoCD
                 echo "🔨 Logging into ArgoCD..."
                 if ! argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD --insecure --grpc-web; then
