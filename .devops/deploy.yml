@@ -212,6 +212,10 @@ stages:
                 echo "✅ Sync process completed successfully"
               name: SyncRoot
               displayName: 'Display Changed Apps and Sync Root App'
+              env:
+                ARGOCD_SERVER: $(argocdServer)
+                ARGOCD_USERNAME: $(argocdUsername)
+                ARGOCD_PASSWORD: $(argocdPassword)
 
     - ${{ each item in parameters.APPS }}:
       - deployment: deploy_${{ replace(item, '-', '_') }}
