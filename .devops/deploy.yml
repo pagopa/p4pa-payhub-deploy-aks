@@ -38,6 +38,7 @@ parameters:
   default: 'develop'
 
 variables:
+  # Variabili statiche
   - name: directoryPattern
     value: 'helm/${{ parameters.ENV }}'
   - name: isPullRequestTrigger
@@ -46,6 +47,36 @@ variables:
     value: true
   - name: argoRootAppName
     value: root-cittadini-app
+
+  - ${{ if eq(parameters.ENV, 'dev') }}:
+    - name: argocdServer
+      value: $(DEV_ARGOCD_SERVER)
+    - name: argocdUsername
+      value: $(DEV_ARGOCD_USERNAME)
+    - name: argocdPassword
+      value: $(DEV_ARGOCD_PASSWORD)
+    - name: agentPoolName
+      value: $(DEV_AGENT_POOL)
+
+  - ${{ if eq(parameters.ENV, 'uat') }}:
+    - name: argocdServer
+      value: $(UAT_ARGOCD_SERVER)
+    - name: argocdUsername
+      value: $(UAT_ARGOCD_USERNAME)
+    - name: argocdPassword
+      value: $(UAT_ARGOCD_PASSWORD)
+    - name: agentPoolName
+      value: $(UAT_AGENT_POOL)
+
+  - ${{ if eq(parameters.ENV, 'prod') }}:
+    - name: argocdServer
+      value: $(PROD_ARGOCD_SERVER)
+    - name: argocdUsername
+      value: $(PROD_ARGOCD_USERNAME)
+    - name: argocdPassword
+      value: $(PROD_ARGOCD_PASSWORD)
+    - name: agentPoolName
+      value: $(PROD_AGENT_POOL)
 
 resources:
   repositories:
@@ -160,7 +191,7 @@ stages:
     - deployment: update_root_app
       displayName: Update AppRoot Argocd
       pool:
-        name: $(DEV_AGENT_POOL)
+        name: $(agentPoolName)
       environment: ${{ parameters.ENV }}
       strategy:
         runOnce:
