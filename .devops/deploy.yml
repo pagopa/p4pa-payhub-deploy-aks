@@ -207,14 +207,14 @@ stages:
                 fi
                             
                 # Initial sync with timeout
-                echo "🔨 Starting sync operation for ${argoRootAppName}..."
-                if ! argocd app sync ${argoRootAppName} --prune --timeout 90; then
+                echo "🔨 Starting sync operation for ${ARGOCD_ROOT_APP_NAME}..."
+                if ! argocd app sync ${ARGOCD_ROOT_APP_NAME} --prune --timeout 90; then
                     echo "❌ Initial sync command failed"
                     exit 1
                 fi
             
                 # Verify sync status
-                if ! check_sync_status ${argoRootAppName}; then
+                if ! check_sync_status ${ARGOCD_ROOT_APP_NAME}; then
                     echo "❌ Sync verification failed"
                     echo "##vso[task.logissue type=error]ArgoCD sync verification failed"
                     exit 1
@@ -227,6 +227,7 @@ stages:
                 ARGOCD_SERVER: $(argocdServer)
                 ARGOCD_USERNAME: $(argocdUsername)
                 ARGOCD_PASSWORD: $(argocdPassword)
+                ARGOCD_ROOT_APP_NAME: $(argoRootAppName)
 
     - ${{ each item in parameters.APPS }}:
       - deployment: deploy_${{ replace(item, '-', '_') }}
