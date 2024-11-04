@@ -1,9 +1,9 @@
-trigger: none  # Disabilita i trigger automatici su push
+trigger: none
 
 pr:
   branches:
     include:
-      - "main"
+      - main
   paths:
     include:
     - 'helm/dev/**'
@@ -13,7 +13,7 @@ schedules:
   displayName: Nightly batch run
   branches:
     include:
-    - "main"
+    - main
   always: true
 
 parameters:
@@ -59,6 +59,7 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
+  # Stage di debug per verificare il contesto di esecuzione
   - stage: debug
     condition: succeeded()
     jobs:
@@ -67,8 +68,9 @@ stages:
         vmImage: 'ubuntu-latest'
       steps:
       - script: |
-          echo  "build reason:  ${{variables['Build.Reason']}}"
+          echo "build reason: ${{variables['Build.Reason']}}"
 
+  # Stage per calcolare i cambiamenti git in caso di PR
   - stage: calculate_pr_git_changes
     condition: and(succeeded(), eq(variables.isPullRequestTrigger, true))
     jobs:
@@ -81,14 +83,14 @@ stages:
         name: checkoutCode
         displayName: 'Checkout Code'
 
-      - # noinspection YAMLSchemaDeprecation
-        task: UsePythonVersion@0
+      - task: UsePythonVersion@0
         inputs:
           versionSpec: '3.x'
           addToPath: true
         name: setupPython
         displayName: 'Setup Python'
 
+      # Migliorato script Python con gestione errori e logging
       - task: PythonScript@0
         name: grep_git_folders
         displayName: 'Process String and Convert to JSON'
@@ -97,26 +99,40 @@ stages:
           script: |
             import json
             import subprocess
-
-            print("Starting the process...")
-
-            command = "git diff --name-only --diff-filter=d origin/main...HEAD | xargs -I {} dirname {} | sort -u"
-            print(f"Executing command: {command}")
-
-            str = subprocess.check_output(command, shell=True).decode('utf-8').strip()
-            print(f"Command output: {str}")
-
-            filtered_list = [item for item in str.split('\n') if "helm/dev" in item]
-            print(f"Filtered list: {filtered_list}")
-
-            cleaned_list = [item.replace("helm/dev/", "") for item in filtered_list]
-            print(f"Cleaned list: {cleaned_list}")
-
-            result_json = json.dumps(cleaned_list)
-            print(f"Final JSON result: {result_json}")
-
-            print(f'##vso[task.setvariable variable=resultJson;isOutput=true]{result_json}')
-            print("Process completed.")
+            import sys
+            
+            try:
+                print("Starting the process...")
+                
+                command = "git diff --name-only --diff-filter=d origin/main...HEAD | xargs -I {} dirname {} | sort -u"
+                print(f"Executing command: {command}")
+                
+                result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                if result.returncode != 0:
+                    raise Exception(f"Git command failed: {result.stderr}")
+                
+                str_output = result.stdout.strip()
+                print(f"Command output: {str_output}")
+                
+                if not str_output:
+                    print("No changes detected")
+                    filtered_list = []
+                else:
+                    filtered_list = [item for item in str_output.split('\n') if "helm/dev" in item]
+                print(f"Filtered list: {filtered_list}")
+                
+                cleaned_list = [item.replace("helm/dev/", "") for item in filtered_list]
+                print(f"Cleaned list: {cleaned_list}")
+                
+                result_json = json.dumps(cleaned_list)
+                print(f"Final JSON result: {result_json}")
+                
+                print(f'##vso[task.setvariable variable=resultJson;isOutput=true]{result_json}')
+                print("Process completed successfully")
+                
+            except Exception as e:
+                print(f"Error occurred: {str(e)}", file=sys.stderr)
+                sys.exit(1)
 
       - task: Bash@3
         name: EchoBashJson
@@ -124,10 +140,11 @@ stages:
         inputs:
           targetType: 'inline'
           script: |
-            echo "Risultato JSON Array:"
+            echo "JSON Array Result:"
             echo '$(grep_git_folders.resultJson)'
             echo "##vso[task.setvariable variable=savedResultJsonArray;isOutput=true]$(grep_git_folders.resultJson)"
 
+  # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
     dependsOn:
       - calculate_pr_git_changes
@@ -141,7 +158,7 @@ stages:
         resultJsonArrayBash: '${{ convertToJson(parameters.APPS) }}'
     jobs:
     - deployment: update_root_app
-      displayName:  Update AppRoot Argocd
+      displayName: Update AppRoot Argocd
       pool:
         name: $(DEV_AGENT_POOL)
       environment: ${{ parameters.ENV }}
@@ -149,86 +166,91 @@ stages:
         runOnce:
           deploy:
             steps:
+            # Step per visualizzare informazioni di debug
             - bash: |
-                echo "Is this a complete run? $(isPullRequestTrigger)"
-                echo "Is this a complete run? ${{variables.isPullRequestTrigger}}"
-                echo "---"
-                echo "BuildReason: ${{variables['Build.Reason']}} "
+                echo "Is this a PR? $(isPullRequestTrigger)"
+                echo "Build Reason: ${{variables['Build.Reason']}}"
                 echo "Changed applications:"
-                echo 'resultJsonArrayBash: $(resultJsonArrayBash)'
-                echo 'resultJsonArrayPython: $(resultJsonArrayPython)'
-                echo 'resultJsonArrayPython: ${{ variables.resultJsonArrayPython }}'
-                echo "---"
-                echo "MY_APPS: $(my_apps)"
-
+                echo "resultJsonArrayBash: $(resultJsonArrayBash)"
+                echo "resultJsonArrayPython: $(resultJsonArrayPython)"
               name: displayChangedApps
-              displayName: 'Display Changed Apps and Sync Root App'
+              displayName: 'Display Changed Apps'
+
+            # Step migliorato per sync di ArgoCD
             - bash: |
-            
+                function install_argocd() {
+                    echo "🔨 Installing ArgoCD CLI..."
+                    if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
+                        echo "❌ Failed to download ArgoCD CLI"
+                        return 1
+                    fi
+                    chmod +x /tmp/argocd-v2.12.4
+                    sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
+                }
+
+                function login_argocd() {
+                    echo "🔨 Logging into ArgoCD..."
+                    if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
+                        echo "❌ Failed to login to ArgoCD"
+                        return 1
+                    fi
+                }
+
                 function check_sync_status() {
                     local app_name=$1
-                    local max_attempts=12  # 2 minuti totali con 10s di intervallo
+                    local max_attempts=12
                     local attempt=1
-                    local sync_status
+                    local wait_time=10
                     
                     while [ $attempt -le $max_attempts ]; do
                         echo "Attempt $attempt/$max_attempts: Checking sync status for $app_name..."
-                        sync_status=$(argocd app get $app_name -o json | jq -r '.status.sync.status')
-                        
-                        if [ "$sync_status" == "Synced" ]; then
-                            echo "✅ Application $app_name successfully synced"
-                            return 0
-                        else
+                        if sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
+                            if [ "$sync_status" == "Synced" ]; then
+                                echo "✅ Application $app_name successfully synced"
+                                return 0
+                            fi
                             echo "⏳ Current sync status: $sync_status"
-                            [ $attempt -lt $max_attempts ] && sleep 10
+                        else
+                            echo "❌ Failed to get sync status"
                         fi
-                        attempt=$((attempt + 1))
+                        
+                        [ $attempt -lt $max_attempts ] && sleep $wait_time
+                        ((attempt++))
                     done
                     
-                    echo "❌ Failed to sync application $app_name after $max_attempts attempts"
+                    echo "❌ Sync status check timed out for $app_name"
                     return 1
                 }
-                
-                # Install ArgoCD CLI
-                echo "🔨 Installing ArgoCD CLI..."
-                if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-                    echo "❌ Failed to download ArgoCD CLI"
+
+                # Main execution
+                if ! install_argocd; then
                     exit 1
                 fi
-                 
-                chmod +x /tmp/argocd-v2.12.4
-                sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-                
-                # Login to ArgoCD
-                echo "🔨 Logging into ArgoCD..."
-                if ! argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD --insecure --grpc-web; then
-                    echo "❌ Failed to login to ArgoCD"
+
+                if ! login_argocd; then
                     exit 1
                 fi
-                            
-                # Initial sync with timeout
-                echo "🔨 Starting sync operation for ${ARGOCD_ROOT_APP_NAME}..."
-                if ! argocd app sync ${ARGOCD_ROOT_APP_NAME} --prune --timeout 90; then
-                    echo "❌ Initial sync command failed"
+
+                if ! argocd app sync "${ARGOCD_ROOT_APP_NAME}" --prune --timeout 90; then
+                    echo "❌ Initial sync failed"
                     exit 1
                 fi
-            
-                # Verify sync status
-                if ! check_sync_status ${ARGOCD_ROOT_APP_NAME}; then
+
+                if ! check_sync_status "${ARGOCD_ROOT_APP_NAME}"; then
                     echo "❌ Sync verification failed"
-                    echo "##vso[task.logissue type=error]ArgoCD sync verification failed"
                     exit 1
                 fi
-            
-                echo "✅ Sync process completed successfully"
-              name: SyncRoot
-              displayName: 'Display Changed Apps and Sync Root App'
+
+                echo "✅ All operations completed successfully"
+              name: syncRoot
+              displayName: 'Sync Root ArgoCD App'
               env:
                 ARGOCD_SERVER: $(argocdServer)
                 ARGOCD_USERNAME: $(argocdUsername)
                 ARGOCD_PASSWORD: $(argocdPassword)
                 ARGOCD_ROOT_APP_NAME: $(argoRootAppName)
 
+    # Deploy delle singole applicazioni
     - ${{ each item in parameters.APPS }}:
       - deployment: deploy_${{ replace(item, '-', '_') }}
         displayName: 'Deploy ${{ item }}'
@@ -252,90 +274,100 @@ stages:
             deploy:
               steps:
               - bash: |
-                  echo "Deploying item: ${{ item }}"
-                  echo "This item was found in the changed applications list, or it's a complete run (PR or main branch)."
+                  echo "Deploying: ${{ item }}"
                 name: displayDeploymentInfo
                 displayName: 'Display Deployment Info'
+
               - bash: |
-                 set -eo pipefail
-                 
-                 # Function to check ArgoCD app health
-                 check_app_health() {
-                     local app_name=$1
-                     local max_retries=30
-                     local retry_count=0
-                     local wait_seconds=10
-                     
-                     echo "Checking health status for $app_name..."
-                     while [ $retry_count -lt $max_retries ]; do
-                         health_status=$(argocd app get "$app_name" -o json | jq -r '.status.health.status')
-                         sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status')
-                         
-                         if [ "$health_status" = "Healthy" ] && [ "$sync_status" = "Synced" ]; then
-                             echo "✅ Application $app_name is healthy and synced"
-                             return 0
-                         fi
-                         
-                         echo "Current status - Health: $health_status, Sync: $sync_status. Retrying in $wait_seconds seconds..."
-                         sleep $wait_seconds
-                         ((retry_count++))
-                     done
-                     
-                     echo "❌ Application $app_name failed to become healthy within timeout"
-                     return 1
-                 }
-                 
-                 app_name=${{ item }}
-                 
-                 # Install ArgoCD CLI
-                 echo "Installing ArgoCD CLI..."
-                 if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-                     echo "❌ Failed to download ArgoCD CLI"
-                     exit 1
-                 fi
-                 
-                 chmod +x /tmp/argocd-v2.12.4
-                 sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-                 
-                 # Login to ArgoCD
-                 echo "Logging into ArgoCD..."
-                 if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
-                     echo "❌ Failed to login to ArgoCD"
-                     exit 1
-                 fi
-                 
-                 # Sync the application
-                 echo "Syncing application $app_name..."
-                 if ! argocd app sync "$app_name" --prune --timeout 180; then
-                     echo "❌ Failed to sync application $app_name"
-                     exit 1
-                 fi
-                 
-                 # Check application health
-                 if ! check_app_health "$app_name"; then
-                     echo "❌ Application health check failed for $app_name"
-                     exit 1
-                 fi
-                 
-                 # Restart deployments
-                 echo "Restarting deployments for $app_name..."
-                 if ! argocd app actions run "$app_name" restart --kind Deployment --all --grpc-web; then
-                     echo "❌ Failed to restart deployments for $app_name"
-                     exit 1
-                 fi
-                 
-                 echo "✅ All operations completed successfully for $app_name"
-                name: syncArgoApp_1
+                # Funzioni di utilità
+                function install_argocd() {
+                    if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
+                        echo "❌ Failed to download ArgoCD CLI"
+                        return 1
+                    fi
+                    chmod +x /tmp/argocd-v2.12.4
+                    sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
+                    return 0
+                }
+
+                function login_argocd() {
+                    if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
+                        echo "❌ Failed to login to ArgoCD"
+                        return 1
+                    fi
+                    return 0
+                }
+
+                function check_app_health() {
+                    local app_name=$1
+                    local max_retries=30
+                    local retry_count=0
+                    local wait_seconds=10
+                    
+                    while [ $retry_count -lt $max_retries ]; do
+                        if health_status=$(argocd app get "$app_name" -o json | jq -r '.status.health.status') && \
+                           sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
+                            
+                            if [ "$health_status" = "Healthy" ] && [ "$sync_status" = "Synced" ]; then
+                                echo "✅ Application $app_name is healthy and synced"
+                                return 0
+                            fi
+
+                            echo "Status - Health: $health_status, Sync: $sync_status"
+                        else
+                            echo "❌ Failed to get application status"
+                        fi
+                        
+                        sleep $wait_seconds
+                        ((retry_count++))
+                    done
+                    
+                    echo "❌ Health check timed out for $app_name"
+                    return 1
+                }
+
+                # Main execution
+                set -e
+                app_name="${{ item }}"
+
+                echo "🔨 Starting deployment for $app_name..."
+
+                if ! install_argocd; then
+                    exit 1
+                fi
+
+                if ! login_argocd; then
+                    exit 1
+                fi
+
+                if ! argocd app sync "$app_name" --prune --timeout 180; then
+                    echo "❌ Sync failed for $app_name"
+                    exit 1
+                fi
+
+                if ! check_app_health "$app_name"; then
+                    echo "❌ Health check failed for $app_name"
+                    exit 1
+                fi
+
+                if ! argocd app actions run "$app_name" restart --kind Deployment --all --grpc-web; then
+                    echo "❌ Failed to restart deployments for $app_name"
+                    exit 1
+                fi
+
+                echo "✅ Deployment completed successfully for $app_name"
+                name: syncArgoApp
                 displayName: 'Sync ArgoCD App: ${{ item }}'
                 env:
                   ARGOCD_SERVER: $(argocdServer)
                   ARGOCD_USERNAME: $(argocdUsername)
                   ARGOCD_PASSWORD: $(argocdPassword)
 
+  # Stage per i test Postman
   - stage: postman_tests
-    displayName: Check and run postman tests
+    displayName: Run Postman Tests
     dependsOn: [sync_argo_apps]
-    condition: always()
+    condition: succeeded()
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
@@ -349,27 +381,26 @@ stages:
               name: checkoutSourceCode
               displayName: 'Checkout Source Code'
 
+            # Verifica se i test Postman possono essere eseguiti
             - task: Bash@3
               name: canRunPostmanTests
-              displayName: 'Can postman tests runs'
+              displayName: 'Check Postman Tests Requirements'
               inputs:
                 targetType: 'inline'
                 script: |
-                  echo "🔨 Setting variables..."
+                  echo "🔨 Checking Postman configuration..."
                   rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
 
                   echo "rootPostman: $rootPostman"
                   echo "runPostmanTests: $runPostmanTests"
 
-                  # Function to check if a value is empty or "null"
-                  is_valid() {
+                  function is_valid() {
                       [ ! -z "$1" ] && [ "$1" != "null" ]
                   }
 
-                  # Check if rootPostman is valid, runPostmanTests is valid and true
                   if ! is_valid "$rootPostman" || ! is_valid "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
-                      echo "##vso[task.logissue type=warning]Skipping Postman tests. Reason: tag postman not exists or run is false"
+                      echo "##vso[task.logissue type=warning]Skipping Postman tests - Configuration not valid or tests disabled"
                       echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
                       exit 0
                   fi
@@ -377,94 +408,130 @@ stages:
                   echo "All checks passed. Proceeding with Postman tests."
                   echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
+                  echo "✅ Postman tests configuration valid"
+                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+
+            # Setup delle variabili Postman
             - task: Bash@3
               name: setupPostmanVariables
-              displayName: 'Setup and Print Postman Variables'
+              displayName: 'Setup Postman Variables'
               condition: and(succeeded(), eq(variables['canRunPostmanTests.runPostmanTest'], 'true'))
               inputs:
                 targetType: 'inline'
                 script: |
-                  # If we're here, rootPostman and runPostmanTests are valid, so we proceed with other checks
+                  echo "🔨 Setting up Postman variables..."
+                  
+                  # Estrazione variabili da values.yaml
                   nameRepo=$(yq '.postman-test.nameRepo' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   envVariables=$(yq '.postman-test.envVariables' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
 
-                  echo "Printing variables..."
-                  echo "nameRepo: $nameRepo"
-                  echo "dir: $dir"
-                  echo "collectionName: $collectionName"
-                  echo "envVariables: $envVariables"
-                  echo "POSTMAN_BRANCH: ${{ parameters.POSTMAN_BRANCH }}"
+                  # Log delle variabili (senza valori sensibili)
+                  echo "📝 Configuration:"
+                  echo "Repository: $nameRepo"
+                  echo "Directory: $dir"
+                  echo "Collection: $collectionName"
+                  echo "Environment Variables File: $envVariables"
+                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
-                  # Function to check if a value is empty or "null"
-                  is_valid() {
+                  # Validazione variabili
+                  function is_valid() {
                       [ ! -z "$1" ] && [ "$1" != "null" ]
                   }
 
-                  # Set Azure DevOps variables with checks
-                  if is_valid "$nameRepo"; then
-                      echo "##vso[task.setvariable variable=nameRepo]$nameRepo"
+                  # Validazione e setting delle variabili
+                  declare -a required_vars=(
+                    "nameRepo:$nameRepo"
+                    "dir:$dir"
+                    "collectionName:$collectionName"
+                    "envVariables:$envVariables"
+                  )
+
+                  missing_vars=()
+                  for var in "${required_vars[@]}"; do
+                    name="${var%%:*}"
+                    value="${var#*:}"
+                    
+                    if is_valid "$value"; then
+                      echo "##vso[task.setvariable variable=$name]$value"
+                    else
+                      missing_vars+=("$name")
+                    fi
+                  done
+
+                  # Gestione errori
+                  if [ ${#missing_vars[@]} -gt 0 ]; then
+                    echo "❌ Missing required variables: ${missing_vars[*]}"
+                    echo "##vso[task.logissue type=warning]Postman configuration incomplete"
+                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
                   else
-                      echo "##vso[task.logissue type=warning]nameRepo is empty or null"
+                    echo "✅ All required variables validated successfully"
+                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
                   fi
 
-                  if is_valid "$dir"; then
-                      echo "##vso[task.setvariable variable=dir]$dir"
-                  else
-                      echo "##vso[task.logissue type=warning]dir is empty or null"
-                  fi
-
-                  if is_valid "$collectionName"; then
-                      echo "##vso[task.setvariable variable=collectionName]$collectionName"
-                  fi
-
-                  if is_valid "$envVariables"; then
-                      echo "##vso[task.setvariable variable=envVariables]$envVariables"
-                  fi
-
-                  if ! is_valid "$nameRepo" || ! is_valid "$dir" || ! is_valid "$collectionName" || ! is_valid "$envVariables"; then
-                      echo "##vso[task.logissue type=warning]One or more required variables are not set or are set to 'null'. Postman tests will be skipped."
-                      echo "##vso[task.setvariable variable=runPostmanTest;isOutput=false]false"
-                  else
-                      echo "All required variables are set and not null. Proceeding with the Postman tests."
-                      echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-                  fi
-
+            # Esecuzione dei test Postman
             - task: Bash@3
               name: runPostmanTests
-              displayName: 'Run Postman Tests'
+              displayName: 'Execute Postman Tests'
               condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
               inputs:
                 targetType: inline
-                script:  |
-                  echo "🖨️ Printing variables..."
-                  echo "nameRepo: $(nameRepo)"
-                  echo "dir: $(dir)"
-                  echo "collectionName: $(collectionName)"
-                  echo "envVariables: $(envVariables)"
-                  echo "POSTMAN_BRANCH: ${{ parameters.POSTMAN_BRANCH }}"
+                script: |
+                  set -e
+                  echo "🚀 Starting Postman tests execution..."
 
-                  echo "All required variables are set. Proceeding with Postman tests."
+                  # Log delle variabili configurate
+                  echo "📝 Test Configuration:"
+                  echo "Repository: $(nameRepo)"
+                  echo "Directory: $(dir)"
+                  echo "Collection: $(collectionName)"
+                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
-                  echo "Cloning repository from branch: ${{ parameters.POSTMAN_BRANCH }}"
+                  # Clone del repository
+                  echo "🔄 Cloning repository..."
+                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(nameRepo).git; then
+                    echo "❌ Failed to clone repository"
+                    exit 1
+                  fi
 
-                  git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(nameRepo).git
-                  ls -la
-                  cd $(nameRepo)/$(dir)
-                  ls -la
-                  cat postman.txt
+                  # Navigazione nella directory corretta
+                  cd $(nameRepo)/$(dir) || {
+                    echo "❌ Failed to navigate to test directory"
+                    exit 1
+                  }
 
-                  # Here you would typically run your Postman tests
-                  # For example:
-                  # npm install -g newman
-                  # newman run $(collectionName) -e $(envVariables)
+                  # Verifica esistenza file necessari
+                  if [ ! -f postman.txt ]; then
+                    echo "⚠️ postman.txt not found, but continuing..."
+                  else
+                    echo "📋 Postman configuration:"
+                    cat postman.txt
+                  fi
 
+                  # TODO: Implementare l'esecuzione effettiva dei test
+                  # Esempio di implementazione:
+                  # if ! npm install -g newman; then
+                  #   echo "❌ Failed to install Newman"
+                  #   exit 1
+                  # fi
+                  # 
+                  # if ! newman run $(collectionName) -e $(envVariables); then
+                  #   echo "❌ Postman tests failed"
+                  #   exit 1
+                  # fi
+
+                  echo "✅ Postman test setup completed successfully"
+
+            # Gestione completamento stage
             - bash: |
                 if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
-                  echo "##vso[task.logissue type=warning]Stage completed with issues, but will be marked as successful."
+                  echo "⚠️ Stage completed with issues"
+                  echo "##vso[task.logissue type=warning]Stage completed with issues, marking as successful"
+                else
+                  echo "✅ Stage completed successfully"
                 fi
                 echo "##vso[task.complete result=Succeeded;]"
               name: forceStageSuccess
-              displayName: 'Force Stage Success'
+              displayName: 'Finalize Stage'
               condition: always()
