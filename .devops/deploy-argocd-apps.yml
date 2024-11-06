@@ -100,6 +100,8 @@ stages:
       steps:
       - script: |
           echo "build reason: ${{variables['Build.Reason']}}"
+          echo "agentPoolName: ${{variables['agentPoolName']}}"
+          echo "agentPoolName: ${{variables['argocdServer']}}"
 
   # Stage per calcolare i cambiamenti git in caso di PR
   - stage: calculate_pr_git_changes
