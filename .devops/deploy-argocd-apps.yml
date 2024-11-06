@@ -46,7 +46,7 @@ variables:
   - name: System.Debug
     value: true
   - name: argoRootAppName
-    value: root-cittadini-app
+    value: root-cittadini-app-${{ parameters.ENV }}
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
