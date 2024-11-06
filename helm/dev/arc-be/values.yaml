@@ -43,11 +43,6 @@ microservice-chart:
     type: ClusterIP
     port: 8080
 
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: "cittadini-workload-identity"
-
   podAnnotations: {}
 
   podSecurityContext:
@@ -107,15 +102,12 @@ microservice-chart:
     WHITE_LIST_USERS: cf-whitelist
     REDIS_HOST: cache-standalone-host
     REDIS_PASSWORD: cache-password
+
   # nodeSelector: {}
 
   # tolerations: []
 
   # affinity: {}
-
-  keyvault:
-    name: "arc-d-itn-cittadini-kv"
-    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
   autoscaling:
     enable: false
@@ -128,3 +120,7 @@ microservice-chart:
   #        metadata:
   #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
   #          value: "50"
+
+  keyvault:
+    name: "arc-d-itn-cittadini-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

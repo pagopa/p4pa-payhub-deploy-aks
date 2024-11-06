@@ -27,6 +27,9 @@ spec:
         microservice-chart:
           azure:
             workloadIdentityClientId: '{{.Values._azureWorkloadIdentityClientId}}'
+          serviceAccount:
+            create: false
+            name: "cittadini-workload-identity"
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: '{{.Values._namespace}}'
