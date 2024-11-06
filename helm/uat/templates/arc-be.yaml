@@ -17,7 +17,7 @@ spec:
   project: '{{.Values._argocdProjectName}}'
   source:
     repoURL: '{{.Values._gitRepoUrl}}'
-    path: helm/dev/arc-be
+    path: helm/uat/arc-be
     targetRevision: '{{.Values._gitTargetRevision}}'
     helm:
       # releaseName: arc-be
