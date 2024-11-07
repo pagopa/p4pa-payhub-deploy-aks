@@ -180,7 +180,7 @@ stages:
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
     condition: >
-      or(
+      and(
         succeeded(),
         in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped', 'Failed')
       )
