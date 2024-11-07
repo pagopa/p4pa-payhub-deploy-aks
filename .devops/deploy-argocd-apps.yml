@@ -179,7 +179,6 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
-    dependsOn: [pre_steps]
     condition: succeeded()
     variables:
       ${{ if eq(variables.isPullRequestTrigger, true) }}:
