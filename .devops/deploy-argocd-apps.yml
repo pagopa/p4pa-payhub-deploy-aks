@@ -91,7 +91,7 @@ pool:
 
 stages:
   # Stage di debug per verificare il contesto di esecuzione
-  - stage: debug
+  - stage: pre_steps
     condition: succeeded()
     jobs:
     - job: debug_steps
@@ -179,7 +179,8 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
-    condition: always()
+    dependsOn: [pre_steps]
+    condition: succeeded()
     variables:
       ${{ if eq(variables.isPullRequestTrigger, true) }}:
         resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
