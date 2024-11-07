@@ -179,20 +179,15 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
-    dependsOn:
-      - calculate_pr_git_changes
-    condition: |
-      and(
-        not(dependencies.calculate_pr_git_changes.outputs['check_pipeline_status.isCanceled']),
-        or(
-          and(
-            eq(variables.isPullRequestTrigger, true),
-            succeeded('calculate_pr_git_changes')
-          ),
-          and(
-            eq(variables.isPullRequestTrigger, false),
-            succeeded()
-          )
+    condition: >
+      or(
+        and(
+          eq(variables.isPullRequestTrigger, true),
+          in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped', 'Failed')
+        ),
+        and(
+          eq(variables.isPullRequestTrigger, false),
+          succeeded()
         )
       )
     variables:
