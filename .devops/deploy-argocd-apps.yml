@@ -181,7 +181,7 @@ stages:
   - stage: sync_argo_apps
     dependsOn:
       - calculate_pr_git_changes
-    condition: always()
+    condition: and(succeeded(), always())
     variables:
       ${{ if eq(variables.isPullRequestTrigger, true) }}:
         resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
