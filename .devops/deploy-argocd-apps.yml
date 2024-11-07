@@ -181,7 +181,20 @@ stages:
   - stage: sync_argo_apps
     dependsOn:
       - calculate_pr_git_changes
-    condition: and(succeeded(), always())
+    condition: |
+      and(
+        not(dependencies.calculate_pr_git_changes.outputs['check_pipeline_status.isCanceled']),
+        or(
+          and(
+            eq(variables.isPullRequestTrigger, true),
+            succeeded('calculate_pr_git_changes')
+          ),
+          and(
+            eq(variables.isPullRequestTrigger, false),
+            succeeded()
+          )
+        )
+      )
     variables:
       ${{ if eq(variables.isPullRequestTrigger, true) }}:
         resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
@@ -288,7 +301,7 @@ stages:
       - deployment: deploy_${{ replace(item, '-', '_') }}
         displayName: 'Deploy ${{ item }}'
         pool:
-          name: $(DEV_AGENT_POOL)
+          name: $(agentPoolName)
         environment: ${{ parameters.ENV }}
         dependsOn: [update_root_app]
         condition: >
@@ -406,7 +419,7 @@ stages:
         - job: postman_tests_${{ replace(item, '-', '_') }}
           displayName: '${{ item }} postman'
           pool:
-            name: $(DEV_AGENT_POOL)
+            name: $(agentPoolName)
           variables:
             stageOutcome: 'Succeeded'
           steps:
