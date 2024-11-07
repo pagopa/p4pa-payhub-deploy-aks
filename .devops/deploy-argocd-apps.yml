@@ -183,7 +183,7 @@ stages:
       or(
         and(
           eq(variables.isPullRequestTrigger, true),
-          in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped', 'Failed')
+          in(dependencies.calculate_pr_git_changes.result, 'Succeeded')
         ),
         and(
           eq(variables.isPullRequestTrigger, false),
