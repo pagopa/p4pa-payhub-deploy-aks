@@ -52,3 +52,10 @@ repos:
       #     - --args=-platform=darwin_arm64
       #     - --args=-platform=linux_amd64
       #     - --args=-platform=linux_arm64
+  - repo: local
+    hooks:
+      - id: helm ct-lint
+        name: Helm Chart Testing Lint
+        entry: bash -c "ct lint --config ct.yaml --all --lint-conf ct.yaml"
+        language: system
+        pass_filenames: false

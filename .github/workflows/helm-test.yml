@@ -13,7 +13,7 @@ on:
      - 'ct.yaml'
 
 jobs:
- lint-test:
+ helm-lint-test:
    runs-on: ubuntu-latest
    steps:
      - name: Checkout
@@ -47,4 +47,4 @@ jobs:
          fi
 
      - name: Run chart-testing (lint)
-       run: ct lint --config ct.yaml --all
+       run: ct lint --config ct.yaml --all --lint-conf ct.yaml
