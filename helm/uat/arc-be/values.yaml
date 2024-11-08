@@ -2,8 +2,8 @@ microservice-chart:
   namespace: "cittadini"
 
   image:
-    repository: arcuitncorecommonacr.azurecr.io/arcbe
-    tag: latest
+    repository: ghcr.io/pagopa/arc-be
+    tag: uat-latest
     pullPolicy: Always
 
   autoscaling:
