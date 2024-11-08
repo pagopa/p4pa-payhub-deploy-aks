@@ -91,7 +91,7 @@ pool:
 
 stages:
   # Stage di debug per verificare il contesto di esecuzione
-  - stage: debug
+  - stage: pre_steps
     condition: succeeded()
     jobs:
     - job: debug_steps
@@ -100,6 +100,8 @@ stages:
       steps:
       - script: |
           echo "build reason: ${{variables['Build.Reason']}}"
+          echo "agentPoolName: ${{variables['agentPoolName']}}"
+          echo "agentPoolName: ${{variables['argocdServer']}}"
 
   # Stage per calcolare i cambiamenti git in caso di PR
   - stage: calculate_pr_git_changes
@@ -177,9 +179,11 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
-    dependsOn:
-      - calculate_pr_git_changes
-    condition: always()
+    condition: >
+      or(
+        succeeded(),
+        in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped')
+      )
     variables:
       ${{ if eq(variables.isPullRequestTrigger, true) }}:
         resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
@@ -286,7 +290,7 @@ stages:
       - deployment: deploy_${{ replace(item, '-', '_') }}
         displayName: 'Deploy ${{ item }}'
         pool:
-          name: $(DEV_AGENT_POOL)
+          name: $(agentPoolName)
         environment: ${{ parameters.ENV }}
         dependsOn: [update_root_app]
         condition: >
@@ -404,7 +408,7 @@ stages:
         - job: postman_tests_${{ replace(item, '-', '_') }}
           displayName: '${{ item }} postman'
           pool:
-            name: $(DEV_AGENT_POOL)
+            name: $(agentPoolName)
           variables:
             stageOutcome: 'Succeeded'
           steps:
