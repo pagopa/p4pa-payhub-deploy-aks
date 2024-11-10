@@ -1,12 +1,12 @@
-trigger: none
+pr: none
 
-pr:
+trigger:
   branches:
     include:
       - main
   paths:
     include:
-    - 'helm/dev/**'
+      - 'helm/dev/**'
 
 schedules:
 - cron: "12 23 * * *"
