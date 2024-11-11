@@ -506,9 +506,22 @@ stages:
                   fi
 
             # Esecuzione dei test Postman
+            - task: NodeTool@0
+              inputs:
+                versionSpec: '16.x'
+            - task: Npm@1.238.1
+              displayName: Install newman
+              inputs:
+                command: custom
+                customCommand: install -g newman
+            - task: DownloadSecureFile@1
+              displayName: 'Download postman secret environment'
+              name: postman_env_secret_file
+              inputs:
+                secureFile: $(envVariablesFile)
             - task: Bash@3
-              name: runPostmanTests
-              displayName: 'Execute Postman Tests'
+              name: run_postman_tests
+              displayName: 'Run Postman Tests'
               condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
               inputs:
                 targetType: inline
@@ -522,6 +535,7 @@ stages:
                   echo "Directory: $(dir)"
                   echo "Collection: $(collectionName)"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
+                  echo "envVariablesFile: $(envVariablesFile)"
 
                   # Clone del repository
                   echo "🔄 Cloning repository..."
@@ -536,20 +550,19 @@ stages:
                     exit 1
                   }
 
-
-                  if ! npm install -g newman; then
-                    echo "❌ Failed to install Newman"
-                    exit 1
-                  fi
-
-                  if ! newman run $(collectionName) -e $(envVariablesFile); then
+                  if ! newman run $(collectionName) -e $(envVariablesFile) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
                     echo "❌ Postman tests failed"
                     exit 1
                   fi
 
                   echo "✅ Postman test setup completed successfully"
 
-            # Gestione completamento stage
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/test-*.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/result/'
+                testRunTitle: 'Publish Newman Test Results'
             - bash: |
                 if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
                   echo "⚠️ Stage completed with issues"
