@@ -402,7 +402,7 @@ stages:
   - stage: postman_tests
     displayName: Run Postman Tests
     dependsOn: [sync_argo_apps]
-    condition: succeeded()
+#    condition: succeeded()
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
