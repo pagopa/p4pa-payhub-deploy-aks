@@ -125,9 +125,9 @@ microservice-chart:
     name: "arc-d-itn-cittadini-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
-  postman-test:
-    run: true
-    repoName: arc-be
-    dir: postman
-    collectionName: "pagopa-arc-E2E.postman_collection.json"
-    envVariablesFile: "arc_DEV.postman_environment.json"
+postman-test:
+  run: true
+  repoName: arc-be
+  dir: postman
+  collectionName: "pagopa-arc-E2E.postman_collection.json"
+  envVariablesFile: "arc_DEV.postman_environment.json"
