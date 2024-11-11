@@ -517,59 +517,59 @@ stages:
               name: postman_env_secret_file
               inputs:
                 secureFile: "arc_${{ upper(parameters.ENV) }}.postman_environment.json"
-#            - task: Bash@3
-#              name: run_postman_tests
-#              displayName: 'Run Postman Tests'
-#              condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
-#              continueOnError: true
-#              inputs:
-#                targetType: inline
-#                script: |
-#                  set -e
-#                  echo "🚀 Starting Postman tests execution..."
-#
-#                  # Log delle variabili configurate
-#                  echo "📝 Test Configuration:"
-#                  echo "Repository: $(repoName)"
-#                  echo "Directory: $(dir)"
-#                  echo "Collection: $(collectionName)"
-#                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
-#                  #echo "envVariablesFile: $(envVariablesFile)"
-#
-#                  # Clone del repository
-#                  echo "🔄 Cloning repository..."
-#                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(repoName).git; then
-#                    echo "❌ Failed to clone repository"
-#                    exit 1
-#                  fi
-#
-#                  # Navigazione nella directory corretta
-#                  cd $(repoName)/$(dir) || {
-#                    echo "❌ Failed to navigate to test directory"
-#                    exit 1
-#                  }
-#
-#                  if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
-#                    echo "❌ Postman tests failed"
-#                    exit 1
-#                  fi
-#
-#                  echo "✅ Postman test setup completed successfully"
-#
-#            - task: PublishTestResults@2
-#              inputs:
-#                testResultsFormat: 'JUnit'
-#                testResultsFiles: '**/test-*.xml'
-#                searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
-#                testRunTitle: 'Publish Newman Test Results'
-#            - bash: |
-#                if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
-#                  echo "⚠️ Stage completed with issues"
-#                  echo "##vso[task.logissue type=warning]Stage completed with issues, marking as successful"
-#                else
-#                  echo "✅ Stage completed successfully"
-#                fi
-#                echo "##vso[task.complete result=Succeeded;]"
-#              name: forceStageSuccess
-#              displayName: 'Finalize Stage'
-#              condition: always()
+            - task: Bash@3
+              name: run_postman_tests
+              displayName: 'Run Postman Tests'
+              condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
+              continueOnError: true
+              inputs:
+                targetType: inline
+                script: |
+                  set -e
+                  echo "🚀 Starting Postman tests execution..."
+
+                  # Log delle variabili configurate
+                  echo "📝 Test Configuration:"
+                  echo "Repository: $(repoName)"
+                  echo "Directory: $(dir)"
+                  echo "Collection: $(collectionName)"
+                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
+                  #echo "envVariablesFile: $(envVariablesFile)"
+
+                  # Clone del repository
+                  echo "🔄 Cloning repository..."
+                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(repoName).git; then
+                    echo "❌ Failed to clone repository"
+                    exit 1
+                  fi
+
+                  # Navigazione nella directory corretta
+                  cd $(repoName)/$(dir) || {
+                    echo "❌ Failed to navigate to test directory"
+                    exit 1
+                  }
+
+                  if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
+                    echo "❌ Postman tests failed"
+                    exit 1
+                  fi
+
+                  echo "✅ Postman test setup completed successfully"
+
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/test-*.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
+                testRunTitle: 'Publish Newman Test Results'
+            - bash: |
+                if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
+                  echo "⚠️ Stage completed with issues"
+                  echo "##vso[task.logissue type=warning]Stage completed with issues, marking as successful"
+                else
+                  echo "✅ Stage completed successfully"
+                fi
+                echo "##vso[task.complete result=Succeeded;]"
+              name: forceStageSuccess
+              displayName: 'Finalize Stage'
+              condition: always()
