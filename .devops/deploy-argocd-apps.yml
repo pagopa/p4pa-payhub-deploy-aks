@@ -179,6 +179,7 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
+    continueOnError: true
     condition: >
       or(
         succeeded(),
@@ -402,7 +403,7 @@ stages:
   - stage: postman_tests
     displayName: Run Postman Tests
     dependsOn: sync_argo_apps
-    condition: always()
+    condition: succeeded()
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
