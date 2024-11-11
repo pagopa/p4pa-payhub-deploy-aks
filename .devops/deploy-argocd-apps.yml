@@ -544,6 +544,8 @@ stages:
                     echo "❌ Failed to clone repository"
                     exit 1
                   fi
+                  
+                  ls -la
 
                   # Navigazione nella directory corretta
                   cd $(repoName)/$(dir) || {
