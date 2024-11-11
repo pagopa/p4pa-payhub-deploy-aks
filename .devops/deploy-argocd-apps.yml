@@ -179,7 +179,6 @@ stages:
 
   # Stage per sync delle applicazioni ArgoCD
   - stage: sync_argo_apps
-    continueOnError: true
     condition: >
       or(
         succeeded(),
@@ -290,6 +289,7 @@ stages:
     - ${{ each item in parameters.APPS }}:
       - deployment: deploy_${{ replace(item, '-', '_') }}
         displayName: 'Deploy ${{ item }}'
+        continueOnError: true
         pool:
           name: $(agentPoolName)
         environment: ${{ parameters.ENV }}
