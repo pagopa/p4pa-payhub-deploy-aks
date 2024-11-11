@@ -567,7 +567,7 @@ stages:
               inputs:
                 testResultsFormat: 'JUnit'
                 testResultsFiles: '**/test-*.xml'
-                searchFolder: '$(System.DefaultWorkingDirectory)/result/'
+                searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
                 testRunTitle: 'Publish Newman Test Results'
             - bash: |
                 if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
