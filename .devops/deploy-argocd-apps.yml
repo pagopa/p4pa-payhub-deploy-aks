@@ -460,14 +460,14 @@ stages:
                   repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  #envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
 
                   # Log delle variabili (senza valori sensibili)
                   echo "📝 Configuration:"
                   echo "Repository: $repoName"
                   echo "Directory: $dir"
                   echo "Collection: $collectionName"
-                  echo "Environment Variables File: $envVariablesFile"
+                  echo "Environment Variables File: inside library secure file"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
                   # Validazione variabili
@@ -480,7 +480,6 @@ stages:
                     "repoName:$repoName"
                     "dir:$dir"
                     "collectionName:$collectionName"
-                    "envVariablesFile:$envVariablesFile"
                   )
 
                   missing_vars=()
@@ -503,7 +502,6 @@ stages:
                   else
                     echo "✅ All required variables validated successfully"
                     echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-                    echo "##vso[task.setvariable variable=envVariablesFileAzdo;isOutput=true]$envVariablesFile"
                   fi
 
             # Esecuzione dei test Postman
@@ -519,8 +517,7 @@ stages:
               displayName: 'Download postman secret environment'
               name: postman_env_secret_file
               inputs:
-#                secureFile: "arc_${{ item }}_${{ upper(parameters.ENV) }}.postman_environment.json"
-                secureFile: "${{ variables.envVariablesFileAzdo }}"
+                secureFile: "arc_${{ upper(parameters.ENV) }}.postman_environment.json"
             - task: Bash@3
               name: run_postman_tests
               displayName: 'Run Postman Tests'
@@ -538,7 +535,7 @@ stages:
                   echo "Directory: $(dir)"
                   echo "Collection: $(collectionName)"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
-                  echo "envVariablesFile: $(envVariablesFile)"
+                  #echo "envVariablesFile: $(envVariablesFile)"
 
                   # Clone del repository
                   echo "🔄 Cloning repository..."

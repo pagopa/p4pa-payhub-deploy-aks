@@ -130,4 +130,4 @@ postman-test:
   repoName: arc-be
   dir: postman
   collectionName: "pagopa-arc-E2E.postman_collection.json"
-  envVariablesFile: "arc_DEV.postman_environment.json"
+  envVariablesFile: "arc_DEV.postman_environment.json" #inside azdo secure files
