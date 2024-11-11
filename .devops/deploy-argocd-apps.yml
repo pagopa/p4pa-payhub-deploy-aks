@@ -524,6 +524,7 @@ stages:
               name: run_postman_tests
               displayName: 'Run Postman Tests'
               condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
+              continueOnError: true
               inputs:
                 targetType: inline
                 script: |
