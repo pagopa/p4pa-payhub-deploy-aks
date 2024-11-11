@@ -517,7 +517,6 @@ stages:
                 customCommand: install -g newman
             - task: DownloadSecureFile@1
               displayName: 'Download postman secret environment'
-              dependsOn: setupPostmanVariables
               name: postman_env_secret_file
               inputs:
                 secureFile: ${{ variables.setupPostmanVariables.envVariablesFileAzdo }}
