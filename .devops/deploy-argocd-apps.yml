@@ -519,7 +519,7 @@ stages:
               displayName: 'Download postman secret environment'
               name: postman_env_secret_file
               inputs:
-                secureFile: "arc_${{ upper(parameters.ENV) }}.postman_environment.json"
+                secureFile: "arc_${{ item }}_${{ upper(parameters.ENV) }}.postman_environment.json"
             - task: Bash@3
               name: run_postman_tests
               displayName: 'Run Postman Tests'
@@ -546,8 +546,6 @@ stages:
                     exit 1
                   fi
                   
-                  ls -la
-
                   # Navigazione nella directory corretta
                   cd $(repoName)/$(dir) || {
                     echo "❌ Failed to navigate to test directory"
@@ -556,11 +554,9 @@ stages:
 
                   if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
                     echo "❌ Postman tests failed"
-                    ls -la
                     exit 1
                   fi
 
-                  ls -la
                   echo "✅ Postman test setup completed successfully"
 
             - task: PublishTestResults@2
