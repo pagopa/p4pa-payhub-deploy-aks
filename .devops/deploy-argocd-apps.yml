@@ -401,6 +401,7 @@ stages:
   # Stage per i test Postman
   - stage: postman_tests
     displayName: Run Postman Tests
+    condition: always()
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
