@@ -103,305 +103,305 @@ stages:
           echo "agentPoolName: ${{variables['agentPoolName']}}"
           echo "agentPoolName: ${{variables['argocdServer']}}"
 
-#  # Stage per calcolare i cambiamenti git in caso di PR
-#  - stage: calculate_pr_git_changes
-#    condition: and(succeeded(), eq(variables.isPullRequestTrigger, true))
-#    jobs:
-#    - job: FindGitChangedFolder
-#      pool:
-#        vmImage: 'ubuntu-latest'
-#      steps:
-#      - checkout: self
-#        fetchDepth: 0
-#        name: checkoutCode
-#        displayName: 'Checkout Code'
-#
-#      - task: UsePythonVersion@0
-#        inputs:
-#          versionSpec: '3.x'
-#          addToPath: true
-#        name: setupPython
-#        displayName: 'Setup Python'
-#
-#      # Migliorato script Python con gestione errori e logging
-#      - task: PythonScript@0
-#        name: grep_git_folders
-#        displayName: 'Process String and Convert to JSON'
-#        inputs:
-#          scriptSource: 'inline'
-#          script: |
-#            import json
-#            import subprocess
-#            import sys
-#
-#            try:
-#                print("Starting the process...")
-#
-#                command = "git diff --name-only --diff-filter=d origin/main...HEAD | xargs -I {} dirname {} | sort -u"
-#                print(f"Executing command: {command}")
-#
-#                result = subprocess.run(command, shell=True, capture_output=True, text=True)
-#                if result.returncode != 0:
-#                    raise Exception(f"Git command failed: {result.stderr}")
-#
-#                str_output = result.stdout.strip()
-#                print(f"Command output: {str_output}")
-#
-#                if not str_output:
-#                    print("No changes detected")
-#                    filtered_list = []
-#                else:
-#                    filtered_list = [item for item in str_output.split('\n') if "helm/dev" in item]
-#                print(f"Filtered list: {filtered_list}")
-#
-#                cleaned_list = [item.replace("helm/dev/", "") for item in filtered_list]
-#                print(f"Cleaned list: {cleaned_list}")
-#
-#                result_json = json.dumps(cleaned_list)
-#                print(f"Final JSON result: {result_json}")
-#
-#                print(f'##vso[task.setvariable variable=resultJson;isOutput=true]{result_json}')
-#                print("Process completed successfully")
-#
-#            except Exception as e:
-#                print(f"Error occurred: {str(e)}", file=sys.stderr)
-#                sys.exit(1)
-#
-#      - task: Bash@3
-#        name: EchoBashJson
-#        displayName: 'Echo Result JSON Array'
-#        inputs:
-#          targetType: 'inline'
-#          script: |
-#            echo "JSON Array Result:"
-#            echo '$(grep_git_folders.resultJson)'
-#            echo "##vso[task.setvariable variable=savedResultJsonArray;isOutput=true]$(grep_git_folders.resultJson)"
-#
-#  # Stage per sync delle applicazioni ArgoCD
-#  - stage: sync_argo_apps
-#    condition: >
-#      or(
-#        succeeded(),
-#        in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped')
-#      )
-#    variables:
-#      ${{ if eq(variables.isPullRequestTrigger, true) }}:
-#        resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
-#        resultJsonArrayBash: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['EchoBashJson.savedResultJsonArray'] ]
-#      ${{ else }}:
-#        resultJsonArrayPython: '${{ convertToJson(parameters.APPS) }}'
-#        resultJsonArrayBash: '${{ convertToJson(parameters.APPS) }}'
-#    jobs:
-#    - deployment: update_root_app
-#      displayName: Update AppRoot Argocd
-#      pool:
-#        name: $(agentPoolName)
-#      environment: ${{ parameters.ENV }}
-#      strategy:
-#        runOnce:
-#          deploy:
-#            steps:
-#            # Step per visualizzare informazioni di debug
-#            - bash: |
-#                echo "Is this a PR? $(isPullRequestTrigger)"
-#                echo "Build Reason: ${{variables['Build.Reason']}}"
-#                echo "Changed applications:"
-#                echo "resultJsonArrayBash: $(resultJsonArrayBash)"
-#                echo "resultJsonArrayPython: $(resultJsonArrayPython)"
-#              name: displayChangedApps
-#              displayName: 'Display Changed Apps'
-#
-#            # Step migliorato per sync di ArgoCD
-#            - bash: |
-#                function install_argocd() {
-#                    echo "🔨 Installing ArgoCD CLI..."
-#                    if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-#                        echo "❌ Failed to download ArgoCD CLI"
-#                        return 1
-#                    fi
-#                    chmod +x /tmp/argocd-v2.12.4
-#                    sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-#                }
-#
-#                function login_argocd() {
-#                    echo "🔨 Logging into ArgoCD..."
-#                    if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
-#                        echo "❌ Failed to login to ArgoCD"
-#                        return 1
-#                    fi
-#                }
-#
-#                function check_sync_status() {
-#                    local app_name=$1
-#                    local max_attempts=12
-#                    local attempt=1
-#                    local wait_time=10
-#
-#                    while [ $attempt -le $max_attempts ]; do
-#                        echo "Attempt $attempt/$max_attempts: Checking sync status for $app_name..."
-#                        if sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
-#                            if [ "$sync_status" == "Synced" ]; then
-#                                echo "✅ Application $app_name successfully synced"
-#                                return 0
-#                            fi
-#                            echo "⏳ Current sync status: $sync_status"
-#                        else
-#                            echo "❌ Failed to get sync status"
-#                        fi
-#
-#                        [ $attempt -lt $max_attempts ] && sleep $wait_time
-#                        ((attempt++))
-#                    done
-#
-#                    echo "❌ Sync status check timed out for $app_name"
-#                    return 1
-#                }
-#
-#                # Main execution
-#                if ! install_argocd; then
-#                    exit 1
-#                fi
-#
-#                if ! login_argocd; then
-#                    exit 1
-#                fi
-#
-#                if ! argocd app sync "${ARGOCD_ROOT_APP_NAME}" --prune --timeout 90; then
-#                    echo "❌ Initial sync failed"
-#                    exit 1
-#                fi
-#
-#                if ! check_sync_status "${ARGOCD_ROOT_APP_NAME}"; then
-#                    echo "❌ Sync verification failed"
-#                    exit 1
-#                fi
-#
-#                echo "✅ All operations completed successfully"
-#              name: syncRoot
-#              displayName: 'Sync Root ArgoCD App'
-#              env:
-#                ARGOCD_SERVER: $(argocdServer)
-#                ARGOCD_USERNAME: $(argocdUsername)
-#                ARGOCD_PASSWORD: $(argocdPassword)
-#                ARGOCD_ROOT_APP_NAME: $(argoRootAppName)
-#
-#    # Deploy delle singole applicazioni
-#    - ${{ each item in parameters.APPS }}:
-#      - deployment: deploy_${{ replace(item, '-', '_') }}
-#        displayName: 'Deploy ${{ item }}'
-#        pool:
-#          name: $(agentPoolName)
-#        environment: ${{ parameters.ENV }}
-#        dependsOn: [update_root_app]
-#        condition: >
-#          and(
-#            succeeded(),
-#            or(
-#              and(
-#                eq(variables.isPullRequestTrigger, false),
-#                contains(variables.resultJsonArrayPython, '${{ item }}')
-#              ),
-#              eq(variables.isPullRequestTrigger, true)
-#            )
-#          )
-#        strategy:
-#          runOnce:
-#            deploy:
-#              steps:
-#              - bash: |
-#                  echo "Deploying: ${{ item }}"
-#                name: displayDeploymentInfo
-#                displayName: 'Display Deployment Info'
-#
-#              - bash: |
-#
-#                  function install_argocd() {
-#                      if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-#                          echo "❌ Failed to download ArgoCD CLI"
-#                          return 1
-#                      fi
-#                      chmod +x /tmp/argocd-v2.12.4
-#                      sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-#                      return 0
-#                  }
-#
-#                  function login_argocd() {
-#                      if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
-#                          echo "❌ Failed to login to ArgoCD"
-#                          return 1
-#                      fi
-#                      return 0
-#                  }
-#
-#                  function check_app_health() {
-#                      local app_name=$1
-#                      local max_retries=30
-#                      local retry_count=0
-#                      local wait_seconds=10
-#
-#                      while [ $retry_count -lt $max_retries ]; do
-#                          if health_status=$(argocd app get "$app_name" -o json | jq -r '.status.health.status') && \
-#                             sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
-#
-#                              if [ "$health_status" = "Healthy" ] && [ "$sync_status" = "Synced" ]; then
-#                                  echo "✅ Application $app_name is healthy and synced"
-#                                  return 0
-#                              fi
-#
-#                              echo "Status - Health ${health_status}, Sync: ${sync_status}"
-#                          else
-#                              echo "❌ Failed to get application status"
-#                          fi
-#
-#                          sleep $wait_seconds
-#                          ((retry_count++))
-#                      done
-#
-#                      echo "❌ Health check timed out for $app_name"
-#                      return 1
-#                  }
-#
-#                  # Main execution
-#                  set -e
-#                  app_name="${{ item }}"
-#
-#                  echo "🔨 Starting deployment for $app_name..."
-#
-#                  if ! install_argocd; then
-#                      exit 1
-#                  fi
-#
-#                  if ! login_argocd; then
-#                      exit 1
-#                  fi
-#
-#                  if ! argocd app sync "$app_name" --prune --timeout 180; then
-#                      echo "❌ Sync failed for $app_name"
-#                      exit 1
-#                  fi
-#
-#                  if ! check_app_health "$app_name"; then
-#                      echo "❌ Health check failed for $app_name"
-#                      exit 1
-#                  fi
-#
-#                  if ! argocd app actions run "$app_name" restart --kind Deployment --all --grpc-web; then
-#                      echo "❌ Failed to restart deployments for $app_name"
-#                      exit 1
-#                  fi
-#
-#                  echo "✅ Deployment completed successfully for $app_name"
-#                name: syncArgoApp
-#                displayName: 'Sync ArgoCD App: ${{ item }}'
-#                env:
-#                  ARGOCD_SERVER: $(argocdServer)
-#                  ARGOCD_USERNAME: $(argocdUsername)
-#                  ARGOCD_PASSWORD: $(argocdPassword)
+  # Stage per calcolare i cambiamenti git in caso di PR
+  - stage: calculate_pr_git_changes
+    condition: and(succeeded(), eq(variables.isPullRequestTrigger, true))
+    jobs:
+    - job: FindGitChangedFolder
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      - checkout: self
+        fetchDepth: 0
+        name: checkoutCode
+        displayName: 'Checkout Code'
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.x'
+          addToPath: true
+        name: setupPython
+        displayName: 'Setup Python'
+
+      # Migliorato script Python con gestione errori e logging
+      - task: PythonScript@0
+        name: grep_git_folders
+        displayName: 'Process String and Convert to JSON'
+        inputs:
+          scriptSource: 'inline'
+          script: |
+            import json
+            import subprocess
+            import sys
+
+            try:
+                print("Starting the process...")
+
+                command = "git diff --name-only --diff-filter=d origin/main...HEAD | xargs -I {} dirname {} | sort -u"
+                print(f"Executing command: {command}")
+
+                result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                if result.returncode != 0:
+                    raise Exception(f"Git command failed: {result.stderr}")
+
+                str_output = result.stdout.strip()
+                print(f"Command output: {str_output}")
+
+                if not str_output:
+                    print("No changes detected")
+                    filtered_list = []
+                else:
+                    filtered_list = [item for item in str_output.split('\n') if "helm/dev" in item]
+                print(f"Filtered list: {filtered_list}")
+
+                cleaned_list = [item.replace("helm/dev/", "") for item in filtered_list]
+                print(f"Cleaned list: {cleaned_list}")
+
+                result_json = json.dumps(cleaned_list)
+                print(f"Final JSON result: {result_json}")
+
+                print(f'##vso[task.setvariable variable=resultJson;isOutput=true]{result_json}')
+                print("Process completed successfully")
+
+            except Exception as e:
+                print(f"Error occurred: {str(e)}", file=sys.stderr)
+                sys.exit(1)
+
+      - task: Bash@3
+        name: EchoBashJson
+        displayName: 'Echo Result JSON Array'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "JSON Array Result:"
+            echo '$(grep_git_folders.resultJson)'
+            echo "##vso[task.setvariable variable=savedResultJsonArray;isOutput=true]$(grep_git_folders.resultJson)"
+
+  # Stage per sync delle applicazioni ArgoCD
+  - stage: sync_argo_apps
+    condition: >
+      or(
+        succeeded(),
+        in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped')
+      )
+    variables:
+      ${{ if eq(variables.isPullRequestTrigger, true) }}:
+        resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
+        resultJsonArrayBash: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['EchoBashJson.savedResultJsonArray'] ]
+      ${{ else }}:
+        resultJsonArrayPython: '${{ convertToJson(parameters.APPS) }}'
+        resultJsonArrayBash: '${{ convertToJson(parameters.APPS) }}'
+    jobs:
+    - deployment: update_root_app
+      displayName: Update AppRoot Argocd
+      pool:
+        name: $(agentPoolName)
+      environment: ${{ parameters.ENV }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            # Step per visualizzare informazioni di debug
+            - bash: |
+                echo "Is this a PR? $(isPullRequestTrigger)"
+                echo "Build Reason: ${{variables['Build.Reason']}}"
+                echo "Changed applications:"
+                echo "resultJsonArrayBash: $(resultJsonArrayBash)"
+                echo "resultJsonArrayPython: $(resultJsonArrayPython)"
+              name: displayChangedApps
+              displayName: 'Display Changed Apps'
+
+            # Step migliorato per sync di ArgoCD
+            - bash: |
+                function install_argocd() {
+                    echo "🔨 Installing ArgoCD CLI..."
+                    if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
+                        echo "❌ Failed to download ArgoCD CLI"
+                        return 1
+                    fi
+                    chmod +x /tmp/argocd-v2.12.4
+                    sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
+                }
+
+                function login_argocd() {
+                    echo "🔨 Logging into ArgoCD..."
+                    if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
+                        echo "❌ Failed to login to ArgoCD"
+                        return 1
+                    fi
+                }
+
+                function check_sync_status() {
+                    local app_name=$1
+                    local max_attempts=12
+                    local attempt=1
+                    local wait_time=10
+
+                    while [ $attempt -le $max_attempts ]; do
+                        echo "Attempt $attempt/$max_attempts: Checking sync status for $app_name..."
+                        if sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
+                            if [ "$sync_status" == "Synced" ]; then
+                                echo "✅ Application $app_name successfully synced"
+                                return 0
+                            fi
+                            echo "⏳ Current sync status: $sync_status"
+                        else
+                            echo "❌ Failed to get sync status"
+                        fi
+
+                        [ $attempt -lt $max_attempts ] && sleep $wait_time
+                        ((attempt++))
+                    done
+
+                    echo "❌ Sync status check timed out for $app_name"
+                    return 1
+                }
+
+                # Main execution
+                if ! install_argocd; then
+                    exit 1
+                fi
+
+                if ! login_argocd; then
+                    exit 1
+                fi
+
+                if ! argocd app sync "${ARGOCD_ROOT_APP_NAME}" --prune --timeout 90; then
+                    echo "❌ Initial sync failed"
+                    exit 1
+                fi
+
+                if ! check_sync_status "${ARGOCD_ROOT_APP_NAME}"; then
+                    echo "❌ Sync verification failed"
+                    exit 1
+                fi
+
+                echo "✅ All operations completed successfully"
+              name: syncRoot
+              displayName: 'Sync Root ArgoCD App'
+              env:
+                ARGOCD_SERVER: $(argocdServer)
+                ARGOCD_USERNAME: $(argocdUsername)
+                ARGOCD_PASSWORD: $(argocdPassword)
+                ARGOCD_ROOT_APP_NAME: $(argoRootAppName)
+
+    # Deploy delle singole applicazioni
+    - ${{ each item in parameters.APPS }}:
+      - deployment: deploy_${{ replace(item, '-', '_') }}
+        displayName: 'Deploy ${{ item }}'
+        pool:
+          name: $(agentPoolName)
+        environment: ${{ parameters.ENV }}
+        dependsOn: [update_root_app]
+        condition: >
+          and(
+            succeeded(),
+            or(
+              and(
+                eq(variables.isPullRequestTrigger, false),
+                contains(variables.resultJsonArrayPython, '${{ item }}')
+              ),
+              eq(variables.isPullRequestTrigger, true)
+            )
+          )
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - bash: |
+                  echo "Deploying: ${{ item }}"
+                name: displayDeploymentInfo
+                displayName: 'Display Deployment Info'
+
+              - bash: |
+
+                  function install_argocd() {
+                      if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
+                          echo "❌ Failed to download ArgoCD CLI"
+                          return 1
+                      fi
+                      chmod +x /tmp/argocd-v2.12.4
+                      sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
+                      return 0
+                  }
+
+                  function login_argocd() {
+                      if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
+                          echo "❌ Failed to login to ArgoCD"
+                          return 1
+                      fi
+                      return 0
+                  }
+
+                  function check_app_health() {
+                      local app_name=$1
+                      local max_retries=30
+                      local retry_count=0
+                      local wait_seconds=10
+
+                      while [ $retry_count -lt $max_retries ]; do
+                          if health_status=$(argocd app get "$app_name" -o json | jq -r '.status.health.status') && \
+                             sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
+
+                              if [ "$health_status" = "Healthy" ] && [ "$sync_status" = "Synced" ]; then
+                                  echo "✅ Application $app_name is healthy and synced"
+                                  return 0
+                              fi
+
+                              echo "Status - Health ${health_status}, Sync: ${sync_status}"
+                          else
+                              echo "❌ Failed to get application status"
+                          fi
+
+                          sleep $wait_seconds
+                          ((retry_count++))
+                      done
+
+                      echo "❌ Health check timed out for $app_name"
+                      return 1
+                  }
+
+                  # Main execution
+                  set -e
+                  app_name="${{ item }}"
+
+                  echo "🔨 Starting deployment for $app_name..."
+
+                  if ! install_argocd; then
+                      exit 1
+                  fi
+
+                  if ! login_argocd; then
+                      exit 1
+                  fi
+
+                  if ! argocd app sync "$app_name" --prune --timeout 180; then
+                      echo "❌ Sync failed for $app_name"
+                      exit 1
+                  fi
+
+                  if ! check_app_health "$app_name"; then
+                      echo "❌ Health check failed for $app_name"
+                      exit 1
+                  fi
+
+                  if ! argocd app actions run "$app_name" restart --kind Deployment --all --grpc-web; then
+                      echo "❌ Failed to restart deployments for $app_name"
+                      exit 1
+                  fi
+
+                  echo "✅ Deployment completed successfully for $app_name"
+                name: syncArgoApp
+                displayName: 'Sync ArgoCD App: ${{ item }}'
+                env:
+                  ARGOCD_SERVER: $(argocdServer)
+                  ARGOCD_USERNAME: $(argocdUsername)
+                  ARGOCD_PASSWORD: $(argocdPassword)
 
   # Stage per i test Postman
   - stage: postman_tests
     displayName: Run Postman Tests
-#    dependsOn: [sync_argo_apps]
+    dependsOn: [sync_argo_apps]
     condition: succeeded()
     jobs:
       - ${{ each item in parameters.APPS }}:
