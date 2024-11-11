@@ -457,17 +457,17 @@ stages:
                   echo "🔨 Setting up Postman variables..."
 
                   # Estrazione variabili da values.yaml
-                  nameRepo=$(yq '.postman-test.nameRepo' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  envVariables=$(yq '.postman-test.envVariables' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
 
                   # Log delle variabili (senza valori sensibili)
                   echo "📝 Configuration:"
-                  echo "Repository: $nameRepo"
+                  echo "Repository: $repoName"
                   echo "Directory: $dir"
                   echo "Collection: $collectionName"
-                  echo "Environment Variables File: $envVariables"
+                  echo "Environment Variables File: $envVariablesFile"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
                   # Validazione variabili
@@ -477,10 +477,10 @@ stages:
 
                   # Validazione e setting delle variabili
                   declare -a required_vars=(
-                    "nameRepo:$nameRepo"
+                    "repoName:$repoName"
                     "dir:$dir"
                     "collectionName:$collectionName"
-                    "envVariables:$envVariables"
+                    "envVariablesFile:$envVariablesFile"
                   )
 
                   missing_vars=()
@@ -518,43 +518,34 @@ stages:
 
                   # Log delle variabili configurate
                   echo "📝 Test Configuration:"
-                  echo "Repository: $(nameRepo)"
+                  echo "Repository: $(repoName)"
                   echo "Directory: $(dir)"
                   echo "Collection: $(collectionName)"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
                   # Clone del repository
                   echo "🔄 Cloning repository..."
-                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(nameRepo).git; then
+                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(repoName).git; then
                     echo "❌ Failed to clone repository"
                     exit 1
                   fi
 
                   # Navigazione nella directory corretta
-                  cd $(nameRepo)/$(dir) || {
+                  cd $(repoName)/$(dir) || {
                     echo "❌ Failed to navigate to test directory"
                     exit 1
                   }
 
-                  # Verifica esistenza file necessari
-                  if [ ! -f postman.txt ]; then
-                    echo "⚠️ postman.txt not found, but continuing..."
-                  else
-                    echo "📋 Postman configuration:"
-                    cat postman.txt
+
+                  if ! npm install -g newman; then
+                    echo "❌ Failed to install Newman"
+                    exit 1
                   fi
 
-                  # TODO: Implementare l'esecuzione effettiva dei test
-                  # Esempio di implementazione:
-                  # if ! npm install -g newman; then
-                  #   echo "❌ Failed to install Newman"
-                  #   exit 1
-                  # fi
-                  #
-                  # if ! newman run $(collectionName) -e $(envVariables); then
-                  #   echo "❌ Postman tests failed"
-                  #   exit 1
-                  # fi
+                  if ! newman run $(collectionName) -e $(envVariablesFile); then
+                    echo "❌ Postman tests failed"
+                    exit 1
+                  fi
 
                   echo "✅ Postman test setup completed successfully"
 
