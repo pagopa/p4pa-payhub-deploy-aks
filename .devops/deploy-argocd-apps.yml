@@ -445,64 +445,64 @@ stages:
                   echo "✅ Postman tests configuration valid"
                   echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
-#            # Setup delle variabili Postman
-#            - task: Bash@3
-#              name: setupPostmanVariables
-#              displayName: 'Setup Postman Variables'
-#              condition: and(succeeded(), eq(variables['canRunPostmanTests.runPostmanTest'], 'true'))
-#              inputs:
-#                targetType: 'inline'
-#                script: |
-#                  echo "🔨 Setting up Postman variables..."
-#
-#                  # Estrazione variabili da values.yaml
-#                  repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#                  dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#                  collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#                  #envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#
-#                  # Log delle variabili (senza valori sensibili)
-#                  echo "📝 Configuration:"
-#                  echo "Repository: $repoName"
-#                  echo "Directory: $dir"
-#                  echo "Collection: $collectionName"
-#                  echo "Environment Variables File: inside library secure file"
-#                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
-#
-#                  # Validazione variabili
-#                  function is_valid() {
-#                      [ ! -z "$1" ] && [ "$1" != "null" ]
-#                  }
-#
-#                  # Validazione e setting delle variabili
-#                  declare -a required_vars=(
-#                    "repoName:$repoName"
-#                    "dir:$dir"
-#                    "collectionName:$collectionName"
-#                  )
-#
-#                  missing_vars=()
-#                  for var in "${required_vars[@]}"; do
-#                    name="${var%%:*}"
-#                    value="${var#*:}"
-#
-#                    if is_valid "$value"; then
-#                      echo "##vso[task.setvariable variable=$name]$value"
-#                    else
-#                      missing_vars+=("$name")
-#                    fi
-#                  done
-#
-#                  # Gestione errori
-#                  if [ ${#missing_vars[@]} -gt 0 ]; then
-#                    echo "❌ Missing required variables: ${missing_vars[*]}"
-#                    echo "##vso[task.logissue type=warning]Postman configuration incomplete"
-#                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
-#                  else
-#                    echo "✅ All required variables validated successfully"
-#                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-#                  fi
-#
+            # Setup delle variabili Postman
+            - task: Bash@3
+              name: setupPostmanVariables
+              displayName: 'Setup Postman Variables'
+              condition: and(succeeded(), eq(variables['canRunPostmanTests.runPostmanTest'], 'true'))
+              inputs:
+                targetType: 'inline'
+                script: |
+                  echo "🔨 Setting up Postman variables..."
+
+                  # Estrazione variabili da values.yaml
+                  repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  #envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+
+                  # Log delle variabili (senza valori sensibili)
+                  echo "📝 Configuration:"
+                  echo "Repository: $repoName"
+                  echo "Directory: $dir"
+                  echo "Collection: $collectionName"
+                  echo "Environment Variables File: inside library secure file"
+                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
+
+                  # Validazione variabili
+                  function is_valid() {
+                      [ ! -z "$1" ] && [ "$1" != "null" ]
+                  }
+
+                  # Validazione e setting delle variabili
+                  declare -a required_vars=(
+                    "repoName:$repoName"
+                    "dir:$dir"
+                    "collectionName:$collectionName"
+                  )
+
+                  missing_vars=()
+                  for var in "${required_vars[@]}"; do
+                    name="${var%%:*}"
+                    value="${var#*:}"
+
+                    if is_valid "$value"; then
+                      echo "##vso[task.setvariable variable=$name]$value"
+                    else
+                      missing_vars+=("$name")
+                    fi
+                  done
+
+                  # Gestione errori
+                  if [ ${#missing_vars[@]} -gt 0 ]; then
+                    echo "❌ Missing required variables: ${missing_vars[*]}"
+                    echo "##vso[task.logissue type=warning]Postman configuration incomplete"
+                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
+                  else
+                    echo "✅ All required variables validated successfully"
+                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+                  fi
+
 #            # Esecuzione dei test Postman
 #            - task: NodeTool@0
 #              inputs:
