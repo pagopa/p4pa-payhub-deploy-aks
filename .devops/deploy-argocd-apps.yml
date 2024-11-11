@@ -415,36 +415,36 @@ stages:
             - checkout: self
               name: checkoutSourceCode
               displayName: 'Checkout Source Code'
-#            # Verifica se i test Postman possono essere eseguiti
-#            - task: Bash@3
-#              name: canRunPostmanTests
-#              displayName: 'Check Postman Tests Requirements'
-#              inputs:
-#                targetType: 'inline'
-#                script: |
-#                  echo "🔨 Checking Postman configuration..."
-#                  rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#                  runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-#
-#                  echo "rootPostman: $rootPostman"
-#                  echo "runPostmanTests: $runPostmanTests"
-#
-#                  function is_valid() {
-#                      [ ! -z "$1" ] && [ "$1" != "null" ]
-#                  }
-#
-#                  if ! is_valid "$rootPostman" || ! is_valid "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
-#                      echo "##vso[task.logissue type=warning]Skipping Postman tests - Configuration not valid or tests disabled"
-#                      echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
-#                      exit 0
-#                  fi
-#
-#                  echo "All checks passed. Proceeding with Postman tests."
-#                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-#
-#                  echo "✅ Postman tests configuration valid"
-#                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-#
+            # Verifica se i test Postman possono essere eseguiti
+            - task: Bash@3
+              name: canRunPostmanTests
+              displayName: 'Check Postman Tests Requirements'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  echo "🔨 Checking Postman configuration..."
+                  rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+
+                  echo "rootPostman: $rootPostman"
+                  echo "runPostmanTests: $runPostmanTests"
+
+                  function is_valid() {
+                      [ ! -z "$1" ] && [ "$1" != "null" ]
+                  }
+
+                  if ! is_valid "$rootPostman" || ! is_valid "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
+                      echo "##vso[task.logissue type=warning]Skipping Postman tests - Configuration not valid or tests disabled"
+                      echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
+                      exit 0
+                  fi
+
+                  echo "All checks passed. Proceeding with Postman tests."
+                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+
+                  echo "✅ Postman tests configuration valid"
+                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+
 #            # Setup delle variabili Postman
 #            - task: Bash@3
 #              name: setupPostmanVariables
