@@ -519,7 +519,8 @@ stages:
               displayName: 'Download postman secret environment'
               name: postman_env_secret_file
               inputs:
-                secureFile: "arc_${{ item }}_${{ upper(parameters.ENV) }}.postman_environment.json"
+#                secureFile: "arc_${{ item }}_${{ upper(parameters.ENV) }}.postman_environment.json"
+                secureFile: "${{ variables.envVariablesFileAzdo }}"
             - task: Bash@3
               name: run_postman_tests
               displayName: 'Run Postman Tests'
