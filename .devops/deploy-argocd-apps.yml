@@ -553,7 +553,7 @@ stages:
                     exit 1
                   }
 
-                  if ! newman run $(collectionName) -e $(envVariablesFile) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
+                  if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
                     echo "❌ Postman tests failed"
                     exit 1
                   fi
