@@ -43,8 +43,6 @@ variables:
     value: 'helm/${{ parameters.ENV }}'
   - name: isPullRequestTrigger
     value: $[eq(variables['Build.Reason'], 'PullRequest')]
-#  - name: System.Debug
-#    value: true
   - name: argoRootAppName
     value: root-cittadini-app-${{ parameters.ENV }}
 
