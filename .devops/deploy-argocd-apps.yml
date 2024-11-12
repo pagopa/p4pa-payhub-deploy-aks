@@ -43,8 +43,6 @@ variables:
     value: 'helm/${{ parameters.ENV }}'
   - name: isPullRequestTrigger
     value: $[eq(variables['Build.Reason'], 'PullRequest')]
-  - name: System.Debug
-    value: true
   - name: argoRootAppName
     value: root-cittadini-app-${{ parameters.ENV }}
 
@@ -401,12 +399,12 @@ stages:
   # Stage per i test Postman
   - stage: postman_tests
     displayName: Run Postman Tests
-    dependsOn: [sync_argo_apps]
-    condition: succeeded()
+    dependsOn: sync_argo_apps
+    condition: always()
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
-          displayName: '${{ item }} postman'
+          displayName: '${{ item }} > postman'
           pool:
             name: $(agentPoolName)
           variables:
@@ -415,7 +413,6 @@ stages:
             - checkout: self
               name: checkoutSourceCode
               displayName: 'Checkout Source Code'
-
             # Verifica se i test Postman possono essere eseguiti
             - task: Bash@3
               name: canRunPostmanTests
@@ -457,17 +454,17 @@ stages:
                   echo "🔨 Setting up Postman variables..."
 
                   # Estrazione variabili da values.yaml
-                  nameRepo=$(yq '.postman-test.nameRepo' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
                   collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  envVariables=$(yq '.postman-test.envVariables' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+                  #envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
 
                   # Log delle variabili (senza valori sensibili)
                   echo "📝 Configuration:"
-                  echo "Repository: $nameRepo"
+                  echo "Repository: $repoName"
                   echo "Directory: $dir"
                   echo "Collection: $collectionName"
-                  echo "Environment Variables File: $envVariables"
+                  echo "Environment Variables File: inside library secure file"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
 
                   # Validazione variabili
@@ -477,10 +474,9 @@ stages:
 
                   # Validazione e setting delle variabili
                   declare -a required_vars=(
-                    "nameRepo:$nameRepo"
+                    "repoName:$repoName"
                     "dir:$dir"
                     "collectionName:$collectionName"
-                    "envVariables:$envVariables"
                   )
 
                   missing_vars=()
@@ -506,10 +502,24 @@ stages:
                   fi
 
             # Esecuzione dei test Postman
+            - task: NodeTool@0
+              inputs:
+                versionSpec: '16.x'
+            - task: Npm@1.238.1
+              displayName: Install newman
+              inputs:
+                command: custom
+                customCommand: install -g newman
+            - task: DownloadSecureFile@1
+              displayName: 'Download postman secret environment'
+              name: postman_env_secret_file
+              inputs:
+                secureFile: "arc_${{ upper(parameters.ENV) }}.postman_environment.json"
             - task: Bash@3
-              name: runPostmanTests
-              displayName: 'Execute Postman Tests'
+              name: run_postman_tests
+              displayName: 'Run Postman Tests'
               condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
+              continueOnError: true
               inputs:
                 targetType: inline
                 script: |
@@ -518,47 +528,38 @@ stages:
 
                   # Log delle variabili configurate
                   echo "📝 Test Configuration:"
-                  echo "Repository: $(nameRepo)"
+                  echo "Repository: $(repoName)"
                   echo "Directory: $(dir)"
                   echo "Collection: $(collectionName)"
                   echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
+                  #echo "envVariablesFile: $(envVariablesFile)"
 
                   # Clone del repository
                   echo "🔄 Cloning repository..."
-                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(nameRepo).git; then
+                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(repoName).git; then
                     echo "❌ Failed to clone repository"
                     exit 1
                   fi
 
                   # Navigazione nella directory corretta
-                  cd $(nameRepo)/$(dir) || {
+                  cd $(repoName)/$(dir) || {
                     echo "❌ Failed to navigate to test directory"
                     exit 1
                   }
 
-                  # Verifica esistenza file necessari
-                  if [ ! -f postman.txt ]; then
-                    echo "⚠️ postman.txt not found, but continuing..."
-                  else
-                    echo "📋 Postman configuration:"
-                    cat postman.txt
+                  if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
+                    echo "❌ Postman tests failed"
+                    exit 1
                   fi
-
-                  # TODO: Implementare l'esecuzione effettiva dei test
-                  # Esempio di implementazione:
-                  # if ! npm install -g newman; then
-                  #   echo "❌ Failed to install Newman"
-                  #   exit 1
-                  # fi
-                  #
-                  # if ! newman run $(collectionName) -e $(envVariables); then
-                  #   echo "❌ Postman tests failed"
-                  #   exit 1
-                  # fi
 
                   echo "✅ Postman test setup completed successfully"
 
-            # Gestione completamento stage
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'JUnit'
+                testResultsFiles: '**/test-*.xml'
+                searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
+                testRunTitle: 'Publish Newman Test Results'
             - bash: |
                 if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
                   echo "⚠️ Stage completed with issues"
