@@ -2,11 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: arc-be
-  # You'll usually want to add your resources to the argocd namespace.
   namespace: argocd
-  # Add this finalizer ONLY if you want these to cascade delete.
   finalizers:
-    # The default behaviour is foreground cascading deletion
     - resources-finalizer.argocd.argoproj.io
     # Alternatively, you can use background cascading deletion
     # - resources-finalizer.argocd.argoproj.io/background
@@ -20,7 +17,6 @@ spec:
     path: helm/prod/arc-be
     targetRevision: '{{.Values._gitTargetRevision}}'
     helm:
-      # releaseName: arc-be
       valueFiles:
         - values.yaml
       valuesObject:
@@ -33,6 +29,9 @@ spec:
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: '{{.Values._namespace}}'
-  # syncPolicy:
-  #   automated: {}
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
   revisionHistoryLimit: 10
