@@ -3,7 +3,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/arc-be
-    tag: v1.1.0@sha256:6cfbc13802b7f4d21f9222495bfc233e88e924c380651e8e3b85f63baf9d30ae
+    tag: v1.2.0@sha256:cbcbbde7ade1c5e15ed2fd934433795ca52203139811a670968673f31abf9453
     pullPolicy: Always
 
   autoscaling:
