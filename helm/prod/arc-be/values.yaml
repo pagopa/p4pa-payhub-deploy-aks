@@ -44,6 +44,7 @@ microservice-chart:
     rest-client:
       BIZ_EVENTS_PAID_NOTICE_BASE_URL: bizevents-paids-base-url
       PULL_PAYMENT_BASE_URL: pullpayment-base-url
+      GPD_SERVICE_BASE_URL: gpd-service-base-url
     assistance:
       ASSISTANCE_ZENDESK_PRODUCT_ID: assistance-arc-zendesk-product-id
       ASSISTANCE_ZENDESK_ORGANIZATION: assistance-arc-zendesk-organization
@@ -54,6 +55,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     BIZ_EVENTS_PAID_NOTICE_SERVICE_API_KEY: pagopa-bizevents-paids-trx-apimv1-subscription-key
     PULL_PAYMENT_SERVICE_API_KEY: pagopa-pullpayment-apimv1-subscription-key
+    GPD_SERVICE_API_KEY: pagopa-gpd-debt-positions-apimv1-subscription-key
     AUTH_CLIENT_ID: oneidentity-client-id
     AUTH_CLIENT_SECRET: oneidentity-client-secret
     JWT_TOKEN_PRIVATE_KEY: jwt-private-key
