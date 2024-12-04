@@ -88,7 +88,7 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  # Stage di debug per verificare il contesto di esecuzione
+  # Debug Steps
   - stage: pre_steps
     condition: succeeded()
     jobs:
@@ -101,7 +101,9 @@ stages:
           echo "agentPoolName: ${{variables['agentPoolName']}}"
           echo "agentPoolName: ${{variables['argocdServer']}}"
 
-  # Stage per calcolare i cambiamenti git in caso di PR
+  #
+  # Calculate changes from PR
+  #
   - stage: calculate_pr_git_changes
     condition: and(succeeded(), eq(variables.isPullRequestTrigger, true))
     jobs:
@@ -175,7 +177,9 @@ stages:
             echo '$(grep_git_folders.resultJson)'
             echo "##vso[task.setvariable variable=savedResultJsonArray;isOutput=true]$(grep_git_folders.resultJson)"
 
-  # Stage per sync delle applicazioni ArgoCD
+  #
+  # ArgoCD
+  #
   - stage: sync_argo_apps
     condition: >
       or(
@@ -396,11 +400,13 @@ stages:
                   ARGOCD_USERNAME: $(argocdUsername)
                   ARGOCD_PASSWORD: $(argocdPassword)
 
-  # Stage per i test Postman
+  #
+  # Postman
+  #
   - stage: postman_tests
     displayName: Run Postman Tests
     dependsOn: sync_argo_apps
-    condition: or(eq(variables.environment, 'DEV'), eq(variables.environment, 'UAT'))
+    condition: or(eq(variables.environment, 'dev'), eq(variables.environment, 'uat'))
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
