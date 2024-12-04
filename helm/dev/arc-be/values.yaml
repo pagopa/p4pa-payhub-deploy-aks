@@ -3,7 +3,7 @@ microservice-chart:
 
   image:
     repository: ghcr.io/pagopa/arc-be
-    tag: develop-latest
+    tag: develop-latest@sha256:6c80b3252b99cc25d5c468093a78290c8aaba43e0a943111e24ee7fc5b97e22d
     pullPolicy: Always
 
   ingress:
