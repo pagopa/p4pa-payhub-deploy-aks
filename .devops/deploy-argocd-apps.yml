@@ -406,7 +406,7 @@ stages:
   - stage: postman_tests
     displayName: Run Postman Tests
     dependsOn: sync_argo_apps
-    condition: or(eq(variables.environment, 'dev'), eq(variables.environment, 'uat'))
+    condition: or(eq(parameters.ENV, 'dev'), eq(parameters.ENV, 'uat'))
     jobs:
       - ${{ each item in parameters.APPS }}:
         - job: postman_tests_${{ replace(item, '-', '_') }}
