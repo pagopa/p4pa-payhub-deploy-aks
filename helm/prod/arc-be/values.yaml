@@ -74,10 +74,10 @@ microservice-chart:
   resources:
     requests:
       memory: " 2048Mi"
-      cpu: "500m"
+      cpu: "1000m"
     limits:
       memory: " 2048Mi"
-      cpu: "500m"
+      cpu: "1000m"
 
   livenessProbe:
     httpGet:
