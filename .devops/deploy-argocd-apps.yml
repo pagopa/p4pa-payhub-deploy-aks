@@ -43,8 +43,8 @@ variables:
     value: 'helm/${{ parameters.ENV }}'
   - name: isPullRequestTrigger
     value: $[eq(variables['Build.Reason'], 'PullRequest')]
-  - name: argoRootAppName
-    value: root-cittadini-app-${{ parameters.ENV }}
+  - name: area
+    value: arc-cittadini
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
@@ -194,99 +194,6 @@ stages:
         resultJsonArrayPython: '${{ convertToJson(parameters.APPS) }}'
         resultJsonArrayBash: '${{ convertToJson(parameters.APPS) }}'
     jobs:
-    - deployment: update_root_app
-      displayName: Update AppRoot Argocd
-      pool:
-        name: $(agentPoolName)
-      environment: ${{ parameters.ENV }}
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            # Step per visualizzare informazioni di debug
-            - bash: |
-                echo "Is this a PR? $(isPullRequestTrigger)"
-                echo "Build Reason: ${{variables['Build.Reason']}}"
-                echo "Changed applications:"
-                echo "resultJsonArrayBash: $(resultJsonArrayBash)"
-                echo "resultJsonArrayPython: $(resultJsonArrayPython)"
-              name: displayChangedApps
-              displayName: 'Display Changed Apps'
-
-            # Step migliorato per sync di ArgoCD
-            - bash: |
-                function install_argocd() {
-                    echo "🔨 Installing ArgoCD CLI..."
-                    if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-                        echo "❌ Failed to download ArgoCD CLI"
-                        return 1
-                    fi
-                    chmod +x /tmp/argocd-v2.12.4
-                    sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-                }
-
-                function login_argocd() {
-                    echo "🔨 Logging into ArgoCD..."
-                    if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
-                        echo "❌ Failed to login to ArgoCD"
-                        return 1
-                    fi
-                }
-
-                function check_sync_status() {
-                    local app_name=$1
-                    local max_attempts=12
-                    local attempt=1
-                    local wait_time=10
-
-                    while [ $attempt -le $max_attempts ]; do
-                        echo "Attempt $attempt/$max_attempts: Checking sync status for $app_name..."
-                        if sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
-                            if [ "$sync_status" == "Synced" ]; then
-                                echo "✅ Application $app_name successfully synced"
-                                return 0
-                            fi
-                            echo "⏳ Current sync status: $sync_status"
-                        else
-                            echo "❌ Failed to get sync status"
-                        fi
-
-                        [ $attempt -lt $max_attempts ] && sleep $wait_time
-                        ((attempt++))
-                    done
-
-                    echo "❌ Sync status check timed out for $app_name"
-                    return 1
-                }
-
-                # Main execution
-                if ! install_argocd; then
-                    exit 1
-                fi
-
-                if ! login_argocd; then
-                    exit 1
-                fi
-
-                if ! argocd app sync "${ARGOCD_ROOT_APP_NAME}" --prune --timeout 90; then
-                    echo "❌ Initial sync failed"
-                    exit 1
-                fi
-
-                if ! check_sync_status "${ARGOCD_ROOT_APP_NAME}"; then
-                    echo "❌ Sync verification failed"
-                    exit 1
-                fi
-
-                echo "✅ All operations completed successfully"
-              name: syncRoot
-              displayName: 'Sync Root ArgoCD App'
-              env:
-                ARGOCD_SERVER: $(argocdServer)
-                ARGOCD_USERNAME: $(argocdUsername)
-                ARGOCD_PASSWORD: $(argocdPassword)
-                ARGOCD_ROOT_APP_NAME: $(argoRootAppName)
-
     # Deploy delle singole applicazioni
     - ${{ each item in parameters.APPS }}:
       - deployment: deploy_${{ replace(item, '-', '_') }}
@@ -294,7 +201,6 @@ stages:
         pool:
           name: $(agentPoolName)
         environment: ${{ parameters.ENV }}
-        dependsOn: [update_root_app]
         condition: >
           and(
             succeeded(),
@@ -316,17 +222,6 @@ stages:
                 displayName: 'Display Deployment Info'
 
               - bash: |
-
-                  function install_argocd() {
-                      if ! curl -sSL -o /tmp/argocd-v2.12.4 https://github.com/argoproj/argo-cd/releases/download/v2.12.4/argocd-linux-amd64; then
-                          echo "❌ Failed to download ArgoCD CLI"
-                          return 1
-                      fi
-                      chmod +x /tmp/argocd-v2.12.4
-                      sudo mv /tmp/argocd-v2.12.4 /usr/local/bin/argocd
-                      return 0
-                  }
-
                   function login_argocd() {
                       if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
                           echo "❌ Failed to login to ArgoCD"
@@ -365,13 +260,9 @@ stages:
 
                   # Main execution
                   set -e
-                  app_name="${{ item }}"
+                  app_name="${ARGOCD_APP_NAME}"
 
                   echo "🔨 Starting deployment for $app_name..."
-
-                  if ! install_argocd; then
-                      exit 1
-                  fi
 
                   if ! login_argocd; then
                       exit 1
@@ -399,6 +290,7 @@ stages:
                   ARGOCD_SERVER: $(argocdServer)
                   ARGOCD_USERNAME: $(argocdUsername)
                   ARGOCD_PASSWORD: $(argocdPassword)
+                  ARGOCD_APP_NAME: "$(area)-${{item}}"
 
   #
   # Postman
