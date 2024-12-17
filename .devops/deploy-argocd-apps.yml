@@ -53,10 +53,8 @@ variables:
   # Variabili statiche
   - name: directoryPattern
     value: 'helm/${{ parameters.ENV }}'
-  - name: isPullRequestTrigger
-    value: $[eq(variables['Build.Reason'], 'PullRequest')]
   - name: area
-    value: arc-cittadini
+    value: p4pa-payhub
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer

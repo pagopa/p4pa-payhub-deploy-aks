@@ -40,7 +40,7 @@ parameters:
   - name: applicationPrefix
     displayName: 'Application Name Prefix'
     type: string
-    # Prefix used for ArgoCD application names (e.g., 'arc-cittadini')
+    # Prefix used for ArgoCD application names (e.g., 'p4pa-payhub')
 
   # Job identifier
   - name: deploymentType
