@@ -1,23 +1,63 @@
+# Template for executing Postman tests on specific applications
 parameters:
-- name: appsList
-  type: object
-  default: []
-- name: env
-  type: string
-- name: agentPoolName
-  type: string
-- name: jobSuffix
-  type: string
-- name: dependsOn
-  type: string
-  default: ''
-- name: postmanBranch
-  type: string
-  default: 'develop'
+  # List of applications to test
+  - name: appsList
+    displayName: 'Applications List'
+    type: object
+    default: []
+    # The list of applications to run Postman tests against
+    # Example: ['app1', 'app2', 'app3']
+
+  # Target environment
+  - name: env
+    displayName: 'Target Environment'
+    type: string
+    # The environment to run tests in (dev, uat, prod)
+
+  # Azure DevOps agent pool name
+  - name: agentPoolName
+    displayName: 'Agent Pool Name'
+    type: string
+    # The name of the Azure DevOps agent pool to use
+
+  # Job identifier suffix
+  - name: jobSuffix
+    displayName: 'Job Type Identifier'
+    type: string
+    # Application type identifier (foundation, operational, satellite)
+
+  # Dependency job
+  - name: dependsOn
+    displayName: 'Dependent Job'
+    type: string
+    default: ''
+    # Name of the job this execution depends on
+
+  # Postman tests branch
+  - name: postmanBranch
+    displayName: 'Postman Tests Branch'
+    type: string
+    default: 'develop'
+    # Branch containing the Postman tests
+
+  # Max retry attempts for failed tests
+  - name: maxRetryAttempts
+    displayName: 'Max Retry Attempts'
+    type: number
+    default: 2
+    # Maximum number of retry attempts for failed tests
+
+  # Timeout for each collection
+  - name: collectionTimeout
+    displayName: 'Collection Timeout (seconds)'
+    type: number
+    default: 300
+    # Timeout in seconds for collection execution
 
 jobs:
 - job: postman_${{ parameters.jobSuffix }}
-  displayName: 'Postman Tests ${{ parameters.jobSuffix }} Apps'
+  displayName: 'Postman Tests - ${{ parameters.jobSuffix }} Apps'
+  timeoutInMinutes: 60
   dependsOn: ${{ parameters.dependsOn }}
   condition: succeeded()
   strategy:
@@ -28,154 +68,207 @@ jobs:
   pool:
     name: ${{ parameters.agentPoolName }}
   variables:
-    stageOutcome: 'Succeeded'
+    testOutcome: 'Succeeded'
   steps:
     - checkout: self
       name: checkoutSourceCode
       displayName: 'Checkout Source Code'
 
     - task: Bash@3
-      name: canRunPostmanTests
-      displayName: 'Check Postman Tests Requirements'
+      name: validatePostmanConfig
+      displayName: 'Validate Postman Configuration'
       inputs:
         targetType: 'inline'
         script: |
-          echo "🔨 Checking Postman configuration..."
+          echo "🔍 Validating Postman configuration..."
+          # Extract configuration from values.yaml
           rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
           runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
 
-          echo "rootPostman: $rootPostman"
-          echo "runPostmanTests: $runPostmanTests"
+          echo "Configuration found:"
+          echo "- Root config: $rootPostman"
+          echo "- Run tests: $runPostmanTests"
 
-          function is_valid() {
+          # Validate if configuration exists and is not null
+          function is_valid_config() {
               [ ! -z "$1" ] && [ "$1" != "null" ]
           }
 
-          if ! is_valid "$rootPostman" || ! is_valid "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
-              echo "##vso[task.logissue type=warning]Skipping Postman tests - Configuration not valid or tests disabled"
+          # Check if tests should be executed based on configuration
+          if ! is_valid_config "$rootPostman" || ! is_valid_config "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
+              echo "##vso[task.logissue type=warning]⚠️ Skipping Postman tests - Configuration not valid or tests disabled"
               echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
               exit 0
           fi
 
-          echo "✅ Postman tests configuration valid"
+          echo "✅ Postman configuration validated successfully"
           echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
     - task: Bash@3
-      name: setupPostmanVariables
-      displayName: 'Setup Postman Variables'
-      condition: and(succeeded(), eq(variables['canRunPostmanTests.runPostmanTest'], 'true'))
+      name: setupTestEnvironment
+      displayName: 'Setup Test Environment'
+      condition: and(succeeded(), eq(variables['validatePostmanConfig.runPostmanTest'], 'true'))
       inputs:
         targetType: 'inline'
         script: |
-          echo "🔨 Setting up Postman variables..."
+          echo "🔧 Configuring test environment..."
 
+          # Extract test configuration from values.yaml
           repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
           dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
           collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
 
-          echo "📝 Configuration:"
-          echo "Repository: $repoName"
-          echo "Directory: $dir"
-          echo "Collection: $collectionName"
-          echo "Branch: ${{ parameters.postmanBranch }}"
+          echo "📋 Test Configuration:"
+          echo "- Repository: $repoName"
+          echo "- Directory: $dir"
+          echo "- Collection: $collectionName"
+          echo "- Branch: ${{ parameters.postmanBranch }}"
 
-          function is_valid() {
+          # Validate individual configuration values
+          function validate_variable() {
               [ ! -z "$1" ] && [ "$1" != "null" ]
           }
 
+          # Define required variables
           declare -a required_vars=(
             "repoName:$repoName"
             "dir:$dir"
             "collectionName:$collectionName"
           )
 
+          # Check for missing required variables
           missing_vars=()
           for var in "${required_vars[@]}"; do
             name="${var%%:*}"
             value="${var#*:}"
 
-            if is_valid "$value"; then
+            if validate_variable "$value"; then
               echo "##vso[task.setvariable variable=$name]$value"
             else
               missing_vars+=("$name")
             fi
           done
 
+          # Handle missing variables
           if [ ${#missing_vars[@]} -gt 0 ]; then
             echo "❌ Missing required variables: ${missing_vars[*]}"
-            echo "##vso[task.logissue type=warning]Postman configuration incomplete"
+            echo "##vso[task.logissue type=warning]Configuration incomplete"
             echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
-          else
-            echo "✅ All required variables validated successfully"
-            echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+            exit 0
           fi
 
+          echo "✅ Test environment configured successfully"
+          echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
+
     - task: NodeTool@0
+      displayName: 'Install Node.js'
       inputs:
         versionSpec: '16.x'
 
     - task: Npm@1.238.1
-      displayName: Install newman
+      displayName: 'Install Newman CLI'
       inputs:
         command: custom
         customCommand: install -g newman
 
     - task: DownloadSecureFile@1
-      displayName: 'Download postman secret environment'
+      displayName: 'Download Environment Variables'
       name: postman_env_secret_file
       inputs:
-        secureFile: "arc_${{ upper(parameters.env) }}.postman_environment.json"
+        secureFile: "p4pa_${{ upper(parameters.env) }}.postman_environment.json"
 
     - task: Bash@3
-      name: run_postman_tests
-      displayName: 'Run Postman Tests'
-      condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
+      name: executePostmanTests
+      displayName: 'Execute Postman Tests'
+      condition: and(succeeded(), eq(variables['setupTestEnvironment.runPostmanTest'], 'true'))
       continueOnError: true
       inputs:
         targetType: inline
         script: |
+          # Error handling function
+          function handle_error() {
+            local error_message=$1
+            echo "❌ $error_message"
+            echo "##vso[task.logissue type=error]$error_message"
+            return 1
+          }
+
+          # Function to execute tests with retry mechanism
+          function execute_tests_with_retry() {
+            local max_attempts=${{ parameters.maxRetryAttempts }}
+            local attempt=1
+            
+            while [ $attempt -le $max_attempts ]; do
+              echo "🔄 Attempt $attempt of $max_attempts..."
+              
+              # Run Newman with specified configuration
+              if newman run $(collectionName) \
+                 -e $(postman_env_secret_file.secureFilePath) \
+                 --reporters cli,junit \
+                 --reporter-junit-export result/test-result.xml \
+                 --timeout ${{ parameters.collectionTimeout }}000; then
+                return 0
+              fi
+              
+              # Handle retry logic
+              ((attempt++))
+              [ $attempt -le $max_attempts ] && { 
+                echo "⏳ Waiting before retry..."; 
+                sleep 10; 
+              }
+            done
+            
+            return 1
+          }
+
           set -e
-          echo "🚀 Starting Postman tests execution..."
+          echo "🚀 Starting test execution for $(appName)..."
 
+          # Log test configuration
           echo "📝 Test Configuration:"
-          echo "Repository: $(repoName)"
-          echo "Directory: $(dir)"
-          echo "Collection: $(collectionName)"
-          echo "Branch: ${{ parameters.postmanBranch }}"
+          echo "- Repository: $(repoName)"
+          echo "- Directory: $(dir)"
+          echo "- Collection: $(collectionName)"
+          echo "- Branch: ${{ parameters.postmanBranch }}"
 
-          echo "🔄 Cloning repository..."
+          # Clone test repository
+          echo "📦 Cloning test repository..."
           if ! git clone -b ${{ parameters.postmanBranch }} https://github.com/pagopa/$(repoName).git; then
-            echo "❌ Failed to clone repository"
+            handle_error "Failed to clone repository"
             exit 1
           fi
 
+          # Navigate to test directory
           cd $(repoName)/$(dir) || {
-            echo "❌ Failed to navigate to test directory"
+            handle_error "Failed to navigate to test directory"
             exit 1
           }
 
-          if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
-            echo "❌ Postman tests failed"
+          # Execute tests with retry mechanism
+          if ! execute_tests_with_retry; then
+            handle_error "Tests failed after ${{ parameters.maxRetryAttempts }} attempts"
             exit 1
           fi
 
-          echo "✅ Postman test setup completed successfully"
+          echo "✅ Tests completed successfully"
 
     - task: PublishTestResults@2
+      displayName: 'Publish Test Results'
       inputs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/test-*.xml'
         searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
-        testRunTitle: 'Publish Newman Test Results'
+        testRunTitle: 'Postman Tests - ${{ parameters.jobSuffix }} - $(appName)'
 
     - bash: |
-        if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
-          echo "⚠️ Stage completed with issues"
-          echo "##vso[task.logissue type=warning]Stage completed with issues, marking as successful"
+        # Check test outcome and finalize execution
+        if [ "$(testOutcome)" == "SucceededWithIssues" ]; then
+          echo "⚠️ Tests completed with issues"
+          echo "##vso[task.logissue type=warning]Tests completed with issues, marking as successful"
         else
-          echo "✅ Stage completed successfully"
+          echo "✅ Tests completed successfully"
         fi
         echo "##vso[task.complete result=Succeeded;]"
-      name: forceStageSuccess
-      displayName: 'Finalize Stage'
+      name: finalizeTests
+      displayName: 'Finalize Test Execution'
       condition: always()
