@@ -18,7 +18,6 @@ microservice-chart:
 
   envSecret:
     MY_KV_SECRET: argocd-server-url
-    TEST: test
 
   image:
     repository: ghcr.io/pagopa/devops-java-springboot-color
