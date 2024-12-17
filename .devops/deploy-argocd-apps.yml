@@ -122,40 +122,40 @@ stages:
       # Foundation Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_FOUNDATION }}
-          jobSuffix: 'foundation'
-          env: ${{ parameters.ENV }}
-          argocdServer: $(argocdServer)
-          argocdUsername: $(argocdUsername)
-          argocdPassword: $(argocdPassword)
+          applicationsList: ${{ parameters.APPS_FOUNDATION }}
+          deploymentType: 'foundation'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
-          area: $(area)
+          applicationPrefix: $(area)
 
       # Operational Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_OPERATIONAL }}
-          jobSuffix: 'operational'
-          env: ${{ parameters.ENV }}
-          argocdServer: $(argocdServer)
-          argocdUsername: $(argocdUsername)
-          argocdPassword: $(argocdPassword)
+          applicationsList: ${{ parameters.APPS_OPERATIONAL }}
+          deploymentType: 'operational'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
-          area: $(area)
-          dependsOn: 'deploy_foundation'
+          applicationPrefix: $(area)
+          dependsOnJob: 'deploy_foundation'
 
       # Satellite Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_SATELLITE }}
-          jobSuffix: 'satellite'
-          env: ${{ parameters.ENV }}
-          argocdServer: $(argocdServer)
-          argocdUsername: $(argocdUsername)
-          argocdPassword: $(argocdPassword)
+          applicationsList: ${{ parameters.APPS_SATELLITE }}
+          deploymentType: 'satellite'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
-          area: $(area)
-          dependsOn: 'deploy_operational'
+          applicationPrefix: $(area)
+          dependsOnJob: 'deploy_operational'
 
   # Stage separato per i test Postman
   - stage: run_postman_tests
