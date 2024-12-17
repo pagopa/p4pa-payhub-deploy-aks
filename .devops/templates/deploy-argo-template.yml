@@ -14,8 +14,6 @@ parameters:
   type: string
 - name: area
   type: string
-- name: isPullRequestTrigger
-  type: boolean
 - name: jobSuffix
   type: string
 - name: dependsOn

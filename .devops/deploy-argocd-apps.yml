@@ -130,7 +130,6 @@ stages:
           argocdPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
           area: $(area)
-          isPullRequestTrigger: "$(isPullRequestTrigger)"
 
       # Operational Apps
       - template: templates/deploy-argo-template.yml
@@ -143,7 +142,6 @@ stages:
           argocdPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
           area: $(area)
-          isPullRequestTrigger: "$(isPullRequestTrigger)"
           dependsOn: 'deploy_foundation'
 
       # Satellite Apps
@@ -157,7 +155,6 @@ stages:
           argocdPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
           area: $(area)
-          isPullRequestTrigger: "$(isPullRequestTrigger)"
           dependsOn: 'deploy_operational'
 
   # Stage separato per i test Postman
