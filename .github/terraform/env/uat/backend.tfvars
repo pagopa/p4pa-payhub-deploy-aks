@@ -1,4 +1,4 @@
 resource_group_name  = "terraform-state-rg"
-storage_account_name = "tfappuatarc"
+storage_account_name = "tfappprodp4pa"
 container_name       = "terraform-state"
-key                  = "arc-deploy-aks.tfstate"
+key                  = "p4pa-payhub-deploy-aks-prod.tfstate"
