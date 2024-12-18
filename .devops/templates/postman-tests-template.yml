@@ -197,10 +197,10 @@ jobs:
           function execute_tests_with_retry() {
             local max_attempts=${{ parameters.maxRetryAttempts }}
             local attempt=1
-            
+
             while [ $attempt -le $max_attempts ]; do
               echo "🔄 Attempt $attempt of $max_attempts..."
-              
+
               # Run Newman with specified configuration
               if newman run $(collectionName) \
                  -e $(postman_env_secret_file.secureFilePath) \
@@ -209,15 +209,15 @@ jobs:
                  --timeout ${{ parameters.collectionTimeout }}000; then
                 return 0
               fi
-              
+
               # Handle retry logic
               ((attempt++))
-              [ $attempt -le $max_attempts ] && { 
-                echo "⏳ Waiting before retry..."; 
-                sleep 10; 
+              [ $attempt -le $max_attempts ] && {
+                echo "⏳ Waiting before retry...";
+                sleep 10;
               }
             done
-            
+
             return 1
           }
 
