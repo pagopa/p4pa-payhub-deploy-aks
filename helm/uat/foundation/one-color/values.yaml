@@ -1,0 +1,96 @@
+#postman-test:
+#  run: true
+#  nameRepo: devops-java-springboot-color
+#  dir: src/test/postman
+#  collectionName: mil-papos.postman_collection.json
+#  envVariables: dev.postman_environment.json
+
+microservice-chart:
+  namespace: "payhub"
+
+  deployment:
+    create: true
+    replicas: 1
+
+  envConfig:
+    APP: basic
+    MY_APP_COLOR: "green"
+
+  envSecret:
+    MY_KV_SECRET: argocd-server-url
+
+  image:
+    repository: ghcr.io/pagopa/devops-java-springboot-color
+    tag: develop-latest
+    pullPolicy: Always
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+      - name: logs
+        mountPath: /app/logs
+
+  livenessProbe:
+    httpGet:
+      path: /status/live
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /status/ready
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 6
+    periodSeconds: 10
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  ingress:
+    create: true
+    host: hub.internal.dev.p4pa.pagopa.it
+    path: /payhub/one-color(/|$)(.*)
+    rewriteTarget: /$2
+    servicePort: 8080
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "150m"
+    limits:
+      memory: "256Mi"
+      cpu: "150m"
+
+  keyvault:
+    name: "p4pa-d-payhub-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  podDisruptionBudget:
+    create: false
+
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#        - matchExpressions:
+#          - key: kubernetes.azure.com/mode
+#            operator: In
+#            values:
+#            - user
+#    podAntiAffinity:
+#      preferredDuringSchedulingIgnoredDuringExecution:
+#      - weight: 100
+#        podAffinityTerm:
+#          labelSelector:
+#            matchLabels:
+#              aadpodidbinding: payhub-pod-identity
+#          namespaces: ["payhub"]
+#          topologyKey: topology.kubernetes.io/zone
