@@ -76,7 +76,7 @@ parameters:
 
 jobs:
 - job: deploy_${{ parameters.deploymentType }}
-  displayName: 'Deploy ${{ parameters.deploymentType }} Applications'
+  displayName: '🚀 ${{ parameters.deploymentType }}'
   dependsOn: ${{ parameters.dependsOnJob }}
   condition: succeeded()
   strategy:
