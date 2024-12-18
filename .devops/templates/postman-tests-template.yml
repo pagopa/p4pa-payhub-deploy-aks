@@ -56,7 +56,7 @@ parameters:
 
 jobs:
 - job: postman_${{ parameters.jobSuffix }}
-  displayName: 'Postman Tests - ${{ parameters.jobSuffix }} Apps'
+  displayName: '🛃 ${{ parameters.jobSuffix }}'
   timeoutInMinutes: 60
   dependsOn: ${{ parameters.dependsOn }}
   condition: succeeded()
