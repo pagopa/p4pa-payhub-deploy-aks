@@ -24,7 +24,7 @@ parameters:
   - name: jobSuffix
     displayName: 'Job Type Identifier'
     type: string
-    # Application type identifier (foundation, operational, satellite)
+    # Application type identifier
 
   # Dependency job
   - name: dependsOn

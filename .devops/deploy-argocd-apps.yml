@@ -26,20 +26,20 @@ parameters:
     - uat
     - prod
 
-- name: APPS_FOUNDATION
-  displayName: Foundation ArgoCD Apps
+- name: APPS_TOP
+  displayName: Top ArgoCD Apps
   type: object
   default:
     - one-color
 
-- name: APPS_OPERATIONAL
-  displayName: Operational ArgoCD Apps
+- name: APPS_MID
+  displayName: Mid ArgoCD Apps
   type: object
   default:
     - two-color
 
-- name: APPS_SATELLITE
-  displayName: Satellite ArgoCD Apps
+- name: APPS_BASE
+  displayName: Base ArgoCD Apps
   type: object
   default:
     - three-color
@@ -117,11 +117,11 @@ stages:
   - stage: sync_argo_apps
     condition: succeeded()
     jobs:
-      # Foundation Apps
+      # top Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          applicationsList: ${{ parameters.APPS_FOUNDATION }}
-          deploymentType: 'foundation'
+          applicationsList: ${{ parameters.APPS_TOP }}
+          deploymentType: 'top'
           environment: ${{ parameters.ENV }}
           argocdServerUrl: $(argocdServer)
           argocdUserName: $(argocdUsername)
@@ -129,60 +129,60 @@ stages:
           agentPoolName: $(agentPoolName)
           applicationPrefix: $(area)
 
-      # Operational Apps
+      # mid Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          applicationsList: ${{ parameters.APPS_OPERATIONAL }}
-          deploymentType: 'operational'
+          applicationsList: ${{ parameters.APPS_MID }}
+          deploymentType: 'mid'
           environment: ${{ parameters.ENV }}
           argocdServerUrl: $(argocdServer)
           argocdUserName: $(argocdUsername)
           argocdUserPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
           applicationPrefix: $(area)
-          dependsOnJob: 'deploy_foundation'
+          dependsOnJob: 'deploy_top'
 
-      # Satellite Apps
+      # base Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          applicationsList: ${{ parameters.APPS_SATELLITE }}
-          deploymentType: 'satellite'
+          applicationsList: ${{ parameters.APPS_BASE }}
+          deploymentType: 'base'
           environment: ${{ parameters.ENV }}
           argocdServerUrl: $(argocdServer)
           argocdUserName: $(argocdUsername)
           argocdUserPassword: $(argocdPassword)
           agentPoolName: $(agentPoolName)
           applicationPrefix: $(area)
-          dependsOnJob: 'deploy_operational'
+          dependsOnJob: 'deploy_mid'
 
   # Stage separato per i test Postman
   - stage: run_postman_tests
     condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
     dependsOn: sync_argo_apps
     jobs:
-      # Foundation Apps Tests
+      # Top Apps Tests
       - template: templates/postman-tests-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_FOUNDATION }}
-          jobSuffix: 'foundation'
+          appsList: ${{ parameters.APPS_TOP }}
+          jobSuffix: 'top'
           env: ${{ parameters.ENV }}
           agentPoolName: $(agentPoolName)
           postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
-      # Operational Apps Tests
+      # Mid Apps Tests
       - template: templates/postman-tests-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_OPERATIONAL }}
-          jobSuffix: 'operational'
+          appsList: ${{ parameters.APPS_MID }}
+          jobSuffix: 'mid'
           env: ${{ parameters.ENV }}
           agentPoolName: $(agentPoolName)
           postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
-      # Satellite Apps Tests
+      # Base Apps Tests
       - template: templates/postman-tests-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_SATELLITE }}
-          jobSuffix: 'satellite'
+          appsList: ${{ parameters.APPS_BASE }}
+          jobSuffix: 'base'
           env: ${{ parameters.ENV }}
           agentPoolName: $(agentPoolName)
           postmanBranch: ${{ parameters.POSTMAN_BRANCH }}

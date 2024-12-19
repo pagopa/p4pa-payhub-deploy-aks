@@ -46,7 +46,7 @@ parameters:
   - name: deploymentType
     displayName: 'Deployment Type'
     type: string
-    # Type of deployment (foundation, operational, satellite)
+    # Type of deployment
 
   # Dependency configuration
   - name: dependsOnJob
