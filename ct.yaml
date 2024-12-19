@@ -5,9 +5,15 @@ timeout: 600s
 
 # Chart directories to scan for changes recursively
 chart-dirs:
-  - helm/dev
-  - helm/uat
-  - helm/prod
+  - helm/dev/base
+  - helm/dev/mid
+  - helm/dev/top
+  - helm/uat/base
+  - helm/uat/mid
+  - helm/uat/top
+  - helm/prod/base
+  - helm/prod/mid
+  - helm/prod/top
 
 # Required Helm repositories for chart dependencies
 chart-repos:

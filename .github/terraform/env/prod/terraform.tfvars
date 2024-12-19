@@ -1,4 +1,4 @@
-prefix         = "arc"
+prefix         = "payhub"
 env            = "prod"
 env_short      = "p"
 location_short = "itn"
@@ -6,7 +6,7 @@ location_short = "itn"
 tags = {
   CreatedBy   = "Terraform"
   Environment = "PROD"
-  Owner       = "ARC"
-  Source      = "https://github.com/pagopa/arc-deploy-aks"
+  Owner       = "payhub"
+  Source      = "https://github.com/pagopa/payhub-deploy-aks"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
 }

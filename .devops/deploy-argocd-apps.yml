@@ -26,11 +26,24 @@ parameters:
     - uat
     - prod
 
-- name: APPS
-  displayName: ArgoCD Apps
+- name: APPS_TOP
+  displayName: Top ArgoCD Apps
   type: object
   default:
-    - arc-be
+    - one-color
+    - four-color
+
+- name: APPS_MID
+  displayName: Mid ArgoCD Apps
+  type: object
+  default:
+    - two-color
+
+- name: APPS_BASE
+  displayName: Base ArgoCD Apps
+  type: object
+  default:
+    - three-color
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
@@ -41,10 +54,8 @@ variables:
   # Variabili statiche
   - name: directoryPattern
     value: 'helm/${{ parameters.ENV }}'
-  - name: isPullRequestTrigger
-    value: $[eq(variables['Build.Reason'], 'PullRequest')]
   - name: area
-    value: arc-cittadini
+    value: p4pa-payhub
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
@@ -102,370 +113,77 @@ stages:
           echo "agentPoolName: ${{variables['argocdServer']}}"
 
   #
-  # Calculate changes from PR
-  #
-  - stage: calculate_pr_git_changes
-    condition: and(succeeded(), eq(variables.isPullRequestTrigger, true))
-    jobs:
-    - job: FindGitChangedFolder
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - checkout: self
-        fetchDepth: 0
-        name: checkoutCode
-        displayName: 'Checkout Code'
-
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.x'
-          addToPath: true
-        name: setupPython
-        displayName: 'Setup Python'
-
-      # Migliorato script Python con gestione errori e logging
-      - task: PythonScript@0
-        name: grep_git_folders
-        displayName: 'Process String and Convert to JSON'
-        inputs:
-          scriptSource: 'inline'
-          script: |
-            import json
-            import subprocess
-            import sys
-
-            try:
-                print("Starting the process...")
-
-                command = "git diff --name-only --diff-filter=d origin/main...HEAD | xargs -I {} dirname {} | sort -u"
-                print(f"Executing command: {command}")
-
-                result = subprocess.run(command, shell=True, capture_output=True, text=True)
-                if result.returncode != 0:
-                    raise Exception(f"Git command failed: {result.stderr}")
-
-                str_output = result.stdout.strip()
-                print(f"Command output: {str_output}")
-
-                if not str_output:
-                    print("No changes detected")
-                    filtered_list = []
-                else:
-                    filtered_list = [item for item in str_output.split('\n') if "helm/dev" in item]
-                print(f"Filtered list: {filtered_list}")
-
-                cleaned_list = [item.replace("helm/dev/", "") for item in filtered_list]
-                print(f"Cleaned list: {cleaned_list}")
-
-                result_json = json.dumps(cleaned_list)
-                print(f"Final JSON result: {result_json}")
-
-                print(f'##vso[task.setvariable variable=resultJson;isOutput=true]{result_json}')
-                print("Process completed successfully")
-
-            except Exception as e:
-                print(f"Error occurred: {str(e)}", file=sys.stderr)
-                sys.exit(1)
-
-      - task: Bash@3
-        name: EchoBashJson
-        displayName: 'Echo Result JSON Array'
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "JSON Array Result:"
-            echo '$(grep_git_folders.resultJson)'
-            echo "##vso[task.setvariable variable=savedResultJsonArray;isOutput=true]$(grep_git_folders.resultJson)"
-
-  #
   # ArgoCD
   #
   - stage: sync_argo_apps
-    condition: >
-      or(
-        succeeded(),
-        in(dependencies.calculate_pr_git_changes.result, 'Succeeded', 'Skipped')
-      )
-    variables:
-      ${{ if eq(variables.isPullRequestTrigger, true) }}:
-        resultJsonArrayPython: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['grep_git_folders.resultJson'] ]
-        resultJsonArrayBash: $[ stageDependencies.calculate_pr_git_changes.FindGitChangedFolder.outputs['EchoBashJson.savedResultJsonArray'] ]
-      ${{ else }}:
-        resultJsonArrayPython: '${{ convertToJson(parameters.APPS) }}'
-        resultJsonArrayBash: '${{ convertToJson(parameters.APPS) }}'
+    condition: succeeded()
     jobs:
-    # Deploy delle singole applicazioni
-    - ${{ each item in parameters.APPS }}:
-      - deployment: deploy_${{ replace(item, '-', '_') }}
-        displayName: 'Deploy ${{ item }}'
-        pool:
-          name: $(agentPoolName)
-        environment: ${{ parameters.ENV }}
-        condition: >
-          and(
-            succeeded(),
-            or(
-              and(
-                eq(variables.isPullRequestTrigger, false),
-                contains(variables.resultJsonArrayPython, '${{ item }}')
-              ),
-              eq(variables.isPullRequestTrigger, true)
-            )
-          )
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - bash: |
-                  echo "Deploying: ${{ item }}"
-                name: displayDeploymentInfo
-                displayName: 'Display Deployment Info'
+      # top Apps
+      - template: templates/deploy-argo-template.yml
+        parameters:
+          applicationsList: ${{ parameters.APPS_TOP }}
+          deploymentType: 'top'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
+          agentPoolName: $(agentPoolName)
+          applicationPrefix: $(area)
 
-              - bash: |
-                  function login_argocd() {
-                      if ! argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --insecure --grpc-web; then
-                          echo "❌ Failed to login to ArgoCD"
-                          return 1
-                      fi
-                      return 0
-                  }
+      # mid Apps
+      - template: templates/deploy-argo-template.yml
+        parameters:
+          applicationsList: ${{ parameters.APPS_MID }}
+          deploymentType: 'mid'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
+          agentPoolName: $(agentPoolName)
+          applicationPrefix: $(area)
+          dependsOnJob: 'deploy_top'
 
-                  function check_app_health() {
-                      local app_name=$1
-                      local max_retries=30
-                      local retry_count=0
-                      local wait_seconds=10
+      # base Apps
+      - template: templates/deploy-argo-template.yml
+        parameters:
+          applicationsList: ${{ parameters.APPS_BASE }}
+          deploymentType: 'base'
+          environment: ${{ parameters.ENV }}
+          argocdServerUrl: $(argocdServer)
+          argocdUserName: $(argocdUsername)
+          argocdUserPassword: $(argocdPassword)
+          agentPoolName: $(agentPoolName)
+          applicationPrefix: $(area)
+          dependsOnJob: 'deploy_mid'
 
-                      while [ $retry_count -lt $max_retries ]; do
-                          if health_status=$(argocd app get "$app_name" -o json | jq -r '.status.health.status') && \
-                             sync_status=$(argocd app get "$app_name" -o json | jq -r '.status.sync.status'); then
-
-                              if [ "$health_status" = "Healthy" ] && [ "$sync_status" = "Synced" ]; then
-                                  echo "✅ Application $app_name is healthy and synced"
-                                  return 0
-                              fi
-
-                              echo "Status - Health ${health_status}, Sync: ${sync_status}"
-                          else
-                              echo "❌ Failed to get application status"
-                          fi
-
-                          sleep $wait_seconds
-                          ((retry_count++))
-                      done
-
-                      echo "❌ Health check timed out for $app_name"
-                      return 1
-                  }
-
-                  # Main execution
-                  set -e
-                  app_name="${ARGOCD_APP_NAME}"
-
-                  echo "🔨 Starting deployment for $app_name..."
-
-                  if ! login_argocd; then
-                      exit 1
-                  fi
-
-                  if ! argocd app sync "$app_name" --prune --timeout 180; then
-                      echo "❌ Sync failed for $app_name"
-                      exit 1
-                  fi
-
-                  if ! check_app_health "$app_name"; then
-                      echo "❌ Health check failed for $app_name"
-                      exit 1
-                  fi
-
-                  if ! argocd app actions run "$app_name" restart --kind Deployment --all --grpc-web; then
-                      echo "❌ Failed to restart deployments for $app_name"
-                      exit 1
-                  fi
-
-                  echo "✅ Deployment completed successfully for $app_name"
-                name: syncArgoApp
-                displayName: 'Sync ArgoCD App: ${{ item }}'
-                env:
-                  ARGOCD_SERVER: $(argocdServer)
-                  ARGOCD_USERNAME: $(argocdUsername)
-                  ARGOCD_PASSWORD: $(argocdPassword)
-                  ARGOCD_APP_NAME: "$(area)-${{item}}"
-
-  #
-  # Postman
-  #
-  - stage: postman_tests
-    displayName: Run Postman Tests
+  # Stage separato per i test Postman
+  - stage: run_postman_tests
+    condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
     dependsOn: sync_argo_apps
-    condition: or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}})
     jobs:
-      - ${{ each item in parameters.APPS }}:
-        - job: postman_tests_${{ replace(item, '-', '_') }}
-          displayName: '${{ item }} > postman'
-          pool:
-            name: $(agentPoolName)
-          variables:
-            stageOutcome: 'Succeeded'
-          steps:
-            - checkout: self
-              name: checkoutSourceCode
-              displayName: 'Checkout Source Code'
-            # Verifica se i test Postman possono essere eseguiti
-            - task: Bash@3
-              name: canRunPostmanTests
-              displayName: 'Check Postman Tests Requirements'
-              inputs:
-                targetType: 'inline'
-                script: |
-                  echo "🔨 Checking Postman configuration..."
-                  rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
+      # Top Apps Tests
+      - template: templates/postman-tests-template.yml
+        parameters:
+          appsList: ${{ parameters.APPS_TOP }}
+          jobSuffix: 'top'
+          env: ${{ parameters.ENV }}
+          agentPoolName: $(agentPoolName)
+          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
-                  echo "rootPostman: $rootPostman"
-                  echo "runPostmanTests: $runPostmanTests"
+      # Mid Apps Tests
+      - template: templates/postman-tests-template.yml
+        parameters:
+          appsList: ${{ parameters.APPS_MID }}
+          jobSuffix: 'mid'
+          env: ${{ parameters.ENV }}
+          agentPoolName: $(agentPoolName)
+          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
-                  function is_valid() {
-                      [ ! -z "$1" ] && [ "$1" != "null" ]
-                  }
-
-                  if ! is_valid "$rootPostman" || ! is_valid "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
-                      echo "##vso[task.logissue type=warning]Skipping Postman tests - Configuration not valid or tests disabled"
-                      echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
-                      exit 0
-                  fi
-
-                  echo "All checks passed. Proceeding with Postman tests."
-                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-
-                  echo "✅ Postman tests configuration valid"
-                  echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-
-            # Setup delle variabili Postman
-            - task: Bash@3
-              name: setupPostmanVariables
-              displayName: 'Setup Postman Variables'
-              condition: and(succeeded(), eq(variables['canRunPostmanTests.runPostmanTest'], 'true'))
-              inputs:
-                targetType: 'inline'
-                script: |
-                  echo "🔨 Setting up Postman variables..."
-
-                  # Estrazione variabili da values.yaml
-                  repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-                  #envVariablesFile=$(yq '.postman-test.envVariablesFile' $(Build.Repository.LocalPath)/helm/${{parameters.ENV}}/${{item}}/values.yaml)
-
-                  # Log delle variabili (senza valori sensibili)
-                  echo "📝 Configuration:"
-                  echo "Repository: $repoName"
-                  echo "Directory: $dir"
-                  echo "Collection: $collectionName"
-                  echo "Environment Variables File: inside library secure file"
-                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
-
-                  # Validazione variabili
-                  function is_valid() {
-                      [ ! -z "$1" ] && [ "$1" != "null" ]
-                  }
-
-                  # Validazione e setting delle variabili
-                  declare -a required_vars=(
-                    "repoName:$repoName"
-                    "dir:$dir"
-                    "collectionName:$collectionName"
-                  )
-
-                  missing_vars=()
-                  for var in "${required_vars[@]}"; do
-                    name="${var%%:*}"
-                    value="${var#*:}"
-
-                    if is_valid "$value"; then
-                      echo "##vso[task.setvariable variable=$name]$value"
-                    else
-                      missing_vars+=("$name")
-                    fi
-                  done
-
-                  # Gestione errori
-                  if [ ${#missing_vars[@]} -gt 0 ]; then
-                    echo "❌ Missing required variables: ${missing_vars[*]}"
-                    echo "##vso[task.logissue type=warning]Postman configuration incomplete"
-                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
-                  else
-                    echo "✅ All required variables validated successfully"
-                    echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
-                  fi
-
-            # Esecuzione dei test Postman
-            - task: NodeTool@0
-              inputs:
-                versionSpec: '16.x'
-            - task: Npm@1.238.1
-              displayName: Install newman
-              inputs:
-                command: custom
-                customCommand: install -g newman
-            - task: DownloadSecureFile@1
-              displayName: 'Download postman secret environment'
-              name: postman_env_secret_file
-              inputs:
-                secureFile: "arc_${{ upper(parameters.ENV) }}.postman_environment.json"
-            - task: Bash@3
-              name: run_postman_tests
-              displayName: 'Run Postman Tests'
-              condition: and(succeeded(), eq(variables['setupPostmanVariables.runPostmanTest'], 'true'))
-              continueOnError: true
-              inputs:
-                targetType: inline
-                script: |
-                  set -e
-                  echo "🚀 Starting Postman tests execution..."
-
-                  # Log delle variabili configurate
-                  echo "📝 Test Configuration:"
-                  echo "Repository: $(repoName)"
-                  echo "Directory: $(dir)"
-                  echo "Collection: $(collectionName)"
-                  echo "Branch: ${{ parameters.POSTMAN_BRANCH }}"
-                  #echo "envVariablesFile: $(envVariablesFile)"
-
-                  # Clone del repository
-                  echo "🔄 Cloning repository..."
-                  if ! git clone -b ${{ parameters.POSTMAN_BRANCH }} https://github.com/pagopa/$(repoName).git; then
-                    echo "❌ Failed to clone repository"
-                    exit 1
-                  fi
-
-                  # Navigazione nella directory corretta
-                  cd $(repoName)/$(dir) || {
-                    echo "❌ Failed to navigate to test directory"
-                    exit 1
-                  }
-
-                  if ! newman run $(collectionName) -e $(postman_env_secret_file.secureFilePath) --reporters cli,junit --reporter-junit-export result/test-result.xml ; then
-                    echo "❌ Postman tests failed"
-                    exit 1
-                  fi
-
-                  echo "✅ Postman test setup completed successfully"
-
-            - task: PublishTestResults@2
-              inputs:
-                testResultsFormat: 'JUnit'
-                testResultsFiles: '**/test-*.xml'
-                searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
-                testRunTitle: 'Publish Newman Test Results'
-            - bash: |
-                if [ "$(stageOutcome)" == "SucceededWithIssues" ]; then
-                  echo "⚠️ Stage completed with issues"
-                  echo "##vso[task.logissue type=warning]Stage completed with issues, marking as successful"
-                else
-                  echo "✅ Stage completed successfully"
-                fi
-                echo "##vso[task.complete result=Succeeded;]"
-              name: forceStageSuccess
-              displayName: 'Finalize Stage'
-              condition: always()
+      # Base Apps Tests
+      - template: templates/postman-tests-template.yml
+        parameters:
+          appsList: ${{ parameters.APPS_BASE }}
+          jobSuffix: 'base'
+          env: ${{ parameters.ENV }}
+          agentPoolName: $(agentPoolName)
+          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
