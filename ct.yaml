@@ -5,13 +5,13 @@ timeout: 600s
 
 # Chart directories to scan for changes recursively
 chart-dirs:
-  - helm/dev/base
+  - helm/dev/ext
   - helm/dev/mid
   - helm/dev/top
-  - helm/uat/base
+  - helm/uat/ext
   - helm/uat/mid
   - helm/uat/top
-  - helm/prod/base
+  - helm/prod/ext
   - helm/prod/mid
   - helm/prod/top
 
