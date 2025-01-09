@@ -22,31 +22,21 @@ microservice-chart:
   deployment:
     create: true
 
-  service:
-    create: true
-    type: ClusterIP
-    port: 8080
-
   ingress:
     create: true
     path: /p4paauth/(.*)
+    host: "hub.internal.dev.p4pa.pagopa.it"
 
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "150m"
+    limits:
+      memory: "512Mi"
+      cpu: "150m"
 
-  podAnnotations: {}
-
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-
-  securityContext:
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
+  autoscaling:
+    enable: false
 
   externalConfigMapFiles:
     create: true
@@ -69,8 +59,6 @@ microservice-chart:
     ACCESS_ORGANIZATION_MODE_ENABLED: "true"
 
   envSecret:
-    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
-
     JWT_TOKEN_PRIVATE_KEY: jwt-private-key
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
@@ -90,6 +78,13 @@ microservice-chart:
     DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW: p4pa-auth-encrypt-psw
 
     PIATTAFORMA_UNITARIA_CLIENT_SECRET: piattaforma-unitaria-client-secret
+
+    ENV: "DEV"
+    JAVA_TOOL_OPTIONS: "-Xms384m -Xmx384m -Djava.util.concurrent.ForkJoinPool.common.parallelism=7 -javaagent:/app/applicationinsights-agent.jar -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json -agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=3002 -Dcom.sun.management.jmxremote.rmi.port=3003 -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+
+    JWT_TOKEN_AUDIENCE: "dev.piattaformaunitaria.pagopa.it"
+    JWT_EXTERNAL_TOKEN_ISS: "https://dev.selfcare.pagopa.it"
+    JWT_EXTERNAL_TOKEN_BASE_URL: "https://dev.selfcare.pagopa.it"
   # nodeSelector: {}
 
   # tolerations: []
