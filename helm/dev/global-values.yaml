@@ -1,0 +1,59 @@
+microservice-chart:
+  namespace: "payhub"
+
+  deployment:
+    create: true
+
+  service:
+    create: true
+    type: ClusterIP
+    ports:
+      - 8080
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
+
+  envSecret:
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+
+  keyvault:
+    name: "p4pa-d-payhub-kv"
+    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
+
+  # nodeSelector: {}
+
+  # tolerations: []
+
+#    affinity:
+#      nodeAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          nodeSelectorTerms:
+#          - matchExpressions:
+#            - key: kubernetes.azure.com/mode
+#              operator: In
+#              values:
+#              - user
+#      podAntiAffinity:
+#        preferredDuringSchedulingIgnoredDuringExecution:
+#        - weight: 100
+#          podAffinityTerm:
+#            labelSelector:
+#              matchLabels:
+#                aadpodidbinding: payhub-pod-identity
+#            namespaces: ["payhub"]
+#            topologyKey: topology.kubernetes.io/ztwo
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
