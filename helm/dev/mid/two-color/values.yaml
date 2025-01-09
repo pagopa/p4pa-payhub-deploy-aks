@@ -4,6 +4,7 @@ microservice-chart:
   envConfig:
     APP: basic
     MY_APP_COLOR: "green"
+    REDIS_PORT: "9999"
 
   envSecret:
     MY_KV_SECRET: argocd-server-url
