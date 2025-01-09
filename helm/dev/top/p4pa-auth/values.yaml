@@ -3,6 +3,11 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
 
+  image:
+    repository: ghcr.io/pagopa/p4pa-auth
+    tag: develop-latest
+    pullPolicy: Always
+
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
