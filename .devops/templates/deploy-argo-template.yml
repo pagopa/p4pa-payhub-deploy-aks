@@ -182,5 +182,5 @@ jobs:
       ARGOCD_SERVER: ${{ parameters.argocdServerUrl }}
       ARGOCD_USERNAME: ${{ parameters.argocdUserName }}
       ARGOCD_PASSWORD: ${{ parameters.argocdUserPassword }}
-      ARGOCD_APP_NAME: "${{ parameters.applicationPrefix }}-$(appName)"
+      ARGOCD_APP_NAME: "$(appName)"
     continueOnError: true
