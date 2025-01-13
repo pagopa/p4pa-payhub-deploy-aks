@@ -36,12 +36,11 @@ parameters:
   displayName: Mid ArgoCD Apps
   type: object
   default:
-    - two-color
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
   type: object
-  default: []
+  default:
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
