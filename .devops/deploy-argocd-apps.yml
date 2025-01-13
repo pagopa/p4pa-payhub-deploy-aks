@@ -30,8 +30,7 @@ parameters:
   displayName: Top ArgoCD Apps
   type: object
   default:
-    - one-color
-    - four-color
+    - p4pa-auth
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
@@ -39,11 +38,10 @@ parameters:
   default:
     - two-color
 
-- name: APPS_BASE
-  displayName: Base ArgoCD Apps
+- name: APPS_EXT
+  displayName: Extra ArgoCD Apps
   type: object
-  default:
-    - three-color
+  default: []
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
@@ -143,11 +141,11 @@ stages:
           applicationPrefix: $(area)
           dependsOnJob: 'deploy_top'
 
-      # base Apps
+      # ext Apps
       - template: templates/deploy-argo-template.yml
         parameters:
-          applicationsList: ${{ parameters.APPS_BASE }}
-          deploymentType: 'base'
+          applicationsList: ${{ parameters.APPS_EXT }}
+          deploymentType: 'ext'
           environment: ${{ parameters.ENV }}
           argocdServerUrl: $(argocdServer)
           argocdUserName: $(argocdUsername)
@@ -179,11 +177,11 @@ stages:
           agentPoolName: $(agentPoolName)
           postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
-      # Base Apps Tests
+      # Ext Apps Tests
       - template: templates/postman-tests-template.yml
         parameters:
-          appsList: ${{ parameters.APPS_BASE }}
-          jobSuffix: 'base'
+          appsList: ${{ parameters.APPS_EXT }}
+          jobSuffix: 'ext'
           env: ${{ parameters.ENV }}
           agentPoolName: $(agentPoolName)
           postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
