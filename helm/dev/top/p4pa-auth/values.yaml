@@ -94,3 +94,10 @@ microservice-chart:
   # tolerations: []
 
   # affinity: {}
+
+postman-test:
+  run: true
+  repoName: p4pa-auth
+  dir: postman
+  collectionName: "p4pa-auth-E2E.postman_collection.json"
+  envVariablesFile: "p4pa_DEV.postman_environment.json" #inside azdo secure files
