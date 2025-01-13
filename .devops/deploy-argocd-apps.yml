@@ -35,12 +35,12 @@ parameters:
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
   type: object
-  default:
+  default: []
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
   type: object
-  default:
+  default: []
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
@@ -115,72 +115,78 @@ stages:
   - stage: sync_argo_apps
     condition: succeeded()
     jobs:
-      # top Apps
-      - template: templates/deploy-argo-template.yml
-        parameters:
-          applicationsList: ${{ parameters.APPS_TOP }}
-          deploymentType: 'top'
-          environment: ${{ parameters.ENV }}
-          argocdServerUrl: $(argocdServer)
-          argocdUserName: $(argocdUsername)
-          argocdUserPassword: $(argocdPassword)
-          agentPoolName: $(agentPoolName)
-          applicationPrefix: $(area)
+      # Top Apps
+      - ${{ if and(ne(length(parameters.APPS_TOP), 0), ne(parameters.APPS_TOP, '[]')) }}:
+        - template: templates/deploy-argo-template.yml
+          parameters:
+            applicationsList: ${{ parameters.APPS_TOP }}
+            deploymentType: 'top'
+            environment: ${{ parameters.ENV }}
+            argocdServerUrl: $(argocdServer)
+            argocdUserName: $(argocdUsername)
+            argocdUserPassword: $(argocdPassword)
+            agentPoolName: $(agentPoolName)
+            applicationPrefix: $(area)
 
-      # mid Apps
-      - template: templates/deploy-argo-template.yml
-        parameters:
-          applicationsList: ${{ parameters.APPS_MID }}
-          deploymentType: 'mid'
-          environment: ${{ parameters.ENV }}
-          argocdServerUrl: $(argocdServer)
-          argocdUserName: $(argocdUsername)
-          argocdUserPassword: $(argocdPassword)
-          agentPoolName: $(agentPoolName)
-          applicationPrefix: $(area)
-          dependsOnJob: 'deploy_top'
+      # Mid Apps
+      - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
+        - template: templates/deploy-argo-template.yml
+          parameters:
+            applicationsList: ${{ parameters.APPS_MID }}
+            deploymentType: 'mid'
+            environment: ${{ parameters.ENV }}
+            argocdServerUrl: $(argocdServer)
+            argocdUserName: $(argocdUsername)
+            argocdUserPassword: $(argocdPassword)
+            agentPoolName: $(agentPoolName)
+            applicationPrefix: $(area)
+            dependsOnJob: 'deploy_top'
 
-      # ext Apps
-      - template: templates/deploy-argo-template.yml
-        parameters:
-          applicationsList: ${{ parameters.APPS_EXT }}
-          deploymentType: 'ext'
-          environment: ${{ parameters.ENV }}
-          argocdServerUrl: $(argocdServer)
-          argocdUserName: $(argocdUsername)
-          argocdUserPassword: $(argocdPassword)
-          agentPoolName: $(agentPoolName)
-          applicationPrefix: $(area)
-          dependsOnJob: 'deploy_mid'
+      # Ext Apps
+      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
+        - template: templates/deploy-argo-template.yml
+          parameters:
+            applicationsList: ${{ parameters.APPS_EXT }}
+            deploymentType: 'ext'
+            environment: ${{ parameters.ENV }}
+            argocdServerUrl: $(argocdServer)
+            argocdUserName: $(argocdUsername)
+            argocdUserPassword: $(argocdPassword)
+            agentPoolName: $(agentPoolName)
+            applicationPrefix: $(area)
+            dependsOnJob: 'deploy_mid'
 
-  # Stage separato per i test Postman
+  # Stage per i test Postman
   - stage: run_postman_tests
     condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
     dependsOn: sync_argo_apps
     jobs:
       # Top Apps Tests
-      - template: templates/postman-tests-template.yml
-        parameters:
-          appsList: ${{ parameters.APPS_TOP }}
-          jobSuffix: 'top'
-          env: ${{ parameters.ENV }}
-          agentPoolName: $(agentPoolName)
-          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+      - ${{ if and(ne(length(parameters.APPS_TOP), 0), ne(parameters.APPS_TOP, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_TOP }}
+            jobSuffix: 'top'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
       # Mid Apps Tests
-      - template: templates/postman-tests-template.yml
-        parameters:
-          appsList: ${{ parameters.APPS_MID }}
-          jobSuffix: 'mid'
-          env: ${{ parameters.ENV }}
-          agentPoolName: $(agentPoolName)
-          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+      - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_MID }}
+            jobSuffix: 'mid'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
 
       # Ext Apps Tests
-      - template: templates/postman-tests-template.yml
-        parameters:
-          appsList: ${{ parameters.APPS_EXT }}
-          jobSuffix: 'ext'
-          env: ${{ parameters.ENV }}
-          agentPoolName: $(agentPoolName)
-          postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_EXT }}
+            jobSuffix: 'ext'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
