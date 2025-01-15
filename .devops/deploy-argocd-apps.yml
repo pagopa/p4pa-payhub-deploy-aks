@@ -64,18 +64,21 @@ variables:
     value: 'helm/${{ parameters.ENV }}'
   - name: area
     value: p4pa-payhub
+  # Runtime variables for pipeline name
   - name: sourceBranch
     value: $[variables['Build.SourceBranch']]
   - name: buildReason
     value: $[variables['Build.Reason']]
-  - name: pipelineName
+  - name: fullPipelineName
     ${{ if eq(variables['Build.Reason'], 'Manual') }}:
-      value: 'Run from $(Build.SourceBranch) on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
+      value: '[Manual] Branch-$[replace(variables['Build.SourceBranchName'], '/', '-')] ENV-${{ parameters.ENV }} ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }} Postman-${{ parameters.POSTMAN_BRANCH }}'
     ${{ if ne(variables['Build.Reason'], 'Manual') }}:
       ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
-        value: 'Trigger: ${{ parameters.TRIGGER_MESSAGE }} on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
+        value: '[Trigger-${{ parameters.TRIGGER_MESSAGE }}] ENV-${{ parameters.ENV }} ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }} Postman-${{ parameters.POSTMAN_BRANCH }}'
       ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
-        value: 'Trigger: Default on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
+        value: '[Trigger-Default] ENV-${{ parameters.ENV }} ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }} Postman-${{ parameters.POSTMAN_BRANCH }}'
+  - name: pipelineName
+    value: $[substring(variables['fullPipelineName'], 0, min(length(variables['fullPipelineName']), 255))]
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
