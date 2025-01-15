@@ -46,9 +46,19 @@ parameters:
   displayName: Postman branch
   type: string
   default: 'develop'
+  
+- name: ARGOCD_TARGET_BRANCH
+  displayName: ArgoCD target branch
+  type: string
+  default: 'main'
+
+- name: TRIGGER_MESSAGE
+  displayName: Trigger Message
+  type: string
+  default: ''
 
 variables:
-  # Variabili statiche
+  # Static variables
   - name: directoryPattern
     value: 'helm/${{ parameters.ENV }}'
   - name: area
@@ -95,6 +105,8 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
+name: $[dependencies.pre_steps.outputs['debug_steps.pipelineName']]
+
 stages:
   # Debug Steps
   - stage: pre_steps
@@ -104,10 +116,29 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      - script: |
+      - bash: |
+          if [[ "$(Build.Reason)" == "Manual" ]]; then
+            # If manually triggered
+            echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Run from $(Build.SourceBranch) on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman: ${{ parameters.POSTMAN_BRANCH }}"
+          else
+            # If triggered by trigger
+            if [[ -n "${{ parameters.TRIGGER_MESSAGE }}" ]]; then
+              echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Trigger: ${{ parameters.TRIGGER_MESSAGE }} on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman: ${{ parameters.POSTMAN_BRANCH }}  "
+            else
+              echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Trigger: Default on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman: ${{ parameters.POSTMAN_BRANCH }}  "
+            fi
+          fi
+        name: setPipelineName
+        
+    - job: legacy_debug_info
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      - bash: |
           echo "build reason: ${{variables['Build.Reason']}}"
           echo "agentPoolName: ${{variables['agentPoolName']}}"
-          echo "agentPoolName: ${{variables['argocdServer']}}"
+          echo "argocdServer: ${{variables['argocdServer']}}"
+        displayName: 'Show Debug Information'
 
   #
   # ArgoCD
@@ -156,7 +187,7 @@ stages:
             applicationPrefix: $(area)
             dependsOnJob: 'deploy_mid'
 
-  # Stage per i test Postman
+  # Stage for Postman Tests
   - stage: run_postman_tests
     condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
     dependsOn: sync_argo_apps
