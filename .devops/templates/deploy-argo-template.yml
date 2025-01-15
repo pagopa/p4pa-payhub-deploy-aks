@@ -14,7 +14,6 @@ parameters:
   - name: targetBranch
     displayName: 'Target Branch'
     type: string
-    default: 'main'
     # The target branch to deploy (e.g., main, develop, feature/*)
 
   # 🌍 Target environment
