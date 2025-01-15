@@ -134,6 +134,9 @@ stages:
           echo "build reason: ${{variables['Build.Reason']}}"
           echo "agentPoolName: ${{variables['agentPoolName']}}"
           echo "argocdServer: ${{variables['argocdServer']}}"
+          echo "argocdTargetBranch: ${{parameters.ARGOCD_TARGET_BRANCH}}"
+          echo "postmanBranch: ${{parameters.POSTMAN_BRANCH}}"
+          echo "triggerMessage: ${{parameters.TRIGGER_MESSAGE}}"
         displayName: 'Show Debug Information'
 
   #
