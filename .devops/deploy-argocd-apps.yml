@@ -64,15 +64,18 @@ variables:
     value: 'helm/${{ parameters.ENV }}'
   - name: area
     value: p4pa-payhub
-
+  - name: sourceBranch
+    value: $[variables['Build.SourceBranch']]
+  - name: buildReason
+    value: $[variables['Build.Reason']]
   - name: pipelineName
     ${{ if eq(variables['Build.Reason'], 'Manual') }}:
-      value: 'Run from $(Build.SourceBranch) on ${{ parameters.ENV }}'
+      value: 'Run from $(Build.SourceBranch) on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
     ${{ if ne(variables['Build.Reason'], 'Manual') }}:
       ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
-        value: 'Trigger: ${{ parameters.TRIGGER_MESSAGE }} on ${{ parameters.ENV }}'
+        value: 'Trigger: ${{ parameters.TRIGGER_MESSAGE }} on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
       ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
-        value: 'Trigger: Default on ${{ parameters.ENV }}'
+        value: 'Trigger: Default on ${{ parameters.ENV }} with argocd: ${{ parameters.ARGOCD_TARGET_BRANCH }} & postman ${{ parameters.POSTMAN_BRANCH }}'
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
