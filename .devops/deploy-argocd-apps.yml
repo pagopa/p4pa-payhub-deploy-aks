@@ -65,6 +65,15 @@ variables:
   - name: area
     value: p4pa-payhub
 
+  - name: pipelineName
+    ${{ if eq(variables['Build.Reason'], 'Manual') }}:
+      value: 'Run from $(Build.SourceBranch) on ${{ parameters.ENV }}'
+    ${{ if ne(variables['Build.Reason'], 'Manual') }}:
+      ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
+        value: 'Trigger: ${{ parameters.TRIGGER_MESSAGE }} on ${{ parameters.ENV }}'
+      ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
+        value: 'Trigger: Default on ${{ parameters.ENV }}'
+
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
       value: $(DEV_ARGOCD_SERVER)
@@ -106,31 +115,13 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
-name: $[ stageDependencies.pre_steps.debug_steps.outputs['setPipelineName.pipelineName'] ]
+name: $(pipelineName)
 
 stages:
   # Debug Steps
   - stage: pre_steps
     condition: succeeded()
     jobs:
-    - job: debug_steps
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - bash: |
-          if [[ "$(Build.Reason)" == "Manual" ]]; then
-            # If manually triggered
-            echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Run from $(Build.SourceBranch) on ${{ parameters.ENV }}"
-          else
-            # If triggered by trigger
-            if [[ -n "${{ parameters.trigger_message }}" ]]; then
-              echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Trigger: ${{ parameters.trigger_message }} on ${{ parameters.ENV }}"
-            else
-              echo "##vso[task.setvariable variable=pipelineName;isoutput=true]Trigger: Default on ${{ parameters.ENV }}"
-            fi
-          fi
-        name: setPipelineName
-        
     - job: legacy_debug_info
       pool:
         vmImage: 'ubuntu-latest'
