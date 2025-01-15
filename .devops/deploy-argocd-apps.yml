@@ -46,13 +46,37 @@ parameters:
   displayName: Postman branch
   type: string
   default: 'develop'
+  
+- name: ARGOCD_TARGET_BRANCH
+  displayName: ArgoCD target branch
+  type: string
+  default: 'main'
+
+- name: TRIGGER_MESSAGE
+  displayName: Trigger Message
+  type: string
+  default: 'pagopa'
+
 
 variables:
-  # Variabili statiche
+  # Static variables
   - name: directoryPattern
     value: 'helm/${{ parameters.ENV }}'
   - name: area
     value: p4pa-payhub
+  - name: sourceBranch
+    value: $[variables['Build.SourceBranch']]
+  - name: buildReason
+    value: $[variables['Build.Reason']]
+  - name: pipelineName
+    ${{ if eq(variables['Build.Reason'], 'Manual') }}:
+      value: '[ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
+    ${{ if ne(variables['Build.Reason'], 'Manual') }}:
+      ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
+        value: '[Trigger-${{ parameters.TRIGGER_MESSAGE }}] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
+      ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
+        value: '[Trigger-Default] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
+
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
     - name: argocdServer
@@ -95,19 +119,22 @@ resources:
 pool:
   vmImage: ubuntu-latest
 
+name: $(pipelineName)
+
 stages:
   # Debug Steps
   - stage: pre_steps
     condition: succeeded()
     jobs:
-    - job: debug_steps
+    - job: legacy_debug_info
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      - script: |
+      - bash: |
           echo "build reason: ${{variables['Build.Reason']}}"
           echo "agentPoolName: ${{variables['agentPoolName']}}"
-          echo "agentPoolName: ${{variables['argocdServer']}}"
+          echo "argocdServer: ${{variables['argocdServer']}}"
+        displayName: 'Show Debug Information'
 
   #
   # ArgoCD
@@ -156,7 +183,7 @@ stages:
             applicationPrefix: $(area)
             dependsOnJob: 'deploy_mid'
 
-  # Stage per i test Postman
+  # Stage for Postman Tests
   - stage: run_postman_tests
     condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
     dependsOn: sync_argo_apps
