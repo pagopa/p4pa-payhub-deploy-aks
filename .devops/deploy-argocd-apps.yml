@@ -70,12 +70,10 @@ variables:
     value: $[variables['Build.Reason']]
   - name: pipelineName
     ${{ if eq(variables['Build.Reason'], 'Manual') }}:
-      value: '[ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
-    ${{ if ne(variables['Build.Reason'], 'Manual') }}:
       ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
-        value: '[Trigger-${{ parameters.TRIGGER_MESSAGE }}] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
+        value: '[ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
       ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
-        value: '[Trigger-Default] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
+        value: '[Trigger-${{ parameters.TRIGGER_MESSAGE }}] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
 
 
   - ${{ if eq(parameters.ENV, 'dev') }}:
