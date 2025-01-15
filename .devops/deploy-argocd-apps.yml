@@ -55,8 +55,7 @@ parameters:
 - name: TRIGGER_MESSAGE
   displayName: Trigger Message
   type: string
-  default: ''
-
+  default: 'none'
 
 variables:
   # Static variables
@@ -70,9 +69,9 @@ variables:
     value: $[variables['Build.Reason']]
   - name: pipelineName
     ${{ if eq(variables['Build.Reason'], 'Manual') }}:
-      ${{ if ne(parameters.TRIGGER_MESSAGE, '') }}:
+      ${{ if ne(parameters.TRIGGER_MESSAGE, 'none') }}:
         value: '[Trigger-${{ parameters.TRIGGER_MESSAGE }}] [ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
-      ${{ if eq(parameters.TRIGGER_MESSAGE, '') }}:
+      ${{ if eq(parameters.TRIGGER_MESSAGE, 'none') }}:
         value: '[ENV-${{ parameters.ENV }}] [ArgoCD-${{ parameters.ARGOCD_TARGET_BRANCH }}] [Postman-${{ parameters.POSTMAN_BRANCH }}]'
 
 
