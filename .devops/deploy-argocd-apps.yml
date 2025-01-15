@@ -55,7 +55,8 @@ parameters:
 - name: TRIGGER_MESSAGE
   displayName: Trigger Message
   type: string
-  default: ''
+  default: 'pagopa'
+
 
 variables:
   # Static variables
