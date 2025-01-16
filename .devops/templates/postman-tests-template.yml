@@ -1,74 +1,73 @@
-# Template for executing Postman tests on specific applications
 parameters:
-  # List of applications to test
+  # Lista delle applicazioni da testare
   - name: appsList
     displayName: 'Applications List'
     type: object
     default: []
-    # The list of applications to run Postman tests against
-    # Example: ['app1', 'app2', 'app3']
+    # La lista delle applicazioni su cui eseguire i test Postman
+    # Esempio: ['app1', 'app2', 'app3']
 
-  # Target environment
+  # Ambiente target
   - name: env
     displayName: 'Target Environment'
     type: string
-    # The environment to run tests in (dev, uat, prod)
+    # L'ambiente in cui eseguire i test (dev, uat, prod)
 
-  # Azure DevOps agent pool name
+  # Nome del pool di agenti Azure DevOps
   - name: agentPoolName
     displayName: 'Agent Pool Name'
     type: string
-    # The name of the Azure DevOps agent pool to use
+    # Il nome del pool di agenti Azure DevOps da utilizzare
 
-  # Job identifier suffix
+  # Suffisso identificativo del job
   - name: appCategory
     displayName: 'App Category Identifier'
     type: string
-    # Application type identifier
+    # Identificatore del tipo di applicazione
 
-  # Dependency job
+  # Job dipendente
   - name: dependsOn
     displayName: 'Dependent Job'
     type: string
     default: ''
-    # Name of the job this execution depends on
+    # Nome del job da cui dipende questa esecuzione
 
-  # Postman tests branch
+  # Branch dei test Postman
   - name: postmanBranch
     displayName: 'Postman Tests Branch'
     type: string
     default: 'develop'
-    # Branch containing the Postman tests
+    # Branch contenente i test Postman
 
-  # Max retry attempts for failed tests
+  # Numero massimo di tentativi per test falliti
   - name: maxRetryAttempts
     displayName: 'Max Retry Attempts'
     type: number
     default: 2
-    # Maximum number of retry attempts for failed tests
+    # Numero massimo di tentativi di retry per i test falliti
 
-  # Timeout for each collection
+  # Timeout per ogni collection
   - name: collectionTimeout
     displayName: 'Collection Timeout (seconds)'
     type: number
     default: 300
-    # Timeout in seconds for collection execution
+    # Timeout in secondi per l'esecuzione della collection
 
-  # Key Vault parameters
+  # Parametri Key Vault
   - name: keyVaultName
     displayName: 'Key Vault Name'
     type: string
-    # Name of the Azure Key Vault containing the environment file
+    # Nome del Key Vault Azure contenente il file di environment
 
   - name: secretName
     displayName: 'Secret Name'
     type: string
-    # Name of the secret containing the Postman environment file
+    # Nome del secret contenente il file di environment Postman
 
   - name: azureServiceConnection
     displayName: 'Azure Subscription'
     type: string
-    # The name of the Azure Service Connection to use for Key Vault access
+    # Nome della Azure Service Connection per l'accesso al Key Vault
 
 jobs:
 - job: postman_${{ parameters.appCategory }}
@@ -85,6 +84,7 @@ jobs:
     name: ${{ parameters.agentPoolName }}
   variables:
     testOutcome: 'Succeeded'
+
   steps:
     - checkout: self
       name: checkoutSourceCode
@@ -97,26 +97,26 @@ jobs:
         targetType: 'inline'
         script: |
           echo "🔍 Validating Postman configuration..."
+          
           # Extract configuration from values.yaml
           rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
           runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
-
+          
           echo "Configuration found:"
           echo "- Root config: $rootPostman"
           echo "- Run tests: $runPostmanTests"
-
+          
           # Validate if configuration exists and is not null
           function is_valid_config() {
               [ ! -z "$1" ] && [ "$1" != "null" ]
           }
-
-          # Check if tests should be executed based on configuration
+          
           if ! is_valid_config "$rootPostman" || ! is_valid_config "$runPostmanTests" || [ "$runPostmanTests" != "true" ]; then
               echo "##vso[task.logissue type=warning]⚠️ Skipping Postman tests - Configuration not valid or tests disabled"
               echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
               exit 0
           fi
-
+          
           echo "✅ Postman configuration validated successfully"
           echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
@@ -128,51 +128,48 @@ jobs:
         targetType: 'inline'
         script: |
           echo "🔧 Configuring test environment..."
-
-          # Extract test configuration from values.yaml
+          
+          # Extract test configuration
           repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
           dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
           collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
-
+          
           echo "📋 Test Configuration:"
           echo "- Repository: $repoName"
           echo "- Directory: $dir"
           echo "- Collection: $collectionName"
           echo "- Branch: ${{ parameters.postmanBranch }}"
-
-          # Validate individual configuration values
+          
+          # Validate configuration values
           function validate_variable() {
               [ ! -z "$1" ] && [ "$1" != "null" ]
           }
-
-          # Define required variables
+          
           declare -a required_vars=(
             "repoName:$repoName"
             "dir:$dir"
             "collectionName:$collectionName"
           )
-
-          # Check for missing required variables
+          
           missing_vars=()
           for var in "${required_vars[@]}"; do
             name="${var%%:*}"
             value="${var#*:}"
-
+            
             if validate_variable "$value"; then
               echo "##vso[task.setvariable variable=$name]$value"
             else
               missing_vars+=("$name")
             fi
           done
-
-          # Handle missing variables
+          
           if [ ${#missing_vars[@]} -gt 0 ]; then
             echo "❌ Missing required variables: ${missing_vars[*]}"
             echo "##vso[task.logissue type=warning]Configuration incomplete"
             echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]false"
             exit 0
           fi
-
+          
           echo "✅ Test environment configured successfully"
           echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
@@ -181,7 +178,7 @@ jobs:
       inputs:
         versionSpec: '18.x'
 
-    - task: Npm@1.238.1
+    - task: Npm@1
       displayName: 'Install Newman CLI'
       inputs:
         command: custom
@@ -198,7 +195,7 @@ jobs:
     - task: AzureKeyVault@2
       displayName: 'Fetch Key Vault Secrets'
       inputs:
-        ConnectedServiceName: '${{ parameters.azureServiceConnection }}'
+        azureSubscription: '${{ parameters.azureServiceConnection }}'
         KeyVaultName: '${{ parameters.keyVaultName }}'
         SecretsFilter: '${{ parameters.secretName }}'
         RunAsPreJob: false
@@ -211,11 +208,17 @@ jobs:
         script: |
           echo "🔐 Setting up Postman environment from Key Vault..."
           
+          # Validate secret availability
+          if [ -z "$(SECRET_${{ parameters.secretName }})" ]; then
+            echo "##vso[task.logissue type=error]Secret not found or empty"
+            exit 1
+          fi
+          
           # Create directory for environment file
           mkdir -p $(Pipeline.Workspace)/postman
           
-          # Save the secret content directly to a file
-          echo "$($(parameters.secretName))" > $(Pipeline.Workspace)/postman/environment.json
+          # Save secret content
+          echo "$(SECRET_${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
           
           # Validate JSON format
           if ! jq empty $(Pipeline.Workspace)/postman/environment.json 2>/dev/null; then
@@ -223,7 +226,6 @@ jobs:
             exit 1
           fi
           
-          # Set variable for the file path
           echo "##vso[task.setvariable variable=postmanEnvFile]$(Pipeline.Workspace)/postman/environment.json"
           
           echo "✅ Postman environment file created successfully"
@@ -243,15 +245,15 @@ jobs:
             echo "##vso[task.logissue type=error]$error_message"
             return 1
           }
-
+          
           # Function to execute tests with retry mechanism
           function execute_tests_with_retry() {
             local max_attempts=${{ parameters.maxRetryAttempts }}
             local attempt=1
-
+            
             while [ $attempt -le $max_attempts ]; do
               echo "🔄 Attempt $attempt of $max_attempts..."
-
+              
               # Run Newman with specified configuration
               if newman run $(collectionName) \
                  -e $(postmanEnvFile) \
@@ -260,47 +262,45 @@ jobs:
                  --timeout ${{ parameters.collectionTimeout }}000; then
                 return 0
               fi
-
-              # Handle retry logic
+              
               ((attempt++))
               [ $attempt -le $max_attempts ] && {
                 echo "⏳ Waiting before retry...";
                 sleep 10;
               }
             done
-
+            
             return 1
           }
-
+          
           set -e
           echo "🚀 Starting test execution for $(appName)..."
-
-          # Log test configuration
+          
           echo "📝 Test Configuration:"
           echo "- Repository: $(repoName)"
           echo "- Directory: $(dir)"
           echo "- Collection: $(collectionName)"
           echo "- Branch: ${{ parameters.postmanBranch }}"
-
+          
           # Clone test repository
           echo "📦 Cloning test repository..."
           if ! git clone -b ${{ parameters.postmanBranch }} https://github.com/pagopa/$(repoName).git; then
             handle_error "Failed to clone repository"
             exit 1
           fi
-
+          
           # Navigate to test directory
           cd $(repoName)/$(dir) || {
             handle_error "Failed to navigate to test directory"
             exit 1
           }
-
+          
           # Execute tests with retry mechanism
           if ! execute_tests_with_retry; then
             handle_error "Tests failed after ${{ parameters.maxRetryAttempts }} attempts"
             exit 1
           fi
-
+          
           echo "✅ Tests completed successfully"
 
     - task: PublishTestResults@2
