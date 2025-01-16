@@ -84,8 +84,8 @@ variables:
       value: $(DEV_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(DEV_AGENT_POOL)
-    - name: azureSubscriptionName
-      value: $(DEV_AZURE_SUBSCRIPTION_NAME)
+    - name: azureServiceConnectionName
+      value: $(DEV_AZURE_SERVICE_CONNECTION_NAME)
     - name: postman_kv_name
       value: $(DEV_POSTMAN_KV_NAME)
     - name: postman_env_secret_name
@@ -100,8 +100,8 @@ variables:
       value: $(UAT_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(UAT_AGENT_POOL)
-    - name: azureSubscriptionName
-      value: $(UAT_AZURE_SUBSCRIPTION_NAME)
+    - name: azureServiceConnectionName
+      value: $(UAT_AZURE_SERVICE_CONNECTION_NAME)
     - name: postman_kv_name
       value: $(UAT_POSTMAN_KV_NAME)
     - name: postman_env_secret_name
@@ -116,8 +116,8 @@ variables:
       value: $(PROD_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(PROD_AGENT_POOL)
-    - name: azureSubscriptionName
-      value: $(PROD_AZURE_SUBSCRIPTION_NAME)
+    - name: azureServiceConnectionName
+      value: $(PROD_AZURE_SERVICE_CONNECTION_NAME)
     - name: postman_kv_name
       value: $(PROD_POSTMAN_KV_NAME)
     - name: postman_env_secret_name
@@ -218,7 +218,7 @@ stages:
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-            azureSubscription: $(azureSubscriptionName)
+            azureServiceConnection: $(azureServiceConnectionName)
             keyVaultName: $(postman_kv_name)
             secretName: $(postman_env_secret_name)
 
@@ -231,7 +231,7 @@ stages:
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-            azureSubscription: $(azureSubscriptionName)
+            azureServiceConnection: $(azureServiceConnectionName)
             keyVaultName: $(postman_kv_name)
             secretName: $(postman_env_secret_name)
 
@@ -244,6 +244,6 @@ stages:
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-            azureSubscription: $(azureSubscriptionName)
+            azureServiceConnection: $(azureServiceConnectionName)
             keyVaultName: $(postman_kv_name)
             secretName: $(postman_env_secret_name)

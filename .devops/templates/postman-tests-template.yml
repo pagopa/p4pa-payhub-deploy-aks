@@ -198,7 +198,7 @@ jobs:
     - task: AzureKeyVault@2
       displayName: 'Fetch Key Vault Secrets'
       inputs:
-        azureSubscription: '${{ parameters.azureSubscription }}'
+        ConnectedServiceName: '${{ parameters.azureSubscription }}'
         KeyVaultName: '${{ parameters.keyVaultName }}'
         SecretsFilter: '${{ parameters.secretName }}'
         RunAsPreJob: false
