@@ -196,7 +196,7 @@ stages:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_TOP }}
-            jobSuffix: 'top'
+            appCategory: 'top'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
@@ -206,7 +206,7 @@ stages:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_MID }}
-            jobSuffix: 'mid'
+            appCategory: 'mid'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
@@ -216,7 +216,7 @@ stages:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_EXT }}
-            jobSuffix: 'ext'
+            appCategory: 'ext'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
