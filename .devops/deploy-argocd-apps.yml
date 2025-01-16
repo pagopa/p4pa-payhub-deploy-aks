@@ -46,7 +46,7 @@ parameters:
   displayName: Postman branch
   type: string
   default: 'develop'
-  
+
 - name: ARGOCD_TARGET_BRANCH
   displayName: ArgoCD target branch
   type: string
@@ -84,6 +84,12 @@ variables:
       value: $(DEV_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(DEV_AGENT_POOL)
+    - name: azureServiceConnectionName
+      value: $(DEV_AZURE_SERVICE_CONNECTION_NAME)
+    - name: postman_kv_name
+      value: $(DEV_POSTMAN_KV_NAME)
+    - name: postman_env_secret_name
+      value: $(DEV_POSTMAN_ENV_SECRET_NAME)
 
   - ${{ if eq(parameters.ENV, 'uat') }}:
     - name: argocdServer
@@ -94,6 +100,12 @@ variables:
       value: $(UAT_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(UAT_AGENT_POOL)
+    - name: azureServiceConnectionName
+      value: $(UAT_AZURE_SERVICE_CONNECTION_NAME)
+    - name: postman_kv_name
+      value: $(UAT_POSTMAN_KV_NAME)
+    - name: postman_env_secret_name
+      value: $(UAT_POSTMAN_ENV_SECRET_NAME)
 
   - ${{ if eq(parameters.ENV, 'prod') }}:
     - name: argocdServer
@@ -104,6 +116,12 @@ variables:
       value: $(PROD_ARGOCD_PASSWORD)
     - name: agentPoolName
       value: $(PROD_AGENT_POOL)
+    - name: azureServiceConnectionName
+      value: $(PROD_AZURE_SERVICE_CONNECTION_NAME)
+    - name: postman_kv_name
+      value: $(PROD_POSTMAN_KV_NAME)
+    - name: postman_env_secret_name
+      value: $(PROD_POSTMAN_ENV_SECRET_NAME)
 
 resources:
   repositories:
@@ -196,27 +214,36 @@ stages:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_TOP }}
-            jobSuffix: 'top'
+            appCategory: 'top'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
 
       # Mid Apps Tests
       - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_MID }}
-            jobSuffix: 'mid'
+            appCategory: 'mid'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
 
       # Ext Apps Tests
       - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
         - template: templates/postman-tests-template.yml
           parameters:
             appsList: ${{ parameters.APPS_EXT }}
-            jobSuffix: 'ext'
+            appCategory: 'ext'
             env: ${{ parameters.ENV }}
             agentPoolName: $(agentPoolName)
             postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
