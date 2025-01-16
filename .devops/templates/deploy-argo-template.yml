@@ -130,7 +130,7 @@ jobs:
       function update_app_branch() {
           local app_name=$1
           local target_branch=$2
-          
+
           echo "🔄 Updating application target branch to: $target_branch"
           if ! argocd app set "$app_name" --revision "$target_branch"; then
               handle_error "Failed to update target branch for $app_name"
