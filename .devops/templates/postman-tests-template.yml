@@ -193,7 +193,7 @@ jobs:
           }
           
           # Validate secret availability
-          if [ -z "$(to_uppercase ${{ parameters.secretName }})" ]; then
+          if [ -z "$($(parameters.secretName))" ]; then
             echo "##vso[task.logissue type=error]Secret not found or empty"
             exit 1
           fi
@@ -202,7 +202,7 @@ jobs:
           mkdir -p $(Pipeline.Workspace)/postman
           
           # Save secret content
-          echo "$(to_uppercase ${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
+          echo "$($(parameters.secretName))" > $(Pipeline.Workspace)/postman/environment.json
           
           cat $(Pipeline.Workspace)/postman/environment.json
           
