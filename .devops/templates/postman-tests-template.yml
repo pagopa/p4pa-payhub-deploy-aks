@@ -188,23 +188,15 @@ jobs:
         targetType: 'inline'
         script: |
           echo "🔐 Setting up Postman environment from Key Vault..."
-          function to_uppercase() {
-              echo "$1" | tr '[:lower:]' '[:upper:]'
-          }
           
-          # Validate secret availability
-          if [ -z "$($(parameters.secretName))" ]; then
-            echo "##vso[task.logissue type=error]Secret not found or empty"
-            exit 1
-          fi
+          # Get secret name from parameters
+          SECRET_NAME="${{ parameters.secretName }}"
           
           # Create directory for environment file
           mkdir -p $(Pipeline.Workspace)/postman
           
           # Save secret content
-          echo "$($(parameters.secretName))" > $(Pipeline.Workspace)/postman/environment.json
-          
-          cat $(Pipeline.Workspace)/postman/environment.json
+          echo "$($SECRET_NAME)" > $(Pipeline.Workspace)/postman/environment.json
           
           # Validate JSON format
           if ! jq empty $(Pipeline.Workspace)/postman/environment.json 2>/dev/null; then
@@ -212,6 +204,7 @@ jobs:
             exit 1
           fi
           
+          # Set environment file path
           echo "##vso[task.setvariable variable=postmanEnvFile]$(Pipeline.Workspace)/postman/environment.json"
           
           echo "✅ Postman environment file created successfully"
