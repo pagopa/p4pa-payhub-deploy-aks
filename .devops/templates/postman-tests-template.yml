@@ -21,8 +21,8 @@ parameters:
     # The name of the Azure DevOps agent pool to use
 
   # Job identifier suffix
-  - name: jobSuffix
-    displayName: 'Job Type Identifier'
+  - name: appCategory
+    displayName: 'App Category Identifier'
     type: string
     # Application type identifier
 
@@ -55,8 +55,8 @@ parameters:
     # Timeout in seconds for collection execution
 
 jobs:
-- job: postman_${{ parameters.jobSuffix }}
-  displayName: '🛃 ${{ parameters.jobSuffix }}'
+- job: postman_${{ parameters.appCategory }}
+  displayName: '🛃 ${{ parameters.appCategory }}'
   timeoutInMinutes: 60
   dependsOn: ${{ parameters.dependsOn }}
   condition: succeeded()
@@ -82,8 +82,8 @@ jobs:
         script: |
           echo "🔍 Validating Postman configuration..."
           # Extract configuration from values.yaml
-          rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
-          runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
+          rootPostman=$(yq '.postman-test' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
+          runPostmanTests=$(yq '.postman-test.run' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
 
           echo "Configuration found:"
           echo "- Root config: $rootPostman"
@@ -114,9 +114,9 @@ jobs:
           echo "🔧 Configuring test environment..."
 
           # Extract test configuration from values.yaml
-          repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
-          dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
-          collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/$(appName)/values.yaml)
+          repoName=$(yq '.postman-test.repoName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
+          dir=$(yq '.postman-test.dir' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
+          collectionName=$(yq '.postman-test.collectionName' $(Build.Repository.LocalPath)/helm/${{parameters.env}}/${{parameters.appCategory}}/$(appName)/values.yaml)
 
           echo "📋 Test Configuration:"
           echo "- Repository: $repoName"
@@ -163,7 +163,7 @@ jobs:
     - task: NodeTool@0
       displayName: 'Install Node.js'
       inputs:
-        versionSpec: '16.x'
+        versionSpec: '18.x'
 
     - task: Npm@1.238.1
       displayName: 'Install Newman CLI'
@@ -258,7 +258,7 @@ jobs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/test-*.xml'
         searchFolder: '$(System.DefaultWorkingDirectory)/$(repoName)/$(dir)/result/'
-        testRunTitle: 'Postman Tests - ${{ parameters.jobSuffix }} - $(appName)'
+        testRunTitle: 'Postman Tests - ${{ parameters.appCategory }} - $(appName)'
 
     - bash: |
         # Check test outcome and finalize execution
