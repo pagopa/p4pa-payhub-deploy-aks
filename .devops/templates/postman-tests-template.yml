@@ -173,25 +173,6 @@ jobs:
           echo "✅ Test environment configured successfully"
           echo "##vso[task.setvariable variable=runPostmanTest;isOutput=true]true"
 
-    - task: NodeTool@0
-      displayName: 'Install Node.js'
-      inputs:
-        versionSpec: '18.x'
-
-    - task: Npm@1
-      displayName: 'Install Newman CLI'
-      inputs:
-        command: custom
-        customCommand: install -g newman
-
-    - task: Bash@3
-      displayName: 'Install jq'
-      inputs:
-        targetType: 'inline'
-        script: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
     - task: AzureKeyVault@2
       displayName: 'Fetch Key Vault Secrets'
       inputs:
@@ -207,9 +188,12 @@ jobs:
         targetType: 'inline'
         script: |
           echo "🔐 Setting up Postman environment from Key Vault..."
+          function to_uppercase() {
+              echo "$1" | tr '[:lower:]' '[:upper:]'
+          }
           
           # Validate secret availability
-          if [ -z "$(${{ parameters.secretName }})" ]; then
+          if [ -z "$(to_uppercase ${{ parameters.secretName }})" ]; then
             echo "##vso[task.logissue type=error]Secret not found or empty"
             exit 1
           fi
@@ -218,7 +202,7 @@ jobs:
           mkdir -p $(Pipeline.Workspace)/postman
           
           # Save secret content
-          echo "$(${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
+          echo "$(to_uppercase ${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
           
           # Validate JSON format
           if ! jq empty $(Pipeline.Workspace)/postman/environment.json 2>/dev/null; then
