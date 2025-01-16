@@ -209,7 +209,7 @@ jobs:
           echo "🔐 Setting up Postman environment from Key Vault..."
           
           # Validate secret availability
-          if [ -z "$(SECRET_${{ parameters.secretName }})" ]; then
+          if [ -z "$(${{ parameters.secretName }})" ]; then
             echo "##vso[task.logissue type=error]Secret not found or empty"
             exit 1
           fi
@@ -218,7 +218,7 @@ jobs:
           mkdir -p $(Pipeline.Workspace)/postman
           
           # Save secret content
-          echo "$(SECRET_${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
+          echo "$(${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
           
           # Validate JSON format
           if ! jq empty $(Pipeline.Workspace)/postman/environment.json 2>/dev/null; then
