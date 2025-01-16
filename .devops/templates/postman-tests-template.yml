@@ -204,6 +204,8 @@ jobs:
           # Save secret content
           echo "$(to_uppercase ${{ parameters.secretName }})" > $(Pipeline.Workspace)/postman/environment.json
           
+          cat $(Pipeline.Workspace)/postman/environment.json
+          
           # Validate JSON format
           if ! jq empty $(Pipeline.Workspace)/postman/environment.json 2>/dev/null; then
             echo "##vso[task.logissue type=error]Invalid JSON format in environment file"
