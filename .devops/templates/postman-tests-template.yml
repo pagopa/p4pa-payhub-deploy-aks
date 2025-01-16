@@ -206,6 +206,12 @@ jobs:
           echo "##vso[task.setvariable variable=postmanEnvFile]$(Pipeline.Workspace)/postman/environment.json"
           echo "✅ Secret fetched and validated successfully"
 
+    - task: Npm@1
+      displayName: 'Install Newman CLI'
+      inputs:
+        command: custom
+        customCommand: install -g newman
+
     - task: Bash@3
       name: executePostmanTests
       displayName: 'Execute Postman Tests'
