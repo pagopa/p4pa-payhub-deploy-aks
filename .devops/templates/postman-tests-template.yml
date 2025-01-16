@@ -65,7 +65,7 @@ parameters:
     type: string
     # Name of the secret containing the Postman environment file
 
-  - name: azureSubscription
+  - name: azureServiceConnection
     displayName: 'Azure Subscription'
     type: string
     # The name of the Azure Service Connection to use for Key Vault access
@@ -198,7 +198,7 @@ jobs:
     - task: AzureKeyVault@2
       displayName: 'Fetch Key Vault Secrets'
       inputs:
-        ConnectedServiceName: '${{ parameters.azureSubscription }}'
+        ConnectedServiceName: '${{ parameters.azureServiceConnection }}'
         KeyVaultName: '${{ parameters.keyVaultName }}'
         SecretsFilter: '${{ parameters.secretName }}'
         RunAsPreJob: false
