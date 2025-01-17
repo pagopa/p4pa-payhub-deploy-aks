@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../../../scripts/deploy.sh values.yaml payhub p4pa-d-itn-dev-aks p4pa-auth
+../../../scripts/deploy.sh values.yaml payhub p4pa-p-itn-prod-aks p4pa-auth
