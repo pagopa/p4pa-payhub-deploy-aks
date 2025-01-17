@@ -1,5 +1,23 @@
 microservice-chart:
   namespace: "payhub"
+  nameOverride: ""
+  fullnameOverride: ""
+
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 120
+    failureThreshold: 15
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 120
+    failureThreshold: 15
+    periodSeconds: 10
 
   deployment:
     create: true
@@ -7,48 +25,16 @@ microservice-chart:
   service:
     create: true
     type: ClusterIP
-    ports:
-      - 8080
+    port: 8080
 
-  externalConfigMapFiles:
+  ingress:
     create: true
-    configMaps:
-      - name: appinsights-config
-        key: applicationinsights.json
+    path: /p4paauth/(.*)
 
-  envConfig:
-    ENV: "DEV"
-    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
-
-  envSecret:
-    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
-
-  keyvault:
-    name: "p4pa-d-payhub-kv"
-    tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
-  # nodeSelector: {}
-
-  # tolerations: []
-
-#    affinity:
-#      nodeAffinity:
-#        requiredDuringSchedulingIgnoredDuringExecution:
-#          nodeSelectorTerms:
-#          - matchExpressions:
-#            - key: kubernetes.azure.com/mode
-#              operator: In
-#              values:
-#              - user
-#      podAntiAffinity:
-#        preferredDuringSchedulingIgnoredDuringExecution:
-#        - weight: 100
-#          podAffinityTerm:
-#            labelSelector:
-#              matchLabels:
-#                aadpodidbinding: payhub-pod-identity
-#            namespaces: ["payhub"]
-#            topologyKey: topology.kubernetes.io/ztwo
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
 
   podAnnotations: {}
 
@@ -61,3 +47,53 @@ microservice-chart:
     runAsNonRoot: true
     runAsUser: 65534
     runAsGroup: 65534
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
+
+  envConfig:
+    APPLICATIONINSIGHTS_ROLE_NAME: "p4paauth"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
+    APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
+
+    ENABLE_AUDIT_APPENDER: "TRUE"
+
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
+
+    JWT_TOKEN_EXPIRATION_SECONDS: "14400" # 4 HOURS
+    ACCESS_ORGANIZATION_MODE_ENABLED: "true"
+
+    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
+
+  envSecret:
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+
+    JWT_TOKEN_PRIVATE_KEY: jwt-private-key
+    JWT_TOKEN_PUBLIC_KEY: jwt-public-key
+
+    REDIS_HOST: cache-standalone-host
+    REDIS_PASSWORD: cache-password
+    MONGODB_URI: mongodb-connection-string
+
+    MYPAY_DB_HOST: db-host
+    MYPAY_DB_USER: db-mypay-login-username
+    MYPAY_DB_PASSWORD: db-mypay-login-password
+
+    MYPIVOT_DB_HOST: db-host
+    MYPIVOT_DB_USER: db-mypay-login-username
+    MYPIVOT_DB_PASSWORD: db-mypay-login-password
+
+    DATA_CIPHER_P4PA_AUTH_HASH_KEY: p4pa-auth-hash-key
+    DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW: p4pa-auth-encrypt-psw
+
+    PIATTAFORMA_UNITARIA_CLIENT_SECRET: piattaforma-unitaria-client-secret
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  # affinity: {}
