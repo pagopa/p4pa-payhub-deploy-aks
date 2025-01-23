@@ -31,6 +31,7 @@ parameters:
   type: object
   default:
     - p4pa-auth
+    - p4pa-organization
     - p4pa-pagopa-payments
 
 - name: APPS_MID
