@@ -33,6 +33,7 @@ parameters:
     - p4pa-auth
     - p4pa-organization
     - p4pa-pagopa-payments
+    - p4pa-workflow-hub
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
