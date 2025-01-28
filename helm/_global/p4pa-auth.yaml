@@ -80,14 +80,6 @@ microservice-chart:
     REDIS_PASSWORD: cache-password
     MONGODB_URI: mongodb-connection-string
 
-    MYPAY_DB_HOST: db-host
-    MYPAY_DB_USER: db-mypay-login-username
-    MYPAY_DB_PASSWORD: db-mypay-login-password
-
-    MYPIVOT_DB_HOST: db-host
-    MYPIVOT_DB_USER: db-mypay-login-username
-    MYPIVOT_DB_PASSWORD: db-mypay-login-password
-
     DATA_CIPHER_P4PA_AUTH_HASH_KEY: p4pa-auth-hash-key
     DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW: p4pa-auth-encrypt-psw
 
