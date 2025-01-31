@@ -1,0 +1,62 @@
+microservice-chart:
+  image:
+    repository: ghcr.io/pagopa/p4pa-io-notification
+    tag: v1.0.0
+    pullPolicy: Always
+
+  ingress:
+    host: "hub.internal.p4pa.pagopa.it"
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1536Mi"
+      cpu: "1500m"
+
+  autoscaling:
+    enable: false
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
+
+  envConfig:
+    ENV: "PROD"
+    JAVA_OPTS: >-
+      -XX:InitialRAMPercentage=75.0
+      -XX:MaxRAMPercentage=85.0
+      -XX:+UseG1GC
+      -XX:MaxGCPauseMillis=100
+      -XX:+UseContainerSupport
+      -XX:ActiveProcessorCount=$(nproc)
+      -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
+      -javaagent:/app/applicationinsights-agent.jar
+      -Dapplicationinsights.configuration.file=/mnt/secrets/appinsights.json
+      -Dcom.sun.management.jmxremote.local.only=true
+      -Dcom.sun.management.jmxremote.port=3002
+      -Dcom.sun.management.jmxremote.authenticate=true
+      -Dcom.sun.management.jmxremote.ssl=true
+      -Dcom.sun.management.jmxremote.access.file=/etc/jmx/jmx.access
+      -Dcom.sun.management.jmxremote.password.file=/etc/jmx/jmx.password
+      -XX:+ExitOnOutOfMemoryError
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=/var/log/heapdump-${POD_NAME}.hprof
+      -Xlog:gc*,safepoint:file=/var/log/gc-${POD_NAME}.log:time,uptime,level,tags:filesize=100M,filecount=5
+      -XX:+PerfDisableSharedMem
+      -XX:+AlwaysPreTouch
+      -XX:+UseTransparentHugePages
+      -XX:NativeMemoryTracking=detail
+      -Djdk.nio.maxCachedBufferSize=262144
+      -Djava.security.egd=file:/dev/./urandom
+      -Dspring.profiles.active=prod
+
+postman-test:
+  run: true
+  repoName: p4pa-io-notification
+  dir: postman
+  collectionName: "p4pa-io-notification-E2E.postman_collection.json"
+  envVariablesFile: "p4pa_PROD.postman_environment.json" #inside azdo secure files
