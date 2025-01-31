@@ -1,0 +1,10 @@
+apiVersion: v2
+name: p4pa-debt-positions
+description: P4PA DEBT POSITIONS
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+dependencies:
+  - name: microservice-chart
+    version: 7.3.1
+    repository: "https://pagopa.github.io/aks-microservice-chart-blueprint"
