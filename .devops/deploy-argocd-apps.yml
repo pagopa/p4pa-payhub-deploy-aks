@@ -39,7 +39,8 @@ parameters:
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
   type: object
-  default: []
+  default:
+    - p4pa-workflow-worker
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
