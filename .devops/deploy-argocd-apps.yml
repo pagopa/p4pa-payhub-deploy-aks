@@ -46,7 +46,8 @@ parameters:
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
   type: object
-  default: []
+  default:
+    - p4pa-io-notification
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
