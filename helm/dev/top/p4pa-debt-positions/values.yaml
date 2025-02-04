@@ -49,8 +49,8 @@ microservice-chart:
       -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
-    ORGANIZATION_BASE_URL: "https://api.dev.p4pa.pagopa.it/p4paorganization"
-    WORKFLOW_HUB_BASE_URL: "https://api.dev.p4pa.pagopa.it/p4paworkflowhub"
+    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
+    WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
