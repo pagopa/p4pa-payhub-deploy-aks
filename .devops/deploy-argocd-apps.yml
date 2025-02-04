@@ -42,6 +42,7 @@ parameters:
   type: object
   default:
     - p4pa-workflow-worker
+    - p4pa-fileshare
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
