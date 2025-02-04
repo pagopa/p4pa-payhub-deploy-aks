@@ -29,7 +29,7 @@ microservice-chart:
 
   ingress:
     create: true
-    path: /p4padebtpositions/(.*)
+    path: /p4pafileshare/(.*)
 
   serviceAccount:
     create: false
@@ -48,40 +48,39 @@ microservice-chart:
     runAsUser: 65534
     runAsGroup: 65534
 
+  persistentVolumeClaimsMounts:
+    create: true
+    mounts:
+      - name: share
+        pvcName: mypay-fileshare-pvc
+        mountPath: "/shared"
+
+  tmpVolumeMount:
+    create: true
+    mounts:
+      - name: tmp
+        mountPath: /tmp
+
   externalConfigMapFiles:
     create: true
     configMaps:
       - name: appinsights-config
         key: applicationinsights.json
 
-  externalConfigMapValues:
-    eventhub-config:
-      KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
-      KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
-      KAFKA_TOPIC_PAYMENTS: p4pa-payhub-payments-topic
-
   envConfig:
-    APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-debt-positions"
+    APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-fileshare"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
 
+    SHARED_FOLDER_ROOT: "/shared"
+
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
+    AUTH_SERVER_BASE_URL: "http://p4pa-auth-microservice-chart:8080/payhub"
+    PROCESS_EXECUTIONS_BASE_URL: "http://p4pa-process-executions-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
-    JWT_TOKEN_PUBLIC_KEY: jwt-public-key
-    DEBT_POSITIONS_DB_HOST: db-host
-    DEBT_POSITIONS_DB_USER: db-piattaforma-unitaria-login-username
-    DEBT_POSITIONS_DB_PASSWORD: db-piattaforma-unitaria-login-password
+    FILE_ENCRYPT_PASSWORD: file-encrypt-password
 
-    CITIZENDB_HOST: db-host
-    CITIZENDB_USER: db-mypay-login-username
-    CITIZENDB_PASSWORD: db-mypay-login-password
-
-    DATA_CIPHER_ENCRYPT_PASSWORD: data-cipher-encrypt-password
-    DATA_CIPHER_HASH_PEPPER: data-cipher-hash-pepper
-
-    KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
-    KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-producer-jaas-config
