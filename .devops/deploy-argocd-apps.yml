@@ -50,6 +50,7 @@ parameters:
   type: object
   default:
     - p4pa-io-notification
+    - p4pa-send-notification
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
