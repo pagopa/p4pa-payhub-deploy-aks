@@ -33,17 +33,25 @@ parameters:
     - p4pa-auth
     - p4pa-organization
     - p4pa-pagopa-payments
+    - p4pa-pu-bff
     - p4pa-workflow-hub
+    - p4pa-debt-positions
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
   type: object
-  default: []
+  default:
+    - p4pa-workflow-worker
+    - p4pa-fileshare
+    - p4pa-classification
+    - p4pa-pdnd-services
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
   type: object
-  default: []
+  default:
+    - p4pa-io-notification
+    - p4pa-send-notification
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
