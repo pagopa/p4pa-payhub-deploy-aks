@@ -45,6 +45,7 @@ parameters:
     - p4pa-fileshare
     - p4pa-classification
     - p4pa-pdnd-services
+    - p4pa-process-executions
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps
