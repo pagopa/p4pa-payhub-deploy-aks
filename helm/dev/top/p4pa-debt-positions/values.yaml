@@ -51,6 +51,7 @@ microservice-chart:
 
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
     WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
+    LOG_LEVEL_PAGOPA: "DEBUG"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
