@@ -36,6 +36,7 @@ parameters:
     - p4pa-pu-bff
     - p4pa-workflow-hub
     - p4pa-debt-positions
+    - p4pa-pu-sil
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps
