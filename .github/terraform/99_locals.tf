@@ -2,8 +2,9 @@ locals {
   # Repo
   github = {
     org        = "pagopa"
-    repository = "payhub-deploy-aks"
+    repository = "p4pa-payhub-deploy-aks"
   }
+  domain = "payhub"
 
   repo_secrets = var.env_short == "p" ? {
   } : {}
@@ -14,7 +15,7 @@ locals {
     "prod" : "main"
   }
 
-  bypass_branch_rules_teams = ["payhub-admins", "payments-cloud-admin"]
+  bypass_branch_rules_teams = ["p4pa-admins", "payments-cloud-admin"]
 
   # this is use to lookup the id for each team
   team_name_to_id = {
@@ -28,7 +29,7 @@ locals {
       bypass_actors                   = true
       required_linear_history         = true
       require_code_owner_review       = true
-      required_approving_review_count = 0
+      required_approving_review_count = 1
     },
   }
 }
