@@ -1,34 +1,31 @@
 microservice-chart:
   image:
-    repository: ghcr.io/pagopa/p4pa-debt-positions
-    tag: develop-latest
+    repository: ghcr.io/pagopa/p4pa-pu-sil
+    tag: uat-latest
     pullPolicy: Always
 
   ingress:
-    host: "hub.internal.dev.p4pa.pagopa.it"
+    host: "hub.internal.uat.p4pa.pagopa.it"
 
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "350m"
+      memory: "256Mi"
+      cpu: "100m"
     limits:
-      memory: "1024Mi"
-      cpu: "750m"
+      memory: "4Gi"
+      cpu: "300m"
 
   autoscaling:
     enable: false
-  #    minReplica: 1
-  #    maxReplica: 1
-  #    pollingInterval: 30 # seconds
-  #    cooldownPeriod: 300 # seconds
-  #    triggers:
-  #      - type: cpu
-  #        metadata:
-  #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-  #          value: "70"
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
 
   envConfig:
-    ENV: "DEV"
+    ENV: "UAT"
     JAVA_OPTS: >-
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
@@ -49,15 +46,6 @@ microservice-chart:
       -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
-    LOG_LEVEL_PAGOPA: "DEBUG"
-
   keyvault:
-    name: "p4pa-d-payhub-kv"
+    name: "p4pa-u-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
-postman-test:
-  run: true
-  repoName: p4pa-debt-positions
-  dir: postman
-  collectionName: "p4pa-debt-positions-E2E.postman_collection.json"
-  envVariablesFile: "p4pa_DEV.postman_environment.json" #inside azdo secure files
