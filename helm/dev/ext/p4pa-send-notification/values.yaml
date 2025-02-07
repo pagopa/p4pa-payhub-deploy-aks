@@ -26,6 +26,7 @@ microservice-chart:
 
   envConfig:
     ENV: "DEV"
+    SEND_BASE_URL: "https://api.uat.notifichedigitali.it"
 
     JAVA_OPTS: >-
       -XX:InitialRAMPercentage=60.0

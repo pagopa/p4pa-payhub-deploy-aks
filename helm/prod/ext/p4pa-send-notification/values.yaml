@@ -26,6 +26,8 @@ microservice-chart:
 
   envConfig:
     ENV: "PROD"
+    SEND_BASE_URL: "https://api.notifichedigitali.it"
+
     JAVA_OPTS: >-
       -XX:InitialRAMPercentage=75.0
       -XX:MaxRAMPercentage=85.0
