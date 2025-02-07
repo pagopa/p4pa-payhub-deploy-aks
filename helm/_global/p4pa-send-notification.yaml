@@ -66,6 +66,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
     MONGODB_URI: mongodb-connection-string
+    PU_SEND_API_KEY: piattaforma-unitaria-send-api-key
 
   # nodeSelector: {}
 
