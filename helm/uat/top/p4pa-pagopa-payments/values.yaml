@@ -31,7 +31,7 @@ microservice-chart:
     PAGOPA_PAYMENTS_WSDL_BASE_URL: "https://hub.internal.uat.p4pa.pagopa.it/p4papagopapayments"
     PAGOPA_NODE_ACA_BASE_URL: "https://api.uat.platform.pagopa.it"
     APP_NODE_FOR_PA_URL: "https://api.uat.platform.pagopa.it/nodo-auth/node-for-pa/v1"
-    PAGOPA_PLATFORM_BASE_URL: "https://api.platform.pagopa.it/taxonomy/service/v1/taxonomy"
+    PAGOPA_TAXONOMIES_BASE_URL: "https://api.platform.pagopa.it/taxonomy/service/v1/taxonomy"
   # nodeSelector: {}
 
   # tolerations: []
