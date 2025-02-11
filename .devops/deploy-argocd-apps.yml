@@ -27,7 +27,7 @@ parameters:
     - prod
 
 - name: APPS_TOP
-  displayName: Top ArgoCD Apps
+  displayName: Top ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-auth
@@ -39,7 +39,7 @@ parameters:
     - p4pa-pu-sil
 
 - name: APPS_MID
-  displayName: Mid ArgoCD Apps
+  displayName: Mid ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-workflow-worker
@@ -49,7 +49,7 @@ parameters:
     - p4pa-process-executions
 
 - name: APPS_EXT
-  displayName: Extra ArgoCD Apps
+  displayName: Extra ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-io-notification
@@ -204,62 +204,62 @@ stages:
             applicationPrefix: $(area)
             dependsOnJob: 'deploy_top'
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
-#
-#      # Ext Apps
-#      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
-#        - template: templates/deploy-argo-template.yml
-#          parameters:
-#            applicationsList: ${{ parameters.APPS_EXT }}
-#            deploymentType: 'ext'
-#            environment: ${{ parameters.ENV }}
-#            argocdServerUrl: $(argocdServer)
-#            argocdUserName: $(argocdUsername)
-#            argocdUserPassword: $(argocdPassword)
-#            agentPoolName: $(agentPoolName)
-#            applicationPrefix: $(area)
-#            dependsOnJob: 'deploy_mid'
-#            targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
-#
-#  # Stage for Postman Tests
-#  - stage: run_postman_tests
-#    condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
-#    dependsOn: sync_argo_apps
-#    jobs:
-#      # Top Apps Tests
-#      - ${{ if and(ne(length(parameters.APPS_TOP), 0), ne(parameters.APPS_TOP, '[]')) }}:
-#        - template: templates/postman-tests-template.yml
-#          parameters:
-#            appsList: ${{ parameters.APPS_TOP }}
-#            appCategory: 'top'
-#            env: ${{ parameters.ENV }}
-#            agentPoolName: $(agentPoolName)
-#            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-#            azureServiceConnection: $(azureServiceConnectionName)
-#            keyVaultName: $(postman_kv_name)
-#            secretName: $(postman_env_secret_name)
-#
-#      # Mid Apps Tests
-#      - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
-#        - template: templates/postman-tests-template.yml
-#          parameters:
-#            appsList: ${{ parameters.APPS_MID }}
-#            appCategory: 'mid'
-#            env: ${{ parameters.ENV }}
-#            agentPoolName: $(agentPoolName)
-#            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-#            azureServiceConnection: $(azureServiceConnectionName)
-#            keyVaultName: $(postman_kv_name)
-#            secretName: $(postman_env_secret_name)
-#
-#      # Ext Apps Tests
-#      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
-#        - template: templates/postman-tests-template.yml
-#          parameters:
-#            appsList: ${{ parameters.APPS_EXT }}
-#            appCategory: 'ext'
-#            env: ${{ parameters.ENV }}
-#            agentPoolName: $(agentPoolName)
-#            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
-#            azureServiceConnection: $(azureServiceConnectionName)
-#            keyVaultName: $(postman_kv_name)
-#            secretName: $(postman_env_secret_name)
+
+      # Ext Apps
+      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
+        - template: templates/deploy-argo-template.yml
+          parameters:
+            applicationsList: ${{ parameters.APPS_EXT }}
+            deploymentType: 'ext'
+            environment: ${{ parameters.ENV }}
+            argocdServerUrl: $(argocdServer)
+            argocdUserName: $(argocdUsername)
+            argocdUserPassword: $(argocdPassword)
+            agentPoolName: $(agentPoolName)
+            applicationPrefix: $(area)
+            dependsOnJob: 'deploy_mid'
+            targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
+
+  # Stage for Postman Tests
+  - stage: run_postman_tests
+    condition: and(succeeded(), or(${{eq(parameters.ENV, 'dev')}}, ${{eq(parameters.ENV, 'uat')}}))
+    dependsOn: sync_argo_apps
+    jobs:
+      # Top Apps Tests
+      - ${{ if and(ne(length(parameters.APPS_TOP), 0), ne(parameters.APPS_TOP, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_TOP }}
+            appCategory: 'top'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
+
+      # Mid Apps Tests
+      - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_MID }}
+            appCategory: 'mid'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
+
+      # Ext Apps Tests
+      - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
+        - template: templates/postman-tests-template.yml
+          parameters:
+            appsList: ${{ parameters.APPS_EXT }}
+            appCategory: 'ext'
+            env: ${{ parameters.ENV }}
+            agentPoolName: $(agentPoolName)
+            postmanBranch: ${{ parameters.POSTMAN_BRANCH }}
+            azureServiceConnection: $(azureServiceConnectionName)
+            keyVaultName: $(postman_kv_name)
+            secretName: $(postman_env_secret_name)
