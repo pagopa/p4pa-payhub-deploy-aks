@@ -165,9 +165,9 @@ stages:
           echo "argocdTargetBranch: ${{parameters.ARGOCD_TARGET_BRANCH}}"
           echo "postmanBranch: ${{parameters.POSTMAN_BRANCH}}"
           echo "triggerMessage: ${{parameters.TRIGGER_MESSAGE}}"
-          echo "App TOPS: ${{ parameters.APPS_TOP }}
-          echo "App MID: ${{ parameters.APPS_MID }}
-          echo "App EXT: ${{ parameters.APPS_EXT }}
+          echo "App TOPS: ${{ join(' ', parameters.APPS_TOP) }}"
+          echo "App MID: ${{ join(' ', parameters.APPS_MID) }}"
+          echo "App EXT: ${{ join(' ', parameters.APPS_EXT) }}"
         displayName: 'Show Debug Information'
 
 #  #
