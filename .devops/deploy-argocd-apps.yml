@@ -27,7 +27,7 @@ parameters:
     - prod
 
 - name: APPS_TOP
-  displayName: Top ArgoCD Apps
+  displayName: Top ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-auth
@@ -39,7 +39,7 @@ parameters:
     - p4pa-pu-sil
 
 - name: APPS_MID
-  displayName: Mid ArgoCD Apps
+  displayName: Mid ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-workflow-worker
@@ -49,7 +49,7 @@ parameters:
     - p4pa-process-executions
 
 - name: APPS_EXT
-  displayName: Extra ArgoCD Apps
+  displayName: Extra ArgoCD Apps. Set to [] to skip deployment.
   type: object
   default:
     - p4pa-io-notification
@@ -165,6 +165,9 @@ stages:
           echo "argocdTargetBranch: ${{parameters.ARGOCD_TARGET_BRANCH}}"
           echo "postmanBranch: ${{parameters.POSTMAN_BRANCH}}"
           echo "triggerMessage: ${{parameters.TRIGGER_MESSAGE}}"
+          echo "App TOPS: ${{ join(' ', parameters.APPS_TOP) }}"
+          echo "App MID: ${{ join(' ', parameters.APPS_MID) }}"
+          echo "App EXT: ${{ join(' ', parameters.APPS_EXT) }}"
         displayName: 'Show Debug Information'
 
   #
