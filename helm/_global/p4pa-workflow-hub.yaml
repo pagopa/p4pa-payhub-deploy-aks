@@ -67,10 +67,14 @@ microservice-chart:
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
 
+    AUTH_BASE_URL: "http://p4pa-auth-microservice-chart:8080/payhub"
+    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
+
+    AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
 
     MAIL_USERNAME: mail-username
     MAIL_PASSWORD: mail-password
