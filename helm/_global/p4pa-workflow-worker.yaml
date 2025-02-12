@@ -76,8 +76,6 @@ microservice-chart:
 
     SHARED_FOLDER_ROOT: "/shared"
 
-    PU_DB_NAME: "mypay"
-
     AUTH_BASE_URL: "http://p4pa-auth-microservice-chart:8080/payhub"
     IO_NOTIFICATION_BASE_URL: "http://p4pa-io-notification-microservice-chart:8080/ionotification"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
@@ -89,10 +87,6 @@ microservice-chart:
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
-
-    PU_DB_HOST: db-host
-    PU_DB_USER: db-mypay-login-username
-    PU_DB_PASSWORD: db-mypay-login-password
 
     AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
 
