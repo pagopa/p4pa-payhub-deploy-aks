@@ -60,6 +60,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
+    PAGOPA_PAYMENTS_BASE_URL: "http://p4pa-pagopa-payments-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
@@ -69,7 +70,6 @@ microservice-chart:
     BROKER_ENCRYPT_PASSWORD: broker-encrypt-password
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
-    PAGOPA_PAYMENTS_BASE_URL: "http://p4pa-pagopa-payments-microservice-chart:8080"
   # nodeSelector: {}
 
   # tolerations: []
