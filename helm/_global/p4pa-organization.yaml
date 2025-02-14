@@ -69,6 +69,7 @@ microservice-chart:
     BROKER_ENCRYPT_PASSWORD: broker-encrypt-password
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
+    PAGOPA_PAYMENTS_BASE_URL: "http://p4pa-pagopa-payments-microservice-chart:8080"
   # nodeSelector: {}
 
   # tolerations: []
