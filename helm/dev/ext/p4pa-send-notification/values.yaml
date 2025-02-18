@@ -28,7 +28,7 @@ microservice-chart:
     ENV: "DEV"
     SEND_BASE_URL: "https://api.uat.notifichedigitali.it"
 
-    JAVA_OPTS: >-
+    JAVA_TOOL_OPTIONS: >-
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
@@ -45,7 +45,6 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.local.only=false
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
-      -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
   keyvault:
