@@ -44,7 +44,6 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.local.only=false
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
-      -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
     PDND_BASE_URL: https://auth.uat.interop.pagopa.it

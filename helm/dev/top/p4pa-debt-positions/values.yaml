@@ -46,7 +46,6 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.local.only=false
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
-      -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
     LOG_LEVEL_PAGOPA: "DEBUG"

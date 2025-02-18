@@ -52,7 +52,6 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.local.only=false
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
-      -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
     
     TOKEN_EXCHANGE_ISSUER: "https://uat.selfcare.pagopa.it"

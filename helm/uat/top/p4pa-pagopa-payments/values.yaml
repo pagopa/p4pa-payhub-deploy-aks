@@ -43,7 +43,6 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.local.only=false
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
-      -Xlog:gc*,safepoint:stdout:time,uptimemillis,level,tags
       -Dspring.profiles.active=dev
 
     PAGOPA_PAYMENTS_WSDL_BASE_URL: "https://hub.internal.uat.p4pa.pagopa.it/p4papagopapayments"
