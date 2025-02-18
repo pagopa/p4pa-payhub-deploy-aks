@@ -26,7 +26,33 @@ microservice-chart:
 
   envConfig:
     ENV: "PROD"
-    JAVA_TOOL_OPTIONS: "-Xms896m -Xmx896m -Djava.util.concurrent.ForkJoinPool.common.parallelism=7 -javaagent:/app/applicationinsights-agent.jar -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json -agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=3002 -Dcom.sun.management.jmxremote.rmi.port=3003 -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+    JAVA_TOOL_OPTIONS: >-
+      -XX:InitialRAMPercentage=75.0
+      -XX:MaxRAMPercentage=85.0
+      -XX:+UseG1GC
+      -XX:MaxGCPauseMillis=100
+      -XX:+UseContainerSupport
+      -XX:ActiveProcessorCount=$(nproc)
+      -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
+      -javaagent:/app/applicationinsights-agent.jar
+      -Dapplicationinsights.configuration.file=/mnt/secrets/appinsights.json
+      -Dcom.sun.management.jmxremote.local.only=true
+      -Dcom.sun.management.jmxremote.port=3002
+      -Dcom.sun.management.jmxremote.authenticate=true
+      -Dcom.sun.management.jmxremote.ssl=true
+      -Dcom.sun.management.jmxremote.access.file=/etc/jmx/jmx.access
+      -Dcom.sun.management.jmxremote.password.file=/etc/jmx/jmx.password
+      -XX:+ExitOnOutOfMemoryError
+      -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=/var/log/heapdump-${POD_NAME}.hprof
+      -Xlog:gc*,safepoint:file=/var/log/gc-${POD_NAME}.log:time,uptime,level,tags:filesize=100M,filecount=5
+      -XX:+PerfDisableSharedMem
+      -XX:+AlwaysPreTouch
+      -XX:+UseTransparentHugePages
+      -XX:NativeMemoryTracking=detail
+      -Djdk.nio.maxCachedBufferSize=262144
+      -Djava.security.egd=file:/dev/./urandom
+      -Dspring.profiles.active=prod
 
     JWT_TOKEN_AUDIENCE: "piattaformaunitaria.pagopa.it"
     JWT_EXTERNAL_TOKEN_ISS: "https://selfcare.pagopa.it"

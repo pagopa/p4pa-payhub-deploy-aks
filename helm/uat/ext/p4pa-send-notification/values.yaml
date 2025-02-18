@@ -28,7 +28,7 @@ microservice-chart:
     ENV: "UAT"
     SEND_BASE_URL: "https://api.uat.notifichedigitali.it"
 
-    JAVA_OPTS: >-
+    JAVA_TOOL_OPTIONS: >-
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
