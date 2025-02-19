@@ -16,7 +16,16 @@ microservice-chart:
       cpu: "300m"
 
   autoscaling:
-    enable: false
+    enable: true
+    minReplica: 1
+    maxReplica: 1
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "70"
 
   externalConfigMapFiles:
     create: true
