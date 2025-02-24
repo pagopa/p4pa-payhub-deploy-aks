@@ -61,7 +61,7 @@ parameters:
   default: 'develop'
 
 - name: ARGOCD_TARGET_BRANCH
-  displayName: ArgoCD target branch
+  displayName: ArgoCD target branch or version tag (vX.Y.Z)
   type: string
   default: 'main'
 
@@ -202,7 +202,6 @@ stages:
             argocdUserPassword: $(argocdPassword)
             agentPoolName: $(agentPoolName)
             applicationPrefix: $(area)
-            dependsOnJob: 'deploy_top'
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
 
       # Ext Apps
@@ -217,7 +216,6 @@ stages:
             argocdUserPassword: $(argocdPassword)
             agentPoolName: $(agentPoolName)
             applicationPrefix: $(area)
-            dependsOnJob: 'deploy_mid'
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
 
   # Stage for Postman Tests
