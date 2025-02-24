@@ -61,7 +61,7 @@ parameters:
   default: 'develop'
 
 - name: ARGOCD_TARGET_BRANCH
-  displayName: ArgoCD target branch
+  displayName: ArgoCD target branch or version tag (vX.Y.Z)
   type: string
   default: 'main'
 
