@@ -18,12 +18,6 @@ microservice-chart:
   autoscaling:
     enable: false
 
-  externalConfigMapFiles:
-    create: true
-    configMaps:
-      - name: appinsights-config
-        key: applicationinsights.json
-
   envConfig:
     ENV: "DEV"
     JAVA_TOOL_OPTIONS: >-

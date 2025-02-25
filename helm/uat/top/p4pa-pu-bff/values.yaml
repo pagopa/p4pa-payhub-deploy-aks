@@ -27,12 +27,6 @@ microservice-chart:
   #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
   #          value: "70"
 
-  externalConfigMapFiles:
-    create: true
-    configMaps:
-      - name: appinsights-config
-        key: applicationinsights.json
-
   envConfig:
     ENV: "UAT"
     JAVA_TOOL_OPTIONS: >-
