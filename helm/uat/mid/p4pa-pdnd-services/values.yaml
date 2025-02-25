@@ -18,22 +18,18 @@ microservice-chart:
   autoscaling:
     enable: false
 
-  externalConfigMapFiles:
-    create: true
-    configMaps:
-      - name: appinsights-config
-        key: applicationinsights.json
-
   envConfig:
     ENV: "UAT"
     JAVA_TOOL_OPTIONS: >-
+      -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=200
       -XX:+UseContainerSupport
-      -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
-      -javaagent:/app/applicationinsights-agent.jar
+      -XX:+ShowCodeDetailsInExceptionMessages
+      -XX:+EnableDynamicAgentLoading
+      -Dspring.profiles.active=dev
       -agentlib:jdwp=transport=dt_socket,server=y,address=*:8001,suspend=n
       -Dcom.sun.management.jmxremote
       -Dcom.sun.management.jmxremote.port=3002
@@ -41,9 +37,9 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.authenticate=false
       -Dcom.sun.management.jmxremote.ssl=false
       -Dcom.sun.management.jmxremote.local.only=false
-      -XX:+ShowCodeDetailsInExceptionMessages
-      -XX:+EnableDynamicAgentLoading
-      -Dspring.profiles.active=dev
+      -Djava.rmi.server.hostname=127.0.0.1 
+      -javaagent:/app/applicationinsights-agent.jar
+      -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
 
     PDND_BASE_URL: https://auth.uat.interop.pagopa.it
     PDND_ACCESS_TOKEN_AUDIENCE: auth.uat.interop.pagopa.it/client-assertion

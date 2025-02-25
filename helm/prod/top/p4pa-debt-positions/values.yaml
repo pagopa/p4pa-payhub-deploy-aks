@@ -17,34 +17,17 @@ microservice-chart:
 
   autoscaling:
     enable: false
-  #    minReplica: 1
-  #    maxReplica: 1
-  #    pollingInterval: 30 # seconds
-  #    cooldownPeriod: 300 # seconds
-  #    triggers:
-  #      - type: cpu
-  #        metadata:
-  #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-  #          value: "70"
 
   envConfig:
     ENV: "PROD"
     JAVA_TOOL_OPTIONS: >-
+      -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
       -XX:InitialRAMPercentage=75.0
       -XX:MaxRAMPercentage=85.0
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=100
       -XX:+UseContainerSupport
       -XX:ActiveProcessorCount=$(nproc)
-      -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
-      -javaagent:/app/applicationinsights-agent.jar
-      -Dapplicationinsights.configuration.file=/mnt/secrets/appinsights.json
-      -Dcom.sun.management.jmxremote.local.only=true
-      -Dcom.sun.management.jmxremote.port=3002
-      -Dcom.sun.management.jmxremote.authenticate=true
-      -Dcom.sun.management.jmxremote.ssl=true
-      -Dcom.sun.management.jmxremote.access.file=/etc/jmx/jmx.access
-      -Dcom.sun.management.jmxremote.password.file=/etc/jmx/jmx.password
       -XX:+ExitOnOutOfMemoryError
       -XX:+HeapDumpOnOutOfMemoryError
       -XX:HeapDumpPath=/var/log/heapdump-${POD_NAME}.hprof
@@ -56,6 +39,15 @@ microservice-chart:
       -Djdk.nio.maxCachedBufferSize=262144
       -Djava.security.egd=file:/dev/./urandom
       -Dspring.profiles.active=prod
+      -Dcom.sun.management.jmxremote.local.only=true
+      -Dcom.sun.management.jmxremote.port=3002
+      -Dcom.sun.management.jmxremote.authenticate=true
+      -Dcom.sun.management.jmxremote.ssl=true
+      -Dcom.sun.management.jmxremote.access.file=/etc/jmx/jmx.access
+      -Dcom.sun.management.jmxremote.password.file=/etc/jmx/jmx.password
+      -Djava.rmi.server.hostname=127.0.0.1 
+      -javaagent:/app/applicationinsights-agent.jar
+      -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
   keyvault:
     name: "p4pa-p-payhub-kv"
