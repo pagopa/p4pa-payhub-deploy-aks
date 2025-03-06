@@ -59,6 +59,9 @@ microservice-chart:
 
     ANPR_BASE_URL: http://p4pa-mocks-microservice-chart:8080
 
+    SEND_BASE_URL: https://api.notifichedigitali.it
+    PDND_SERVICE_SEND_PURPOSE_ID: 3af06fc1-674c-41d3-ac66-df259846f4c1
+
   keyvault:
     name: "p4pa-p-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
