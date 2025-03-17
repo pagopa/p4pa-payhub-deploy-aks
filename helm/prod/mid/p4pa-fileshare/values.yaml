@@ -19,6 +19,8 @@ microservice-chart:
     enable: false
 
   envConfig:
+    FILESHARE_BASE_URL: "https://api.p4pa.pagopa.it/fileshare"
+
     ENV: "PROD"
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
