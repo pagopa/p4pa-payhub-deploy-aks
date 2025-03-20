@@ -48,6 +48,13 @@ microservice-chart:
     runAsUser: 65534
     runAsGroup: 65534
 
+  persistentVolumeClaimsMounts:
+    create: true
+    mounts:
+      - name: share
+        pvcName: mypay-fileshare-pvc
+        mountPath: "/shared"
+
   externalConfigMapFiles:
     create: true
     configMaps:
