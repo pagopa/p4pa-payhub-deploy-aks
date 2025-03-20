@@ -90,6 +90,8 @@ microservice-chart:
     WORKFLOW_HUB_DB_USER: db-piattaforma-unitaria-login-username
     WORKFLOW_HUB_DB_PASSWORD: db-piattaforma-unitaria-login-password
 
+    CIPHER_DP_SYNC_WF_CONFIG_ENCRYPT_PSW: dp-sync-wf-config-encrypt-password
+
   # nodeSelector: {}
 
   # tolerations: []
