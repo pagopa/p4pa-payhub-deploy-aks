@@ -61,6 +61,8 @@ microservice-chart:
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
 
+    SHARED_FOLDER_ROOT: "/shared"
+
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
     WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
 
@@ -69,6 +71,7 @@ microservice-chart:
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
     MONGODB_URI: mongodb-connection-string
     PU_SEND_API_KEY: piattaforma-unitaria-send-api-key
+    FILE_ENCRYPT_PASSWORD: file-encrypt-password
 
   # nodeSelector: {}
 
