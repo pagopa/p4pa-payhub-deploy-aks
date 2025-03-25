@@ -21,7 +21,7 @@ microservice-chart:
   envConfig:
     ENV: "DEV"
     SEND_BASE_URL: "https://api.uat.notifichedigitali.it"
-    FILESHARE_BASE_URL: "https://api.dev.p4pa.pagopa.it/fileshare"
+    FILESHARE_PUBLIC_BASE_URL: "https://api.dev.p4pa.pagopa.it/fileshare"
 
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
