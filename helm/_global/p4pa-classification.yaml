@@ -70,3 +70,9 @@ microservice-chart:
     CLASSIFICATION_DB_HOST: db-host
     CLASSIFICATION_DB_USER: db-piattaforma-unitaria-login-username
     CLASSIFICATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
+    
+    CITIZENDB_HOST: db-host
+    CITIZENDB_USER: db-mypay-login-username
+    CITIZENDB_PASSWORD: db-mypay-login-password
+
+    DATA_CIPHER_ENCRYPT_PASSWORD: data-cipher-encrypt-password
