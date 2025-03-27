@@ -81,6 +81,13 @@ microservice-chart:
     PU_SEND_API_KEY: piattaforma-unitaria-send-api-key
     FILE_ENCRYPT_PASSWORD: file-encrypt-password
 
+    CITIZENDB_HOST: db-host
+    CITIZENDB_USER: db-mypay-login-username
+    CITIZENDB_PASSWORD: db-mypay-login-password
+
+    DATA_CIPHER_ENCRYPT_PASSWORD: data-cipher-encrypt-password
+    DATA_CIPHER_HASH_PEPPER: data-cipher-hash-pepper
+
   # nodeSelector: {}
 
   # tolerations: []
