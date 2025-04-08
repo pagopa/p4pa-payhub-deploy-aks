@@ -71,6 +71,9 @@ microservice-chart:
     WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
     CLASSIFICATION_BASE_URL: "http://p4pa-classification-microservice-chart:8080"
 
+    CACHE_PII_SIZE: 0
+    CACHE_PII_MINUTES: 0
+
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
