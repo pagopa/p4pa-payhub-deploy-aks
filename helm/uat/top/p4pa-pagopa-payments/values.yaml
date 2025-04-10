@@ -20,6 +20,7 @@ microservice-chart:
 
   envConfig:
     ENV: "UAT"
+    PAGOPA_PRINT_PAYMENT_NOTICE_BASE_URL: https://api.uat.platform.pagopa.it/print-payment-notice-service/external/v1
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -XX:InitialRAMPercentage=60.0
