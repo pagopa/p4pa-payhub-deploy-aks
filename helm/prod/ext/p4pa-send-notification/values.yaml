@@ -21,7 +21,7 @@ microservice-chart:
   envConfig:
     ENV: "PROD"
     SEND_BASE_URL: "https://api.notifichedigitali.it"
-    FILESHARE_PUBLIC_BASE_URL: "https://api.p4pa.pagopa.it/fileshare"
+    FILESHARE_PUBLIC_BASE_URL: "https://api.p4pa.pagopa.it/pu/fileshare"
 
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
