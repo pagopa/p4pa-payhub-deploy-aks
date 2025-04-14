@@ -70,7 +70,6 @@ microservice-chart:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
-    PAGOPA_PRINT_PAYMENT_NOTICE_API_KEY: piattaforma-unitaria-print-payment-notice-api-key
 
   # nodeSelector: {}
 
