@@ -54,6 +54,7 @@ parameters:
   default:
     - p4pa-io-notification
     - p4pa-send-notification
+    - p4pa-registries
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch

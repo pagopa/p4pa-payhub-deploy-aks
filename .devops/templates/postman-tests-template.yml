@@ -310,3 +310,14 @@ jobs:
       name: finalizeTests
       displayName: 'Finalize Test Execution'
       condition: always()
+
+    - task: 'Bash@3'
+      displayName: 'Send message on Slack'
+      condition: in(variables['Agent.JobStatus'], 'SucceededWithIssues', 'Failed')
+      inputs:
+        targetType: 'inline'
+        script: >
+          curl -X POST \
+            -H "Content-type: application/json" \
+            --data '{"text": "*Attention: There is an error in $(appName) deploy in step _postman test_!*\nCheck the logs for more details $(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId) to view the build results."}' \
+            $(SLACK_WEBHOOK_URL)

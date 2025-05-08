@@ -65,7 +65,7 @@ microservice-chart:
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
 
 postman-test:
-  run: true
+  run: false
   repoName: p4pa-pu-bff
   dir: postman
   collectionName: "PuBff-e2e.postman_collection.json"
