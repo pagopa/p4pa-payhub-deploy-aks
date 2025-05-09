@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-auth
-    tag: v1.0.0
+    tag: v1.0.0@sha256:9e108873cccdc395b68b698edd15af742f36afb568e22392c7383f69588bb924
     pullPolicy: Always
 
   ingress:
