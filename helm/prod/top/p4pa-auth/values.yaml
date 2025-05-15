@@ -52,11 +52,7 @@ microservice-chart:
     JWT_TOKEN_AUDIENCE: "piattaformaunitaria.pagopa.it"
     JWT_EXTERNAL_TOKEN_ISS: "https://selfcare.pagopa.it"
     JWT_EXTERNAL_TOKEN_BASE_URL: "https://selfcare.pagopa.it"
-  # nodeSelector: {}
 
-  # tolerations: []
-
-  # affinity: {}
   keyvault:
     name: "p4pa-p-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
