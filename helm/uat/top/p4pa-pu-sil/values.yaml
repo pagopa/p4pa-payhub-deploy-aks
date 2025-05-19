@@ -40,6 +40,8 @@ microservice-chart:
       -Djava.rmi.server.hostname=127.0.0.1 
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
+  
+    SIL_WSDL_BASE_URL: "https://hub.internal.dev.p4pa.pagopa.it/p4papusil"    
 
   keyvault:
     name: "p4pa-u-payhub-kv"
