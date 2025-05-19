@@ -65,6 +65,7 @@ microservice-chart:
     DEBT_POSITION_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
     FILESHARE_BASE_URL: "http://p4pa-fileshare-microservice-chart:8080"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
+    SEND_NOTIFICATION_BASE_URL: "http://p4pa-send-notification-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
