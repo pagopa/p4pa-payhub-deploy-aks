@@ -1,4 +1,5 @@
 .terraform
 .idea
+*.iml
 **/charts
 **/Chart.lock
