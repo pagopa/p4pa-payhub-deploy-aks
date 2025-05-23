@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-pagopa-payments
-    tag: uat-latest
+    tag: uat-latest@sha256:38d91df92334bf5422e15f2f12b329eba1dd15c8f1ab770bc2dcdeacf3af2e2d
     pullPolicy: Always
 
   ingress:
