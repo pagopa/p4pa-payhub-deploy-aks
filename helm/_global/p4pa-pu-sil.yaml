@@ -69,6 +69,8 @@ microservice-chart:
 
     AUTH_SERVER_BASE_URL: "http://p4pa-auth-microservice-chart:8080"
     SEND_NOTIFICATION_BASE_URL: "http://p4pa-send-notification-microservice-chart:8080"
+    PROCESS_EXECUTIONS_BASE_URL: "http://p4pa-process-executions-microservice-chart:8080"
+    FILESHARE_BASE_URL: "http://p4pa-fileshare-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
