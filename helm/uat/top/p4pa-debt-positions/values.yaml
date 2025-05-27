@@ -50,7 +50,7 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
 
-    FEATURE_ORGANIZATION_PIVA_CHECK: false
+    FEATURE_ORGANIZATION_PIVA_CHECK: "false"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
