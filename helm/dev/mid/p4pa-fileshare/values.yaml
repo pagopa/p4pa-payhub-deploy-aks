@@ -41,8 +41,6 @@ microservice-chart:
       -Djava.rmi.server.hostname=127.0.0.1 
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
-      
-    FILESHARE_BASE_URL: "https://hub.internal.dev.p4pa.pagopa.it/fileshare"    
 
   keyvault:
     name: "p4pa-d-payhub-kv"
