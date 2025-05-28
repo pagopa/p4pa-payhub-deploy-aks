@@ -41,7 +41,8 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
   
-    SIL_WSDL_BASE_URL: "https://hub.internal.aut.p4pa.pagopa.it/p4papusil"    
+    SIL_WSDL_BASE_URL: "https://hub.internal.aut.p4pa.pagopa.it/p4papusil"   
+    PUBLIC_BASE_URL_FILESHARE: "https://api.uat.p4pa.pagopa.it/pu/fileshare"    
 
   keyvault:
     name: "p4pa-u-payhub-kv"
