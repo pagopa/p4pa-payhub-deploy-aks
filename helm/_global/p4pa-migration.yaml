@@ -92,3 +92,5 @@ microservice-chart:
     MIGRATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
 
     FILE_ENCRYPT_PASSWORD: file-encrypt-password
+
+    ZIP_MAX_COMPRESSION_RATIO: 999999
