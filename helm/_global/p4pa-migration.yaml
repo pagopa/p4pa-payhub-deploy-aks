@@ -82,6 +82,7 @@ microservice-chart:
     PROCESS_EXECUTIONS_BASE_URL: "http://p4pa-process-executions-microservice-chart:8080"
     DEBT_POSITION_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
 
+    ZIP_MAX_COMPRESSION_RATIO: "99999999999999"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
@@ -94,5 +95,3 @@ microservice-chart:
     MIGRATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
 
     FILE_ENCRYPT_PASSWORD: file-encrypt-password
-
-    ZIP_MAX_COMPRESSION_RATIO: 999999
