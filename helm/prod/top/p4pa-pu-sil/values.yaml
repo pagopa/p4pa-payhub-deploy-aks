@@ -50,7 +50,8 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
   
     SIL_WSDL_BASE_URL: "https://hub.internal.p4pa.pagopa.it/p4papusil"
-    PUBLIC_BASE_URL_FILESHARE: "https://api.p4pa.pagopa.it/pu/fileshare"    
+    PUBLIC_BASE_URL_FILESHARE: "https://api.p4pa.pagopa.it/pu/fileshare"
+    PAGOPA_NODE_CHECKOUT_BASE_URL: "https://api.platform.pagopa.it/checkout/ec/v1"
 
   keyvault:
     name: "p4pa-p-payhub-kv"
