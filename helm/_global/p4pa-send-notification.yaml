@@ -73,6 +73,7 @@ microservice-chart:
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
     WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
     DEBT_POSITION_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
+    PDND_BASE_URL: "http://p4pa-pdnd-services-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
