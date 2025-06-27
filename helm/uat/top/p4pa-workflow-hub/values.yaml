@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-workflow-hub
-    tag: uat-latest
+    tag: uat-latest@sha256:1291b00046e2669070cdeb2e7c4371193bc5b522d9b6f10c55601a5ef9be2167
     pullPolicy: Always
 
   ingress:
