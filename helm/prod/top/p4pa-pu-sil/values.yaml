@@ -51,6 +51,7 @@ microservice-chart:
   
     SIL_WSDL_BASE_URL: "https://hub.internal.p4pa.pagopa.it/p4papusil"
     PUBLIC_BASE_URL_FILESHARE: "https://api.p4pa.pagopa.it/pu/fileshare"
+    PUBLIC_BASE_URL_PU_SIL: "https://api.p4pa.pagopa.it/pu/sil"
     PAGOPA_NODE_CHECKOUT_BASE_URL: "https://api.platform.pagopa.it/checkout/ec/v1"
 
     # The following URLs are used by the Checkout service to redirect the user after payment
