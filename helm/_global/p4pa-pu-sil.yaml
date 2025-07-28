@@ -83,6 +83,9 @@ microservice-chart:
     KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
     KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-registries-evh-producer-jaas-config
 
+    REST_AGID_INTEGRITY_PU_PRIVATEKEY: pu-sil-integrity-priv
+    REST_AGID_INTEGRITY_PU_PUBLICKEY: pu-sil-integrity-pub
+
   # nodeSelector: {}
 
   # tolerations: []
