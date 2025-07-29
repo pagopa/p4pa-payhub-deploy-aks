@@ -45,7 +45,9 @@ microservice-chart:
     TEMPORAL_SERVER_HOST: "api.temporal.internal.uat.p4pa.pagopa.it"
     TEMPORAL_SERVER_PORT: "443"
 
-    MAIL_HOST: "smtp.ethereal.email"
+    MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
+    MAIL_SMTP_AUTH: "false"
+    MAIL_SMTP_STARTTLS: "false"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
