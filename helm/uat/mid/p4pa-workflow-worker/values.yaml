@@ -49,6 +49,7 @@ microservice-chart:
     MAIL_PORT: "25"
     MAIL_SMTP_AUTH: "false"
     MAIL_SMTP_STARTTLS: "false"
+    MAIL_SMTP_STARTTLS_REQUIRED: "false"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
