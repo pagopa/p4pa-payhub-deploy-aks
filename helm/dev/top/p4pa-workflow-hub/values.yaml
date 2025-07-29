@@ -48,6 +48,8 @@ microservice-chart:
 
     MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
     MAIL_PORT: "25"
+    MAIL_SMTP_STARTTLS: "false"
+    MAIL_SMTP_STARTTLS_REQUIRED: "false"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
