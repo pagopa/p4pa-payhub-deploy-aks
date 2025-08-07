@@ -55,6 +55,8 @@ parameters:
     - p4pa-io-notification
     - p4pa-send-notification
     - p4pa-registries
+    - p4pa-iam-sync
+    - p4pa-migration
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
