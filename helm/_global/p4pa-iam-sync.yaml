@@ -75,7 +75,7 @@ microservice-chart:
 
     AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
 
-    KAFKA_IAM_ORGANIZATIONS_CONSUMER_SASL_JAAS_CONFIG: iam-organizations-events-consumer-jaas-config
+    KAFKA_IAM_ORGANIZATIONS_CONSUMER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
     KAFKA_IAM_USERS_CONSUMER_SASL_JAAS_CONFIG: iam-users-events-consumer-jaas-config
 
   # nodeSelector: {}
