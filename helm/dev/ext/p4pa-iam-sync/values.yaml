@@ -45,11 +45,6 @@ microservice-chart:
     KAFKA_IAM_ORGANIZATIONS_GROUP_ID: "p4pa-workflow-hub-consumer-group"
     KAFKA_IAM_USERS_GROUP_ID: "p4pa-workflow-hub-consumer-group"
 
-  envSecret:
-    KAFKA_IAM_ORGANIZATIONS_TOPIC: p4pa-payhub-payments-topic
-    KAFKA_IAM_ORGANIZATIONS_BINDER_BROKER: p4pa-payhub-kafka-broker
-    KAFKA_IAM_USERS_TOPIC: p4pa-payhub-payments-topic
-    KAFKA_IAM_USERS_BINDER_BROKER: p4pa-payhub-kafka-broker
 
 
   keyvault:
