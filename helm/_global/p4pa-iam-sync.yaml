@@ -63,8 +63,8 @@ microservice-chart:
 
     KAFKA_CONFIG_SASL_MECHANISM: "PLAIN"
     KAFKA_CONFIG_SECURITY_PROTOCOL: "SASL_SSL"
-    KAFKA_IAM_ORGANIZATIONS_TOPIC: "sc-contracts"
-    KAFKA_IAM_USERS_TOPIC: "sc-users"
+    KAFKA_IAM_ORGANIZATIONS_TOPIC: p4pa-payhub-payments-topic
+    KAFKA_IAM_USERS_TOPIC: p4pa-payhub-payments-topic
 
     AUTH_BASE_URL: "http://p4pa-auth-microservice-chart:8080/payhub"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
