@@ -54,15 +54,19 @@ microservice-chart:
       - name: appinsights-config
         key: applicationinsights.json
 
+  externalConfigMapValues:
+    eventhub-config:
+      KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
+      KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
+      KAFKA_IAM_ORGANIZATIONS_TOPIC: p4pa-payhub-payments-topic
+      KAFKA_IAM_USERS_TOPIC: p4pa-payhub-payments-topic
+
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-iam-sync"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
-
-    KAFKA_CONFIG_SASL_MECHANISM: "PLAIN"
-    KAFKA_CONFIG_SECURITY_PROTOCOL: "SASL_SSL"
 
     AUTH_BASE_URL: "http://p4pa-auth-microservice-chart:8080/payhub"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
@@ -75,9 +79,7 @@ microservice-chart:
 
     KAFKA_IAM_ORGANIZATIONS_CONSUMER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
     KAFKA_IAM_USERS_CONSUMER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
-    KAFKA_IAM_ORGANIZATIONS_TOPIC: p4pa-payhub-payments-topic
     KAFKA_IAM_ORGANIZATIONS_BINDER_BROKER: p4pa-payhub-kafka-broker
-    KAFKA_IAM_USERS_TOPIC: p4pa-payhub-payments-topic
     KAFKA_IAM_USERS_BINDER_BROKER: p4pa-payhub-kafka-broker
 
   # nodeSelector: {}
