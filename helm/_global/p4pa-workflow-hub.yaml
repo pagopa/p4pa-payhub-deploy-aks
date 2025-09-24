@@ -59,6 +59,7 @@ microservice-chart:
       KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
       KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
       KAFKA_TOPIC_PAYMENTS: p4pa-payhub-payments-topic
+      KAFKA_TOPIC_DATA_EVENTS: p4pa-payhub-data-events-topic
 
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-workflow-hub"
@@ -85,6 +86,7 @@ microservice-chart:
     KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
     KAFKA_PAYMENTS_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
     KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-producer-jaas-config
+    KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-data-events-evh-producer-jaas-config
 
     WORKFLOW_HUB_DB_HOST: db-host
     WORKFLOW_HUB_DB_USER: db-piattaforma-unitaria-login-username
