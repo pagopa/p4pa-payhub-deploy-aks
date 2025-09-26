@@ -37,6 +37,7 @@ parameters:
     - p4pa-workflow-hub
     - p4pa-debt-positions
     - p4pa-pu-sil
+    - p4pa-citizen
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps. Set to [] to skip deployment.
