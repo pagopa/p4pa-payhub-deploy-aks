@@ -58,6 +58,7 @@ microservice-chart:
     CHECKOUT_DEFAULT_CALLBACK_URL_OK: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/ok"
     CHECKOUT_DEFAULT_CALLBACK_URL_KO: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/ko"
     CHECKOUT_DEFAULT_CALLBACK_URL_CANCEL: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/cancel"
+
   keyvault:
     name: "p4pa-p-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
