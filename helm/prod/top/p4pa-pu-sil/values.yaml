@@ -55,11 +55,9 @@ microservice-chart:
     PAGOPA_NODE_CHECKOUT_BASE_URL: "https://api.platform.pagopa.it/checkout/ec/v1"
 
     # The following URLs are used by the Checkout service to redirect the user after payment
-    # TODO task P4ADEV-3249 to change these example URLs to the correct ones
-    CHECKOUT_DEFAULT_CALLBACK_URL_OK: "https://pu.p4pa.pagopa.it/checkout/ok"
-    CHECKOUT_DEFAULT_CALLBACK_URL_KO: "https://pu.p4pa.pagopa.it/checkout/ko"
-    CHECKOUT_DEFAULT_CALLBACK_URL_CANCEL: "https://pu.p4pa.pagopa.it/checkout/cancel"
-
+    CHECKOUT_DEFAULT_CALLBACK_URL_OK: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/ok"
+    CHECKOUT_DEFAULT_CALLBACK_URL_KO: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/ko"
+    CHECKOUT_DEFAULT_CALLBACK_URL_CANCEL: "https://p4pa.pagopa.it/piattaformaunitaria/checkout-callback/cancel"
   keyvault:
     name: "p4pa-p-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
