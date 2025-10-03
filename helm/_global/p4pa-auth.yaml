@@ -53,6 +53,8 @@ microservice-chart:
     configMaps:
       - name: appinsights-config
         key: applicationinsights.json
+
+  externalConfigMapValues:
     eventhub-config:
       KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
       KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
