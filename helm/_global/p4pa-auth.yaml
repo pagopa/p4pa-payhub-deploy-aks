@@ -53,6 +53,10 @@ microservice-chart:
     configMaps:
       - name: appinsights-config
         key: applicationinsights.json
+    eventhub-config:
+      KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
+      KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
+      KAFKA_AUDIT_TOPIC: p4pa-payhub-audit-topic
 
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4paauth"
@@ -84,6 +88,9 @@ microservice-chart:
     DATA_CIPHER_P4PA_AUTH_ENCRYPT_PSW: p4pa-auth-encrypt-psw
 
     PIATTAFORMA_UNITARIA_CLIENT_SECRET: piattaforma-unitaria-client-secret
+
+    KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
+    KAFKA_AUDIT_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-audit-evh-producer-jaas-config
   # nodeSelector: {}
 
   # tolerations: []
