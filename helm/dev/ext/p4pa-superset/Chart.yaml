@@ -5,6 +5,6 @@ type: application
 version: 1.0.0
 appVersion: 1.0.0
 dependencies:
-  - name: apache-superset
+  - name: superset
     version: 0.15.0
     repository: "http://apache.github.io/superset/"
