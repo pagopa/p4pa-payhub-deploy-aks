@@ -172,6 +172,27 @@ superset:
       - "/bin/sh"
       - "-c"
       - ". {{ .Values.configMountPath }}/superset_bootstrap.sh; /usr/bin/run-server.sh"
+    connections:
+      # -- Change in case of bringing your own redis and then also set redis.enabled:false
+      redis_host: "READ-FROM-ENV"
+      redis_port: "READ-FROM-ENV"
+      redis_user: "READ-FROM-ENV"
+      redis_password: "READ-FROM-ENV"
+      redis_cache_db: "1"
+      redis_celery_db: "0"
+      # Or SSL port is usually 6380
+      # Update following for using Redis with SSL
+      redis_ssl:
+        enabled: true
+      # You need to change below configuration incase bringing own PostgresSQL instance and also set postgresql.enabled:false
+      # -- Database type for Superset metadata (Supported types: "postgresql", "mysql")
+      db_type: "postgresql"
+      db_host: "READ-FROM-ENV"
+      db_port: "READ-FROM-ENV"
+      db_user: "READ-FROM-ENV"
+      db_pass: "READ-FROM-ENV"
+      db_name: "READ-FROM-ENV"
+
     env: {}
     # -- If true, forces deployment to reload on each upgrade
     forceReload: false
