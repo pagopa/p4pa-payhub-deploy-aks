@@ -58,6 +58,7 @@ parameters:
     - p4pa-registries
     - p4pa-iam-sync
     - p4pa-migration
+    - p4pa-superset
 
 - name: POSTMAN_BRANCH
   displayName: Postman branch
