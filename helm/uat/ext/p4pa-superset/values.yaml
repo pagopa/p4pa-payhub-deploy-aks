@@ -1,0 +1,120 @@
+superset:
+  ingress:
+    hosts:
+      - "hub.internal.uat.p4pa.pagopa.it"
+    tls: []
+
+  resources:
+    # The limits below will apply to all Superset components. To set individual resource limitations refer to the pod specific values below.
+    # The pod specific values will overwrite anything that is set here.
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Superset node configuration
+  supersetNode:
+    replicas:
+      replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    # -- Sets the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for supersetNode pods
+    podDisruptionBudget:
+      # -- Whether the pod disruption budget should be created
+      enabled: false
+      # -- If set, maxUnavailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      minAvailable: 1
+      # -- If set, minAvailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      maxUnavailable: 1
+    # -- Resource settings for the supersetNode pods - these settings overwrite might existing values from the global resources object defined above.
+    resources: {}
+      # limits:
+      #  cpu: 100m
+      #  memory: 128Mi
+      # requests:
+      #  cpu: 100m
+    #  memory: 128Mi
+
+  # Superset Celery worker configuration
+  supersetWorker:
+    replicas:
+      replicaCount: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    # -- Sets the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for supersetWorker pods
+    podDisruptionBudget:
+      # -- Whether the pod disruption budget should be created
+      enabled: false
+      # -- If set, maxUnavailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      minAvailable: 1
+      # -- If set, minAvailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      maxUnavailable: 1
+    # -- Resource settings for the supersetWorker pods - these settings overwrite might existing values from the global resources object defined above.
+    resources:
+      limits:
+        cpu: 500m
+        memory: 2048Mi
+      requests:
+        cpu: 100m
+        memory: 1024Mi
+
+  # Superset beat configuration (to trigger scheduled jobs like reports)
+  supersetCeleryBeat:
+    # -- Sets the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for supersetCeleryBeat pods
+    podDisruptionBudget:
+      # -- Whether the pod disruption budget should be created
+      enabled: false
+      # -- If set, maxUnavailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      minAvailable: 1
+      # -- If set, minAvailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      maxUnavailable: 1
+    # -- Resource settings for the CeleryBeat pods - these settings overwrite might existing values from the global resources object defined above.
+    resources: {}
+      # limits:
+      #  cpu: 100m
+      #  memory: 128Mi
+      # requests:
+      #  cpu: 100m
+    #  memory: 128Mi
+
+  supersetCeleryFlower:
+    replicaCount: 1
+    # -- Sets the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for supersetCeleryFlower pods
+    podDisruptionBudget:
+      # -- Whether the pod disruption budget should be created
+      enabled: false
+      # -- If set, maxUnavailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      minAvailable: 1
+      # -- If set, minAvailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      maxUnavailable: 1
+    # -- Resource settings for the CeleryBeat pods - these settings overwrite might existing values from the global resources object defined above.
+    resources: {}
+      # limits:
+      #  cpu: 100m
+      #  memory: 128Mi
+      # requests:
+      #  cpu: 100m
+    #  memory: 128Mi
+
+
+  supersetWebsockets:
+    # -- Sets the [pod disruption budget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for supersetWebsockets pods
+    podDisruptionBudget:
+      # -- Whether the pod disruption budget should be created
+      enabled: false
+      # -- If set, maxUnavailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      minAvailable: 1
+      # -- If set, minAvailable must not be set - see https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+      maxUnavailable: 1
+    resources: {}
+
