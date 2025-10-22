@@ -50,6 +50,8 @@ microservice-chart:
     MAIL_PORT: "25"
     MAIL_SMTP_STARTTLS: "false"
     MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS: 600
+
 
   keyvault:
     name: "p4pa-d-payhub-kv"
