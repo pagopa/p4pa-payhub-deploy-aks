@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-debt-positions
-    tag: uat-latest
+    tag: uat-latest@sha256:cb1d43898fd66de554bab1b7fe714049b85a1fbd322fc3fa5059304b5fcaa97f
     pullPolicy: Always
 
   ingress:
