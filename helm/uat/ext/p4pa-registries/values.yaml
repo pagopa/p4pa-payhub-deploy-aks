@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-registries
-    tag: uat-latest
+    tag: uat-latest@sha256:7b05c7b9a904bd1aba141b690fe80b82776286de8099edc099d4fcce5e01a3ae
     pullPolicy: Always
 
   ingress:
