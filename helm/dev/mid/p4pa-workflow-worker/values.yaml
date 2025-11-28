@@ -42,10 +42,6 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
 
-    TEMPORAL_SERVER_ENABLE_HTTPS: "true"
-    TEMPORAL_SERVER_HOST: "api.temporal.internal.dev.p4pa.pagopa.it"
-    TEMPORAL_SERVER_PORT: "443"
-
     MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
     MAIL_PORT: "25"
     MAIL_SMTP_STARTTLS: "false"
