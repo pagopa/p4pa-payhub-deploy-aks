@@ -51,7 +51,7 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
     
     TOKEN_EXCHANGE_ISSUER: "https://uat.selfcare.pagopa.it"
-    SUPERSET_BASE_URL: "https://analytics.internal.uat.p4pa.pagopa.it"
+    SUPERSET_BASE_URL: "https://analytics.uat.p4pa.pagopa.it"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
