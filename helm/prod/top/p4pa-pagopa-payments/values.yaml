@@ -55,6 +55,7 @@ microservice-chart:
     PAGOPA_NODE_GPD_BASE_URL: "https://api.platform.pagopa.it/gpd/debt-positions-service/v3/"
     APP_NODE_FOR_PA_URL: "https://api.platform.pagopa.it/nodo-auth/node-for-pa/v1"
     PAGOPA_TAXONOMIES_BASE_URL: "https://api.platform.pagopa.it/taxonomy/service/v1/taxonomy"
+    PAGOPA_NODE_SYNC_PAYMENTS_REPORTING_BASE_URL: "https://api.platform.pagopa.it/fdr-org/service/v1"
   # nodeSelector: {}
 
   # tolerations: []
