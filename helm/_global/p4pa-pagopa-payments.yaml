@@ -82,7 +82,6 @@ microservice-chart:
     SEND_NOTIFICATION_BASE_URL: "http://p4pa-send-notification-microservice-chart:8080"
     PU_SIL_BASE_URL: "http://p4pa-pu-sil-microservice-chart:8080"
     WORKFLOW_HUB_BASE_URL: "http://p4pa-workflow-hub-microservice-chart:8080"
-    CLASSIFICATION_BASE_URL: "http://p4pa-classification-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
