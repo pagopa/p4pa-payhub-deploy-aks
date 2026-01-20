@@ -46,6 +46,7 @@ microservice-chart:
     MAIL_PORT: "25"
     MAIL_SMTP_STARTTLS: "false"
     MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    INGEST_FLOW_FILES_PAYMENTS_REPORTING_LEGACY_FEATURE_FLAGS: "false"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
