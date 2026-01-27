@@ -17,6 +17,7 @@ microservice-chart:
 
   autoscaling:
     enable: false
+    minReplica: 2
 
   envConfig:
     ENV: "PROD"
