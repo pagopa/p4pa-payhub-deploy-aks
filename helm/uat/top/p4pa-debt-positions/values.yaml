@@ -15,6 +15,9 @@ microservice-chart:
       memory: "2048Mi"
       cpu: "1500m"
 
+  deployment:
+    replicas: 2
+
   autoscaling:
     enable: false
     minReplica: 2
