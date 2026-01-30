@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-citizen
-    tag: develop-latest
+    tag: develop-latest@sha256:eee6bbb5ca1e00a81a5b41512ec68bd69adee1c83a4f4f5f6a02856e40c86e58
     pullPolicy: Always
 
   ingress:
