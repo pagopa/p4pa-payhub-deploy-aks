@@ -1,0 +1,82 @@
+microservice-chart:
+  namespace: "payhub"
+  nameOverride: ""
+  fullnameOverride: ""
+
+  startupProbe:
+    create: true
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 30
+    failureThreshold: 15
+    periodSeconds: 10
+
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    failureThreshold: 15
+    periodSeconds: 10
+
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 5
+    failureThreshold: 15
+    periodSeconds: 10
+
+  deployment:
+    create: true
+
+  service:
+    create: true
+    type: ClusterIP
+    port: 8080
+
+  ingress:
+    create: true
+    path: /p4pacie/(.*)
+
+  serviceAccount:
+    create: false
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
+
+  envConfig:
+    APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-cie"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
+    APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
+    APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
+    ENABLE_AUDIT_APPENDER: "TRUE"
+
+    AUTH_SERVER_BASE_URL: "http://p4pa-auth-microservice-chart:8080"
+    DEBT_POSITIONS_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
+
+  envSecret:
+    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+
+  # nodeSelector: {}
+
+  # tolerations: []
+
+  # affinity: {}
