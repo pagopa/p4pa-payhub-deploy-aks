@@ -74,6 +74,9 @@ microservice-chart:
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+    CIE_DB_HOST: db-host
+    CIE_DB_USER: db-piattaforma-unitaria-login-username
+    CIE_DB_PASSWORD: db-piattaforma-unitaria-login-password
 
   # nodeSelector: {}
 
