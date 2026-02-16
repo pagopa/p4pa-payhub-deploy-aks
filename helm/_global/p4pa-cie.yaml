@@ -62,6 +62,13 @@ microservice-chart:
       - name: appinsights-config
         key: applicationinsights.json
 
+  externalConfigMapValues:
+    eventhub-config:
+      KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
+      KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
+      KAFKA_TOPIC_PAYMENTS: p4pa-payhub-payments-topic
+      KAFKA_TOPIC_DATA_EVENTS: p4pa-payhub-data-events-topic
+
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-cie"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
@@ -75,6 +82,10 @@ microservice-chart:
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+
+    KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
+    KAFKA_PAYMENTS_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
+
     CIE_DB_HOST: db-host
     CIE_DB_USER: db-piattaforma-unitaria-login-username
     CIE_DB_PASSWORD: db-piattaforma-unitaria-login-password
