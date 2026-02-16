@@ -67,7 +67,6 @@ microservice-chart:
       KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
       KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
       KAFKA_TOPIC_PAYMENTS: p4pa-payhub-payments-topic
-      KAFKA_TOPIC_DATA_EVENTS: p4pa-payhub-data-events-topic
 
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-cie"
