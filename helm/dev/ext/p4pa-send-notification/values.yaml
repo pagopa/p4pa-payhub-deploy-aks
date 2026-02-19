@@ -25,6 +25,7 @@ microservice-chart:
 
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
+      -Djdk.virtualThreadScheduler.parallelism=4
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
