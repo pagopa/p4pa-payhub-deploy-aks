@@ -16,7 +16,7 @@ microservice-chart:
       cpu: "1500m"
 
   deployment:
-    replicas: 2
+    replicas: 4
 
   autoscaling:
     enable: false
