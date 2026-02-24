@@ -51,6 +51,8 @@ microservice-chart:
     MAIL_SMTP_STARTTLS: "false"
     MAIL_SMTP_STARTTLS_REQUIRED: "false"
 
+    DEFAULT_REST_CONNECTION_POOL_SIZE: "20"
+    DEFAULT_REST_CONNECTION_POOL_SIZE_PER_ROUTE: "10"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
