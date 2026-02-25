@@ -23,6 +23,8 @@ microservice-chart:
     PAGOPA_PRINT_PAYMENT_NOTICE_BASE_URL: https://api.dev.platform.pagopa.it/print-payment-notice-service/external/v1
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
+      -Djdk.virtualThreadScheduler.parallelism=4
+      -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC

@@ -16,7 +16,7 @@ microservice-chart:
       cpu: "1500m"
 
   deployment:
-    replicas: 2
+    replicas: 4
 
   autoscaling:
     enable: false
@@ -34,6 +34,8 @@ microservice-chart:
     ENV: "UAT"
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
+      -Djdk.virtualThreadScheduler.parallelism=4
+      -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
