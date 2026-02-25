@@ -79,8 +79,6 @@ microservice-chart:
     DEBT_POSITIONS_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
 
-    DEBT_POSITION_CIE_EXPIRATION_DAYS: "5"
-
     MEF_IBAN: "IT49K0100003245BE00000003QS"
 
   envSecret:
