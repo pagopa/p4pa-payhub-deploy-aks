@@ -82,8 +82,6 @@ microservice-chart:
     DEBT_POSITION_CIE_EXPIRATION_DAYS: "5"
 
     MEF_IBAN: "IT49K0100003245BE00000003QS"
-    MEF_FISCAL_CODE: "80415740580"
-    MEF_NAME: "Ministero dell'Economia e delle Finanze"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
