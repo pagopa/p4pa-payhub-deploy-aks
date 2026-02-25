@@ -73,9 +73,12 @@ microservice-chart:
     DEBT_POSITIONS_BASE_URL: "http://p4pa-debt-positions-microservice-chart:8080"
     ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
     PAGOPA_PAYMENTS_BASE_URL: "http://p4pa-pagopa-payments-microservice-chart:8080"
+    CIE_BASE_URL: "http://p4pa-cie-microservice-chart:8080"
+
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
+    P4PA_AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
 
   # nodeSelector: {}
 
