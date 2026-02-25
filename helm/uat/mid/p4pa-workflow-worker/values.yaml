@@ -27,6 +27,7 @@ microservice-chart:
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -Djdk.virtualThreadScheduler.parallelism=4
+      -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
@@ -50,9 +51,6 @@ microservice-chart:
     MAIL_PORT: "25"
     MAIL_SMTP_STARTTLS: "false"
     MAIL_SMTP_STARTTLS_REQUIRED: "false"
-
-    DEFAULT_REST_CONNECTION_POOL_SIZE: "70"
-    DEFAULT_REST_CONNECTION_POOL_SIZE_PER_ROUTE: "50"
 
   keyvault:
     name: "p4pa-u-payhub-kv"

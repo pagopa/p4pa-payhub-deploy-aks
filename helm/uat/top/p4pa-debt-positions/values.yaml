@@ -35,6 +35,7 @@ microservice-chart:
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -Djdk.virtualThreadScheduler.parallelism=4
+      -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=60.0
       -XX:MaxRAMPercentage=70.0
       -XX:+UseG1GC
@@ -55,11 +56,6 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
 
     FEATURE_ORGANIZATION_PIVA_CHECK: "false"
-
-    DEBT_POSITIONS_DB_CONNECTION_MAX_POOL_SIZE: "20"
-    DEBT_POSITIONS_DB_CONNECTION_MIN_IDLE: "20"
-    CITIZENDB_CONNECTION_MAX_POOL_SIZE: "20"
-    CITIZENDB_CONNECTION_MIN_IDLE: "20"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
