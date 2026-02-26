@@ -75,6 +75,7 @@ microservice-chart:
     PAGOPA_PAYMENTS_BASE_URL: "http://p4pa-pagopa-payments-microservice-chart:8080"
     CIE_BASE_URL: "http://p4pa-cie-microservice-chart:8080"
 
+    CIE_ORGANIZATION_FISCAL_CODE: "00399810589"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
