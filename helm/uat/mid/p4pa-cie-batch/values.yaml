@@ -1,6 +1,6 @@
 microservice-chart:
   image:
-    repository: ghcr.io/pagopa/p4pa-cie
+    repository: ghcr.io/pagopa/p4pa-cie-batch
     tag: uat-latest
     pullPolicy: Always
 
@@ -49,7 +49,3 @@ microservice-chart:
 
 postman-test:
   run: false
-  repoName: p4pa-cie
-  dir: postman
-  collectionName: "p4pa-cie-E2E.postman_collection.json"
-  envVariablesFile: "p4pa_UAT.postman_environment.json" #inside azdo secure files

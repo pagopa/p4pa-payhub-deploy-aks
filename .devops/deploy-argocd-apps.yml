@@ -49,6 +49,7 @@ parameters:
     - p4pa-classification
     - p4pa-pdnd-services
     - p4pa-process-executions
+    - p4pa-cie-batch
 
 - name: APPS_EXT
   displayName: Extra ArgoCD Apps. Set to [] to skip deployment.
