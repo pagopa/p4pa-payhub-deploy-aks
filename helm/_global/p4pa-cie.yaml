@@ -3,6 +3,9 @@ microservice-chart:
   nameOverride: ""
   fullnameOverride: ""
 
+  imagePullSecrets:
+    - name: ghcr-secret
+
   startupProbe:
     create: true
     httpGet:
