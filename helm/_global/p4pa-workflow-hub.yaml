@@ -100,7 +100,7 @@ microservice-chart:
     KAFKA_PAYMENTS_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
     KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-producer-jaas-config
     KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-data-events-evh-producer-jaas-config
-    KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-registry-evh-producer-jaas-config
+    KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-registries-evh-producer-jaas-config
 
     WORKFLOW_HUB_DB_HOST: db-host
     WORKFLOW_HUB_DB_USER: db-piattaforma-unitaria-login-username
