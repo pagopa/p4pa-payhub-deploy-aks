@@ -18,6 +18,9 @@ microservice-chart:
   autoscaling:
     enable: false
 
+#  envSecret:
+#    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: TODO configure secret for prod
+
   envConfig:
     ENV: "PROD"
     JAVA_TOOL_OPTIONS: >-
@@ -52,6 +55,10 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
     PAGOPA_PRINT_PAYMENT_NOTICE_CIE_BASE_URL: "https://api.platform.pagopa.it/printit/cie/pdf-engine/v1"
+
+    CIE_ONLINE_HTTPS_ENABLED: "true"
+    CIE_ONLINE_HTTPS_TRUST_ALL: "false"
+    # CIE_ONLINE_BASE_URL: TODO cie-online service
 
   keyvault:
     name: "p4pa-p-payhub-kv"
