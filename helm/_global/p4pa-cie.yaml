@@ -84,7 +84,11 @@ microservice-chart:
     CIE_DB_HOST: db-host
     CIE_DB_USER: db-piattaforma-unitaria-login-username
     CIE_DB_PASSWORD: db-piattaforma-unitaria-login-password
+
     P4PA_AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
+
+    CIE_ONLINE_HTTPS_CERT: outbound-certificate-pub-key
+    CIE_ONLINE_HTTPS_KEY: outbound-certificate-prv-key
 
   # nodeSelector: {}
 

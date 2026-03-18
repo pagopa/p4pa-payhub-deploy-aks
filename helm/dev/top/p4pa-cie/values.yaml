@@ -18,6 +18,9 @@ microservice-chart:
   autoscaling:
     enable: false
 
+  envSecret:
+    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-internal-dev-p4pa-pagopa-it
+
   envConfig:
     ENV: "DEV"
 
@@ -45,6 +48,10 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
 
     PAGOPA_PRINT_PAYMENT_NOTICE_CIE_BASE_URL: "https://api.dev.platform.pagopa.it/printit/cie/pdf-engine/v1"
+
+    CIE_ONLINE_HTTPS_ENABLED: "true"
+    CIE_ONLINE_HTTPS_TRUST_ALL: "false"
+    CIE_ONLINE_BASE_URL: "http://p4pa-mocks-microservice-chart:8080/cie"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
