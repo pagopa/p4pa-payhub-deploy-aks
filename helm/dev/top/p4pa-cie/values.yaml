@@ -19,7 +19,7 @@ microservice-chart:
     enable: false
 
   envSecret:
-    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-internal-dev-p4pa-pagopa-it
+    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-mtls-internal-dev-p4pa-pagopa-it
 
   envConfig:
     ENV: "DEV"
@@ -51,7 +51,7 @@ microservice-chart:
 
     CIE_ONLINE_HTTPS_ENABLED: "true"
     CIE_ONLINE_HTTPS_TRUST_ALL: "false"
-    CIE_ONLINE_BASE_URL: "http://p4pa-mocks-microservice-chart:8080/cie"
+    CIE_ONLINE_BASE_URL: "https://hub-mtls.internal.dev.p4pa.pagopa.it/p4pamocks/cie"
 
   keyvault:
     name: "p4pa-d-payhub-kv"

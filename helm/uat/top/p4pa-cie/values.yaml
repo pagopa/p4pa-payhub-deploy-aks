@@ -20,7 +20,7 @@ microservice-chart:
 
   envSecret:
     # switch in order to match with CIE_ONLINE_BASE_URL
-    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-internal-uat-p4pa-pagopa-it
+    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-mtls-internal-uat-p4pa-pagopa-it
     # CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: TODO configure secret for uat
 
   envConfig:
@@ -54,7 +54,7 @@ microservice-chart:
     CIE_ONLINE_HTTPS_TRUST_ALL: "false"
 
     # switch CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION when switching CIE_ONLINE_BASE_URL
-    CIE_ONLINE_BASE_URL: "http://p4pa-mocks-microservice-chart:8080/cie"
+    CIE_ONLINE_BASE_URL: "https://hub-mtls.internal.uat.p4pa.pagopa.it/p4pamocks/cie"
     # CIE_ONLINE_BASE_URL: TODO cie-online service
 
   keyvault:
