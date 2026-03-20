@@ -24,6 +24,8 @@ microservice-chart:
 
   envConfig:
     ENV: "UAT"
+    MASSIVE_NOTICES_RETENTION_DAYS: 7
+
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -Djdk.virtualThreadScheduler.parallelism=4
