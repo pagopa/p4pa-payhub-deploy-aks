@@ -55,6 +55,7 @@ microservice-chart:
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
     PAGOPA_PRINT_PAYMENT_NOTICE_CIE_BASE_URL: "https://api.platform.pagopa.it/printit/cie/pdf-engine/v1"
+    PAGOPA_CREDITOR_INSTITUTIONS_BASE_URL: "https://api.platform.pagopa.it/printit/cie/api-config/v1"
 
     CIE_ONLINE_HTTPS_ENABLED: "true"
     CIE_ONLINE_HTTPS_TRUST_ALL: "false"
