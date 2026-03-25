@@ -24,19 +24,18 @@ microservice-chart:
     FILESHARE_PUBLIC_BASE_URL: "https://api.p4pa.pagopa.it/pu/fileshare"
 
     JAVA_TOOL_OPTIONS: >-
-      -Djava.util.concurrent.ForkJoinPool.common.parallelism=$[$(nproc)*2]
-      -Djdk.virtualThreadScheduler.parallelism=$[$(nproc)*2]
+      -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
+      -Djdk.virtualThreadScheduler.parallelism=2
       -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=75.0
       -XX:MaxRAMPercentage=85.0
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=100
-      -XX:ParallelGCThreads=$[$(nproc)*2]
+      -XX:ParallelGCThreads=2
       -XX:ConcGCThreads=1
       -XX:MinTLABSize=16k
       -XX:+ResizeTLAB
       -XX:+UseContainerSupport
-      -XX:ActiveProcessorCount=$(nproc)
       -XX:+ExitOnOutOfMemoryError
       -XX:+HeapDumpOnOutOfMemoryError
       -XX:HeapDumpPath=/var/log/heapdump-${POD_NAME}.hprof
