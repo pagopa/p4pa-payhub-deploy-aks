@@ -37,6 +37,11 @@ microservice-chart:
       -XX:MinTLABSize=16k
       -XX:+ResizeTLAB
       -XX:+UseContainerSupport
+      -XX:+PerfDisableSharedMem
+      -XX:+AlwaysPreTouch
+      -XX:+UseTransparentHugePages
+      -XX:NativeMemoryTracking=detail
+      -Djdk.nio.maxCachedBufferSize=262144
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
       -Dspring.profiles.active=dev
