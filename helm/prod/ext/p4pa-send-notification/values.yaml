@@ -31,6 +31,10 @@ microservice-chart:
       -XX:MaxRAMPercentage=85.0
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=100
+      -XX:ParallelGCThreads=$[$(nproc)*2]
+      -XX:ConcGCThreads=1
+      -XX:MinTLABSize=16k
+      -XX:+ResizeTLAB
       -XX:+UseContainerSupport
       -XX:ActiveProcessorCount=$(nproc)
       -XX:+ExitOnOutOfMemoryError
