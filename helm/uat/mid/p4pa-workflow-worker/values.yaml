@@ -29,10 +29,19 @@ microservice-chart:
       -Djdk.virtualThreadScheduler.parallelism=4
       -Djdk.virtualThreadScheduler.maxPoolSize=256
       -XX:InitialRAMPercentage=60.0
-      -XX:MaxRAMPercentage=70.0
+      -XX:MaxRAMPercentage=85.0
       -XX:+UseG1GC
       -XX:MaxGCPauseMillis=200
+      -XX:ParallelGCThreads=4
+      -XX:ConcGCThreads=1
+      -XX:MinTLABSize=16k
+      -XX:+ResizeTLAB
       -XX:+UseContainerSupport
+      -XX:+PerfDisableSharedMem
+      -XX:+AlwaysPreTouch
+      -XX:+UseTransparentHugePages
+      -XX:NativeMemoryTracking=detail
+      -Djdk.nio.maxCachedBufferSize=262144
       -XX:+ShowCodeDetailsInExceptionMessages
       -XX:+EnableDynamicAgentLoading
       -Dspring.profiles.active=dev
