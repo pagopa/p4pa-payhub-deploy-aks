@@ -53,7 +53,7 @@ microservice-chart:
 
     CIE_ONLINE_HTTPS_ENABLED: "true"
     CIE_ONLINE_HTTPS_TRUST_ALL: "false"
-    # CIE_ONLINE_BASE_URL: TODO cie-online service
+    # CIE_ONLINE_BASE_URL: "https://pagamenti.servizicie.interno.gov.it/payments-service" TODO to confirm
 
   keyvault:
     name: "p4pa-p-payhub-kv"

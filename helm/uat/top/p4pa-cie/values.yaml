@@ -65,7 +65,7 @@ microservice-chart:
 
     # switch CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION when switching CIE_ONLINE_BASE_URL
     CIE_ONLINE_BASE_URL: "https://hub-mtls.internal.uat.p4pa.pagopa.it/p4pamocks/cie"
-    # CIE_ONLINE_BASE_URL: TODO cie-online service
+    # CIE_ONLINE_BASE_URL: "https://collaudo.pagamenti.servizicie.interno.gov.it/payments-service"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
