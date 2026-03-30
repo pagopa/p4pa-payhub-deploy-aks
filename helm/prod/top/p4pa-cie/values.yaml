@@ -19,7 +19,7 @@ microservice-chart:
     enable: false
 
 #  envSecret:
-#    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: TODO configure secret for prod
+#    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: cie-online-certificate
 
   envConfig:
     ENV: "PROD"
