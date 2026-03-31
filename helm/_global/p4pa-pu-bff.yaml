@@ -81,7 +81,7 @@ microservice-chart:
     CITIZEN_BASE_URL: "http://p4pa-citizen-microservice-chart:8080"
 
     monitoring_services_cie_serviceName: "P4PA-Cie Service"
-    monitoring_services_cie_url: "http://p4pa-cie-microservice-chart:8080"
+    monitoring_services_cie_url: "http://p4pa-cie-microservice-chart:8080/actuator/health/readiness"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
