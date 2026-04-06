@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-workflow-worker
-    tag: develop-latest
+    tag: develop-latest@sha256:bfcdf84f750aba00b5e6e22877746858c7a8fe3f070c4f90c83f8f3d93b50002
     pullPolicy: Always
 
   ingress:
