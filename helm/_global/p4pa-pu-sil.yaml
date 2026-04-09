@@ -93,6 +93,7 @@ microservice-chart:
 
     REST_AGID_INTEGRITY_PU_PRIVATEKEY: pu-sil-integrity-priv
     REST_AGID_INTEGRITY_PU_PUBLICKEY: pu-sil-integrity-pub
+    P4PA_AUTH_CLIENT_SECRET: piattaforma-unitaria-client-secret
 
   # nodeSelector: {}
 
