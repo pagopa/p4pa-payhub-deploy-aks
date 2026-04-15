@@ -20,8 +20,8 @@ microservice-chart:
 
   envSecret:
     # switch in order to match with CIE_ONLINE_BASE_URL
-    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-mtls-internal-uat-p4pa-pagopa-it
-    # CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: cie-online-certificate
+    #CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: hub-mtls-internal-uat-p4pa-pagopa-it
+    CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION: cie-online-certificate
 
   envConfig:
     ENV: "UAT"
@@ -64,8 +64,8 @@ microservice-chart:
     CIE_ONLINE_HTTPS_TRUST_ALL: "false"
 
     # switch CIE_ONLINE_HTTPS_TRUST_CERTIFICATES_COLLECTION when switching CIE_ONLINE_BASE_URL
-    CIE_ONLINE_BASE_URL: "https://hub-mtls.internal.uat.p4pa.pagopa.it/p4pamocks/cie"
-    # CIE_ONLINE_BASE_URL: "https://collaudo.pagamenti.servizicie.interno.gov.it/payments-service"
+    # CIE_ONLINE_BASE_URL: "https://hub-mtls.internal.uat.p4pa.pagopa.it/p4pamocks/cie"
+    CIE_ONLINE_BASE_URL: "https://collaudo.pagamenti.servizicie.interno.gov.it/payments-service"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
