@@ -90,6 +90,9 @@ microservice-chart:
     CIE_ONLINE_HTTPS_CERT: outbound-certificate-pub-key
     CIE_ONLINE_HTTPS_KEY: outbound-certificate-prv-key
 
+    DATA_CIPHER_ENCRYPT_PASSWORD: data-cipher-encrypt-password
+    DATA_CIPHER_HASH_PEPPER: data-cipher-hash-pepper
+
   # nodeSelector: {}
 
   # tolerations: []
