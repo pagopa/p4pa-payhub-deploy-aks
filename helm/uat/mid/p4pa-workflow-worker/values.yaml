@@ -23,6 +23,7 @@ microservice-chart:
     minReplica: 4
 
   envSecret:
+    MAIL_SENDER_ADDRESS: aws-ses-mail-from
     # To use fake email server (see also envConfig section)
     #MAIL_USERNAME: mail-username
     #MAIL_PASSWORD: mail-password

@@ -23,6 +23,7 @@ microservice-chart:
     minReplica: 4
 
   envSecret:
+    MAIL_SENDER_ADDRESS: aws-ses-mail-from
     MAIL_USERNAME: aws-ses-mail-smtp-username
     MAIL_PASSWORD: aws-ses-mail-smtp-password
     MAIL_HOST: aws-ses-mail-host
