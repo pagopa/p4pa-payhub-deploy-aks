@@ -18,6 +18,10 @@ microservice-chart:
   autoscaling:
     enable: false
 
+  envSecret:
+    MAIL_USERNAME: mail-username
+    MAIL_PASSWORD: mail-password
+
   envConfig:
     ENV: "DEV"
 

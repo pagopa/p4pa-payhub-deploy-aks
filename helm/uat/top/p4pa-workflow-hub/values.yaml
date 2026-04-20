@@ -22,6 +22,15 @@ microservice-chart:
     enable: false
     minReplica: 4
 
+  envSecret:
+    MAIL_SENDER_ADDRESS: aws-ses-mail-from
+    # To use fake email server
+    MAIL_USERNAME: mail-username
+    MAIL_PASSWORD: mail-password
+    # To use real email server (AWS SES)
+    #MAIL_USERNAME: aws-ses-mail-smtp-username
+    #MAIL_PASSWORD: aws-ses-mail-smtp-password
+
   envConfig:
     ENV: "UAT"
 
@@ -59,10 +68,14 @@ microservice-chart:
 
     MASSIVE_NOTICES_RETENTION_DAYS: "7"
 
+    # To use fake email server (see also EnvSecret section)
     MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
     MAIL_PORT: "25"
     MAIL_SMTP_STARTTLS: "false"
     MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    # To use real email server (AWS SES)
+    #MAIL_SMTP_STARTTLS: "true"
+    #MAIL_SMTP_STARTTLS_REQUIRED: "true"
 
   keyvault:
     name: "p4pa-u-payhub-kv"
