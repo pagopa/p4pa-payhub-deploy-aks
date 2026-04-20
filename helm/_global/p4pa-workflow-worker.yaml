@@ -107,9 +107,6 @@ microservice-chart:
 
     FILE_ENCRYPT_PSW: file-encrypt-password
 
-    MAIL_USERNAME: mail-username
-    MAIL_PASSWORD: mail-password
-
   # nodeSelector: {}
 
   # tolerations: []

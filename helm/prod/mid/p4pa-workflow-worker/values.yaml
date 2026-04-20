@@ -22,6 +22,11 @@ microservice-chart:
     enable: false
     minReplica: 4
 
+  envSecret:
+    MAIL_USERNAME: aws-ses-mail-smtp-username
+    MAIL_PASSWORD: aws-ses-mail-smtp-password
+    MAIL_HOST: aws-ses-mail-host
+
   envConfig:
     ENV: "PROD"
     JAVA_TOOL_OPTIONS: >-
@@ -49,7 +54,8 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
-    MAIL_HOST: "smtp.gmail.com"
+    MAIL_SMTP_STARTTLS: "true"
+    MAIL_SMTP_STARTTLS_REQUIRED: "true"
 
   keyvault:
     name: "p4pa-p-payhub-kv"
