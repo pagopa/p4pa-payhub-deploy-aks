@@ -48,11 +48,11 @@ microservice-chart:
       -Dcom.sun.management.jmxremote.authenticate=false
       -Dcom.sun.management.jmxremote.ssl=false
       -Dcom.sun.management.jmxremote.local.only=false
-      -Djava.rmi.server.hostname=127.0.0.1 
+      -Djava.rmi.server.hostname=127.0.0.1
       -javaagent:/app/applicationinsights-agent.jar
-      -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json 
-  
-    SIL_WSDL_BASE_URL: "https://hub.internal.aut.p4pa.pagopa.it/p4papusil"   
+      -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
+
+    SIL_WSDL_BASE_URL: "https://hub.internal.aut.p4pa.pagopa.it/p4papusil"
     PUBLIC_BASE_URL_FILESHARE: "https://api.uat.p4pa.pagopa.it/pu/fileshare"
     PUBLIC_BASE_URL_PU_SIL: "https://api.uat.p4pa.pagopa.it/pu/sil"
     PUBLIC_BASE_URL_BFF: "https://api.uat.p4pa.pagopa.it/pu/bff"

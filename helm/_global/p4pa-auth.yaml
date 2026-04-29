@@ -77,7 +77,6 @@ microservice-chart:
     ENABLE_AUDIT_APPENDER: "TRUE"
     ENABLE_KAFKA_AUDIT_APPENDER: "TRUE"
 
-    REDIS_PORT: "6380"
     REDIS_SSL_ENABLED: "true"
 
     JWT_TOKEN_EXPIRATION_SECONDS: "14400" # 4 HOURS
@@ -92,6 +91,7 @@ microservice-chart:
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
     REDIS_HOST: cache-standalone-host
+    REDIS_PORT: cache-port
     REDIS_PASSWORD: cache-password
     MONGODB_URI: mongodb-connection-string
 
