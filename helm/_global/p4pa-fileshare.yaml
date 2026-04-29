@@ -94,4 +94,3 @@ microservice-chart:
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     FILE_ENCRYPT_PASSWORD: file-encrypt-password
-

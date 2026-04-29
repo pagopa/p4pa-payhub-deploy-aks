@@ -50,7 +50,7 @@ microservice-chart:
       -Djdk.nio.maxCachedBufferSize=262144
       -Djava.security.egd=file:/dev/./urandom
       -Dspring.profiles.active=prod
-      -Djava.rmi.server.hostname=127.0.0.1 
+      -Djava.rmi.server.hostname=127.0.0.1
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
