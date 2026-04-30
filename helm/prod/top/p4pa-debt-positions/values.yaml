@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-debt-positions
-    tag: v1.0.0
+    tag: v1.0.1@sha256:d90d230bb73c3831ad959ca7f9e1af2064a902a9b5220b5b06b46b9a04166b6c
     pullPolicy: Always
 
   ingress:
@@ -16,11 +16,10 @@ microservice-chart:
       cpu: "1500m"
 
   deployment:
-    replicas: 2
+    replicas: 4
 
   autoscaling:
     enable: false
-    minReplica: 2
 
   envConfig:
     ENV: "PROD"

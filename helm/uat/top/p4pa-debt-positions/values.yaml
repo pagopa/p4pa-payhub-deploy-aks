@@ -20,15 +20,6 @@ microservice-chart:
 
   autoscaling:
     enable: false
-    minReplica: 2
-  #    maxReplica: 1
-  #    pollingInterval: 30 # seconds
-  #    cooldownPeriod: 300 # seconds
-  #    triggers:
-  #      - type: cpu
-  #        metadata:
-  #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-  #          value: "70"
 
   envConfig:
     ENV: "UAT"

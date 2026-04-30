@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-cie-batch
-    tag: v1.0.0
+    tag: v1.0.0@sha256:c5cc5a8e096ae14d97cdfd655c7541be89af65e54986251b920dc85cbc53b191
     pullPolicy: Always
 
   ingress:

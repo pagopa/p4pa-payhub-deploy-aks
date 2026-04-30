@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-pu-bff
-    tag: v1.0.0
+    tag: v1.0.0@sha256:1c2c6c241c4ffdf05408f7eebb16a7a7449da7a5259fe4415b97c4134eddb924
     pullPolicy: Always
 
   ingress:
@@ -16,16 +16,16 @@ microservice-chart:
       cpu: "1500m"
 
   autoscaling:
-    enable: false
-  #    minReplica: 1
-  #    maxReplica: 1
-  #    pollingInterval: 30 # seconds
-  #    cooldownPeriod: 300 # seconds
-  #    triggers:
-  #      - type: cpu
-  #        metadata:
-  #          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
-  #          value: "70"
+    enable: true
+    minReplica: 1
+    maxReplica: 4
+    pollingInterval: 30 # seconds
+    cooldownPeriod: 300 # seconds
+    triggers:
+      - type: cpu
+        metadata:
+          type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+          value: "70"
 
   envConfig:
     ENV: "PROD"
