@@ -57,6 +57,7 @@ microservice-chart:
 
     CIE_MAIL_SMTP_STARTTLS: "true"
     CIE_MAIL_SMTP_STARTTLS_REQUIRED: "true"
+    CIE_MAIL_PORT: "25"
 
   keyvault:
     name: "p4pa-p-payhub-kv"
