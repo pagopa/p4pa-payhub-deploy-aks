@@ -23,10 +23,10 @@ microservice-chart:
     minReplica: 4
 
   envSecret:
-    MAIL_SENDER_ADDRESS: aws-ses-mail-from
-    MAIL_USERNAME: aws-ses-mail-smtp-username
-    MAIL_PASSWORD: aws-ses-mail-smtp-password
-    MAIL_HOST: aws-ses-mail-host
+    CIE_MAIL_SENDER_ADDRESS: aws-ses-mail-from
+    CIE_MAIL_USERNAME: aws-ses-mail-smtp-username
+    CIE_MAIL_PASSWORD: aws-ses-mail-smtp-password
+    CIE_MAIL_HOST: aws-ses-mail-host
 
   envConfig:
     ENV: "PROD"
@@ -55,8 +55,8 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
-    MAIL_SMTP_STARTTLS: "true"
-    MAIL_SMTP_STARTTLS_REQUIRED: "true"
+    CIE_MAIL_SMTP_STARTTLS: "true"
+    CIE_MAIL_SMTP_STARTTLS_REQUIRED: "true"
 
   keyvault:
     name: "p4pa-p-payhub-kv"

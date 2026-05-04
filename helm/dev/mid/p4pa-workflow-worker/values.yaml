@@ -19,8 +19,8 @@ microservice-chart:
     enable: false
 
   envSecret:
-    MAIL_USERNAME: mail-username
-    MAIL_PASSWORD: mail-password
+    CIE_MAIL_USERNAME: mail-username
+    CIE_MAIL_PASSWORD: mail-password
 
   envConfig:
     ENV: "DEV"
@@ -57,10 +57,11 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
-    MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
-    MAIL_PORT: "25"
-    MAIL_SMTP_STARTTLS: "false"
-    MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    CIE_MAIL_HOST: "p4pa-fake-email-mailpit-smtp.fake-email.svc.cluster.local"
+    CIE_MAIL_PORT: "25"
+    CIE_MAIL_SMTP_STARTTLS: "false"
+    CIE_MAIL_SMTP_STARTTLS_REQUIRED: "false"
+    CIE_MAIL_SENDER_ADDRESS: "piattaforma-unitaria@noreply.com"
 
   keyvault:
     name: "p4pa-d-payhub-kv"
