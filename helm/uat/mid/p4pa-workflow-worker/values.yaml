@@ -28,10 +28,10 @@ microservice-chart:
     CIE_MAIL_USERNAME: mail-username
     CIE_MAIL_PASSWORD: mail-password
     # To use real email server (AWS SES)
-    #MAIL_USERNAME: aws-ses-mail-smtp-username
-    #MAIL_PASSWORD: aws-ses-mail-smtp-password
-    #MAIL_HOST: aws-ses-mail-host
-    #MAIL_PORT: aws-ses-port-number
+    #CIE_MAIL_USERNAME: aws-ses-mail-smtp-username
+    #CIE_MAIL_PASSWORD: aws-ses-mail-smtp-password
+    #CIE_MAIL_HOST: aws-ses-mail-host
+    #CIE_MAIL_PORT: aws-ses-port-number
 
   envConfig:
     ENV: "UAT"
@@ -73,8 +73,8 @@ microservice-chart:
     CIE_MAIL_SMTP_STARTTLS: "false"
     CIE_MAIL_SMTP_STARTTLS_REQUIRED: "false"
     # To use real email server (AWS SES)
-    #MAIL_SMTP_STARTTLS: "true"
-    #MAIL_SMTP_STARTTLS_REQUIRED: "true"
+    #CIE_MAIL_SMTP_STARTTLS: "true"
+    #CIE_MAIL_SMTP_STARTTLS_REQUIRED: "true"
 
   keyvault:
     name: "p4pa-u-payhub-kv"

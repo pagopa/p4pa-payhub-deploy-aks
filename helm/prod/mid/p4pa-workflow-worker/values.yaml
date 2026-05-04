@@ -27,6 +27,7 @@ microservice-chart:
     CIE_MAIL_USERNAME: aws-ses-mail-smtp-username
     CIE_MAIL_PASSWORD: aws-ses-mail-smtp-password
     CIE_MAIL_HOST: aws-ses-mail-host
+    CIE_MAIL_PORT: aws-ses-port-number
 
   envConfig:
     ENV: "PROD"
@@ -57,7 +58,6 @@ microservice-chart:
 
     CIE_MAIL_SMTP_STARTTLS: "true"
     CIE_MAIL_SMTP_STARTTLS_REQUIRED: "true"
-    CIE_MAIL_PORT: "25"
 
   keyvault:
     name: "p4pa-p-payhub-kv"
