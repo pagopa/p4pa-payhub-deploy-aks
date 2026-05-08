@@ -182,6 +182,20 @@ stages:
   - stage: sync_argo_apps
     condition: succeeded()
     jobs:
+      - job: prod_gatekeeper
+        displayName: 'Production Approval Gate'
+        condition: eq('${{ parameters.ENV }}', 'prod')
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Validating Production Service Connection'
+            inputs:
+              azureSubscription: $(azureServiceConnectionName)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'echo "Approval received. Proceeding with deployment..."'
+
       # Top Apps
       - ${{ if and(ne(length(parameters.APPS_TOP), 0), ne(parameters.APPS_TOP, '[]')) }}:
         - template: templates/deploy-argo-template.yml
@@ -195,6 +209,8 @@ stages:
             agentPoolName: $(agentPoolName)
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
+            ${{ if eq(parameters.ENV, 'prod') }}:
+              dependsOnJob: 'prod_gatekeeper'
 
       # Mid Apps
       - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
@@ -209,6 +225,8 @@ stages:
             agentPoolName: $(agentPoolName)
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
+            ${{ if eq(parameters.ENV, 'prod') }}:
+              dependsOnJob: 'prod_gatekeeper'
 
       # Ext Apps
       - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
@@ -223,6 +241,8 @@ stages:
             agentPoolName: $(agentPoolName)
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
+            ${{ if eq(parameters.ENV, 'prod') }}:
+              dependsOnJob: 'prod_gatekeeper'
 
   # Stage for Postman Tests
   - stage: run_postman_tests
