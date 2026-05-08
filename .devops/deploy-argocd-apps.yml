@@ -210,7 +210,7 @@ stages:
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
             ${{ if eq(parameters.ENV, 'prod') }}:
-              dependsOnJob: ['prod_gatekeeper']
+              dependsOnJob: 'prod_gatekeeper'
 
       # Mid Apps
       - ${{ if and(ne(length(parameters.APPS_MID), 0), ne(parameters.APPS_MID, '[]')) }}:
@@ -226,7 +226,7 @@ stages:
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
             ${{ if eq(parameters.ENV, 'prod') }}:
-              dependsOnJob: ['prod_gatekeeper']
+              dependsOnJob: 'prod_gatekeeper'
 
       # Ext Apps
       - ${{ if and(ne(length(parameters.APPS_EXT), 0), ne(parameters.APPS_EXT, '[]')) }}:
@@ -242,7 +242,7 @@ stages:
             applicationPrefix: $(area)
             targetBranch: ${{ parameters.ARGOCD_TARGET_BRANCH }}
             ${{ if eq(parameters.ENV, 'prod') }}:
-              dependsOnJob: ['prod_gatekeeper']
+              dependsOnJob: 'prod_gatekeeper'
 
   # Stage for Postman Tests
   - stage: run_postman_tests
