@@ -122,7 +122,7 @@ microservice-chart:
       headerValue: canary
       weightPercent: 10
     image:
-      repository: ghcr.io/pagopa/send-notification
+      repository: ghcr.io/pagopa/p4pa-send-notification
       tag: <HOT_FIX_IMAGE_HERE>
     envSecret: { }
     envConfig: { }
