@@ -104,6 +104,31 @@ microservice-chart:
     KAFKA_AUDIT_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-audit-evh-producer-jaas-config
   # nodeSelector: {}
 
-  # tolerations: []
+  tolerations:
+    - key: "puOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
 
-  # affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: domain
+            operator: In
+            values:
+            - pu
+
+  canaryDelivery:
+    create: false
+    ingress:
+      header: true
+      headerName: X-Canary
+      headerValue: canary
+      weightPercent: 10
+    image:
+      repository: ghcr.io/pagopa/p4pa-auth
+      tag: <HOT_FIX_IMAGE_HERE>
+    envSecret: { }
+    envConfig: { }
