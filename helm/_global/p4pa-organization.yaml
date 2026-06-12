@@ -80,6 +80,7 @@ microservice-chart:
     BROKER_ENCRYPT_PASSWORD: broker-encrypt-password
     ORGANIZATION_ENCRYPT_PASSWORD: organization-encrypt-password
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
+    PDND_CLIENT_ENCRYPT_PASSWORD: pdnd-client-encrypt-password
 
   # nodeSelector: {}
 
