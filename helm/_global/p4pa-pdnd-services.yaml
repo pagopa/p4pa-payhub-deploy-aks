@@ -69,6 +69,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
     PDND_AUTH_USERID: "pagopa-piattaforma-unitaria"
+    ORGANIZATION_BASE_URL: "http://p4pa-organization-microservice-chart:8080"
 
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
