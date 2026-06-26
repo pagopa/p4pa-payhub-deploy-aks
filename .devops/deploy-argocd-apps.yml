@@ -39,6 +39,7 @@ parameters:
     - p4pa-pu-sil
     - p4pa-citizen
     - p4pa-cie
+    - p4pa-send-bff
 
 - name: APPS_MID
   displayName: Mid ArgoCD Apps. Set to [] to skip deployment.
