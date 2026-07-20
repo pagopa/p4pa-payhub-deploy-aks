@@ -54,7 +54,6 @@ microservice-chart:
       -javaagent:/app/applicationinsights-agent.jar
       -Dapplicationinsights.configuration.file=/mnt/file-config-external/appinsights-config/applicationinsights.json
 
-    #TODO edit with real env when prod is ready P4ADEV-1518
     PDND_BASE_URL: "https://auth.interop.pagopa.it"
     PDND_ACCESS_TOKEN_AUDIENCE: "auth.interop.pagopa.it/client-assertion"
 
