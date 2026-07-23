@@ -29,6 +29,7 @@ microservice-chart:
 
   envConfig:
     ENV: "DEV"
+    FILESHARE_PUBLIC_BASE_URL: "https://api.dev.p4pa.pagopa.it/pu/fileshare"
     JAVA_TOOL_OPTIONS: >-
       -Djava.util.concurrent.ForkJoinPool.common.parallelism=4
       -Djdk.virtualThreadScheduler.parallelism=4
