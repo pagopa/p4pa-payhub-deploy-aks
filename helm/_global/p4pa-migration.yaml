@@ -105,6 +105,7 @@ microservice-chart:
     MIGRATION_DB_PASSWORD: db-piattaforma-unitaria-login-password
 
     FILE_ENCRYPT_PASSWORD: file-encrypt-password
+    DATA_CIPHER_HASH_PEPPER: data-cipher-hash-pepper
 
   tolerations:
     - key: "puOnly"
