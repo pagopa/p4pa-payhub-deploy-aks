@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-organization
-    tag: develop-latest
+    tag: develop-latest@sha256:e06e679b14c453b8b6bf8d62dc96ed81366f007e33588e0700ab41c4d6eae22d
     pullPolicy: Always
 
   ingress:
