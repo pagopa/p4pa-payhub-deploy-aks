@@ -1,7 +1,7 @@
 microservice-chart:
   image:
     repository: ghcr.io/pagopa/p4pa-send-notification
-    tag: develop-latest
+    tag: develop-latest@sha256:90f977eaf3535e5dc8271a19e0baae750a6759f669a61b0455974999e6f1ce3f
     pullPolicy: Always
 
   ingress:
